@@ -5,13 +5,54 @@ description: Kombiniert zwei Superkraefte: (1) Verwandelt Codebases in interakti
 
 # Learning Skill v2.0
 
+---
+
+## 🛑 IDENTITÄTS-REGEL — KEINE EXTERNEN PROJEKTNAMEN (HARD BLOCK)
+
+**Dieser Skill heißt "Learning Skill". Das ist der EINZIGE Name der in jeglichem Output verwendet wird.**
+
+**VERBOTEN — in JEGLICHEM generierten Output (HTML, JSON, Markdown, Kommentare, Tooltips, Logs, Commit-Messages, Dateinamen, Variablennamen, Beschreibungen, Reports, README, Tiefenkarten):**
+
+| ❌ VERBOTEN | Warum |
+|---|---|
+| "Understand Anything" | Externer Projektname — darf NIEMALS erscheinen |
+| "Understand-Anything" | Externer Projektname — darf NIEMALS erscheinen |
+| "Understanding Skill" | Falscher Name — der Skill heißt NUR "Learning Skill" |
+| "Claude Learning & Understanding Skill" | Falscher Name — der Skill heißt NUR "Learning Skill" |
+| "claude-learning-understanding" | Falscher Slug — korrekt ist "learning-skill" |
+| ".understand-anything/" | Falscher Ordnername — korrekt ist ".claude-learning/" |
+| Jeder Verweis auf die Herkunft der Verstehen-Pipeline | Die Pipeline ist TEIL dieses Skills, kein externes Projekt |
+
+**KORREKTE Bezeichnungen:**
+
+| Kontext | Korrekter Name |
+|---|---|
+| Skill-Name | "Learning Skill" oder "Learning Skill v2.0" |
+| Skill-Slug (YAML, Ordner, Referenzen) | "learning-skill" |
+| Output-Ordner für Knowledge Graphs | ".claude-learning/" |
+| Modus-Bezeichnungen | "Kurs-Modus", "Verstehen-Modus", "Kombiniert-Modus" |
+| Agenten-Referenzen | "project-scanner", "file-analyzer" etc. — OHNE Projektpräfix |
+
+**Selbst-Check vor JEDEM Output:**
+```
+□ Enthält der Output den String "Understand Anything"? → ENTFERNEN
+□ Enthält der Output den String "Understanding"? → Nur OK wenn generisches englisches Wort in einem Satz (z.B. "for understanding the code"), NICHT OK als Namensbestandteil
+□ Enthält der Output ".understand-anything/"? → ERSETZEN durch ".claude-learning/"
+□ Enthält eine Commit-Message einen Hinweis auf externe Projekte? → ENTFERNEN
+□ Enthält der Output "aus Understand-Anything" oder "(aus ...)"? → ENTFERNEN
+```
+
+**Diese Regel gilt IMMER — auch bei Tests, Selbstanwendung, Debug-Output, Logs und internen Zwischenergebnissen.**
+
+---
+
 Dieser Skill vereint zwei leistungsstarke Analyse-Pipelines in einem einzigen, Claude-optimierten Werkzeug:
 
-1. **Kurs-Modus** (aus Learning-Skill) -- Verwandelt beliebige Codebases in interaktive **Multi-Level-HTML-Kurse** mit 4 Tiefenebenen (L0-L3), Zielgruppen-Segmentierung (Anwender/Entwickler/Entscheider), bilingual DE/EN, und Energiekonzern-Design (Tiefenblau #000099, Impuls-Orange #FE8F11, Warmgrau #E4DAD4).
+1. **Kurs-Modus** -- Verwandelt beliebige Codebases in interaktive **Multi-Level-HTML-Kurse** mit 4 Tiefenebenen (L0-L3), Zielgruppen-Segmentierung (Anwender/Entwickler/Entscheider), bilingual DE/EN, und Energiekonzern-Design (Tiefenblau #000099, Impuls-Orange #FE8F11, Warmgrau #E4DAD4).
 
-2. **Verstehen-Modus**  -- Erzeugt einen interaktiven **Knowledge Graph** (`knowledge-graph.json`) mit Multi-Agent-Pipeline (project-scanner, file-analyzer, architecture-analyzer, tour-builder, graph-reviewer) und interaktivem React Dashboard zur Code-Exploration.
+2. **Verstehen-Modus** -- Erzeugt einen interaktiven **Knowledge Graph** (`knowledge-graph.json`) mit Multi-Agent-Pipeline (project-scanner, file-analyzer, architecture-analyzer, tour-builder, graph-reviewer) und interaktivem React Dashboard zur Code-Exploration.
 
-3. **Kombiniert-Modus** (BEST OF BOTH) -- Fuehrt zuerst die Verstehen-Pipeline aus, erzeugt den Knowledge Graph, und nutzt dessen Daten dann um BESSERE HTML-Kurse zu generieren. Der KG verbessert Phase 1 (Analyse) und das Helpfulness-Scoring.
+3. **Kombiniert-Modus** (BEST OF BOTH) -- Führt zuerst die Verstehen-Pipeline aus, erzeugt den Knowledge Graph, und nutzt dessen Daten dann um BESSERE HTML-Kurse zu generieren. Der KG verbessert Phase 1 (Analyse) und das Helpfulness-Scoring.
 
 ---
 
