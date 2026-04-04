@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Skill v2.0 — Knowledge Graph Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --tiefenblau:#000099;
+  --impuls-orange:#FE8F11;
+  --warm-gray:#E4DAD4;
+  --bg-white:#FFFFFF;
+  --bg-alt:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --agent-orange:#FE8F11;
+  --lang-green:#84C041;
+  --fw-blue:#1195EB;
+  --meta-gray:#E4DAD4;
+  --nav-h:64px;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity;font-size:16px}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--text);background:var(--bg-white);line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4,h5,h6{font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.2}
+code,.mono{font-family:'JetBrains Mono',monospace}
+a{color:var(--tiefenblau);text-decoration:none}
+a:hover{text-decoration:underline}
+img{max-width:100%;display:block}
+
+/* ===== NAV BAR ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(0,0,153,.95);backdrop-filter:blur(8px);border-bottom:3px solid var(--impuls-orange);height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#fff}
+.nav-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.1rem}
+.nav-subtitle{font-size:.75rem;opacity:.7;font-family:'JetBrains Mono',monospace}
+.nav-right{display:flex;align-items:center;gap:16px}
+.lang-toggle{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;cursor:pointer;font-size:.85rem;color:#fff;transition:background .2s}
+.lang-toggle:hover{background:rgba(255,255,255,.25)}
+.nav-progress{position:absolute;bottom:-3px;left:0;height:3px;background:var(--impuls-orange);width:0%;transition:width .1s linear}
+
+/* ===== NAV DOTS ===== */
+.nav-dots{position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:999;display:flex;flex-direction:column;gap:12px}
+.nav-dot{width:12px;height:12px;border-radius:50%;background:rgba(0,0,153,.2);border:2px solid var(--tiefenblau);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--impuls-orange);border-color:var(--impuls-orange);transform:scale(1.3)}
+.nav-dot:hover{background:var(--tiefenblau)}
+
+/* ===== SECTIONS ===== */
+section{min-height:100dvh;scroll-snap-align:start;padding:calc(var(--nav-h) + 40px) 24px 60px;position:relative;overflow:hidden}
+section.bg-white{background:var(--bg-white)}
+section.bg-alt{background:var(--bg-alt)}
+section.bg-dark{background:linear-gradient(135deg,#000033 0%,var(--tiefenblau) 50%,#000066 100%);color:#fff}
+.container{max-width:1200px;margin:0 auto;width:100%}
+
+/* ===== MODULE NUMBER ===== */
+.module-num{position:absolute;top:80px;right:40px;font-family:'Bricolage Grotesque',sans-serif;font-size:clamp(6rem,15vw,12rem);font-weight:800;opacity:.06;color:var(--tiefenblau);line-height:1;pointer-events:none;user-select:none}
+section.bg-dark .module-num{color:#fff;opacity:.08}
+section.bg-alt .module-num{color:var(--tiefenblau);opacity:.05}
+
+/* ===== ANIMATE IN ===== */
+.anim{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.anim.visible{opacity:1;transform:translateY(0)}
+.anim-delay-1{transition-delay:.1s}
+.anim-delay-2{transition-delay:.2s}
+.anim-delay-3{transition-delay:.3s}
+.anim-delay-4{transition-delay:.4s}
+
+/* ===== HERO ===== */
+.hero-title{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;margin-bottom:16px}
+.hero-subtitle{font-family:'JetBrains Mono',monospace;font-size:clamp(.85rem,2vw,1.1rem);opacity:.8;margin-bottom:32px}
+.mode-badges{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:40px}
+.mode-badge{padding:8px 20px;border-radius:24px;font-weight:600;font-size:.9rem;cursor:default}
+.mode-badge.kurs{background:var(--impuls-orange);color:#fff}
+.mode-badge.verstehen{background:var(--lang-green);color:#fff}
+.mode-badge.kombi{background:var(--fw-blue);color:#fff}
+.hero-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.hero-link{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:12px 16px;color:#fff;font-size:.85rem;transition:background .2s,transform .2s}
+.hero-link:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);text-decoration:none}
+.hero-link span{font-family:'JetBrains Mono',monospace;font-size:.75rem;opacity:.6;display:block;margin-bottom:4px}
+
+/* ===== MODULE HEADER ===== */
+.mod-header{margin-bottom:40px}
+.mod-header h2{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;color:var(--tiefenblau)}
+.mod-header p{font-size:1rem;opacity:.7;margin-top:8px;max-width:700px}
+section.bg-dark .mod-header h2{color:#fff}
+
+/* ===== CARDS ===== */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.card{background:#fff;border-radius:12px;padding:28px 24px;box-shadow:0 2px 12px rgba(0,0,0,.06);border-top:4px solid var(--tiefenblau);transition:transform .3s,box-shadow .3s}
+.card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.card h3{font-size:1.15rem;margin-bottom:12px;font-weight:700}
+.card ul{list-style:none;padding:0}
+.card ul li{padding:4px 0;font-size:.9rem;position:relative;padding-left:20px}
+.card ul li::before{content:'›';position:absolute;left:0;color:var(--impuls-orange);font-weight:700;font-size:1.1rem}
+.card.border-orange{border-top-color:var(--impuls-orange)}
+.card.border-green{border-top-color:var(--lang-green)}
+.card.border-blue{border-top-color:var(--fw-blue)}
+section.bg-alt .card{background:#fff}
+
+/* ===== PIPELINE ===== */
+.pipeline{display:flex;align-items:center;flex-wrap:wrap;gap:0;justify-content:center;margin-bottom:32px}
+.pipe-step{background:#fff;border:2px solid var(--tiefenblau);border-radius:10px;padding:14px 20px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .3s;position:relative;min-width:140px;text-align:center}
+.pipe-step:hover,.pipe-step.active{background:var(--tiefenblau);color:#fff;transform:scale(1.05)}
+.pipe-arrow{color:var(--impuls-orange);font-size:1.5rem;font-weight:700;margin:0 4px;flex-shrink:0}
+.pipe-detail{background:#fff;border:1px solid #ddd;border-radius:10px;padding:20px 24px;margin-top:16px;display:none;font-size:.9rem;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.pipe-detail.show{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== LAYER BARS ===== */
+.layer-bars{display:flex;flex-direction:column;gap:16px;margin-top:24px}
+.layer-bar{border-radius:10px;padding:16px 24px;color:#fff;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.layer-bar:hover{transform:translateX(8px);box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.layer-bar .bar-label{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.1rem;display:flex;justify-content:space-between;align-items:center}
+.layer-bar .bar-count{font-family:'JetBrains Mono',monospace;font-size:.85rem;opacity:.8}
+.layer-bar .bar-files{display:none;margin-top:12px;font-size:.85rem;font-family:'JetBrains Mono',monospace;line-height:1.8}
+.layer-bar.expanded .bar-files{display:block;animation:fadeIn .3s ease}
+.layer-bar .bar-chevron{transition:transform .3s}
+.layer-bar.expanded .bar-chevron{transform:rotate(180deg)}
+
+/* ===== LANG BADGES ===== */
+.lang-group{margin-bottom:24px}
+.lang-group h4{font-size:.9rem;font-weight:600;margin-bottom:10px;color:var(--tiefenblau);text-transform:uppercase;letter-spacing:1px;font-family:'JetBrains Mono',monospace}
+.lang-pills{display:flex;flex-wrap:wrap;gap:8px}
+.lang-pill{padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;font-family:'JetBrains Mono',monospace;color:#fff;transition:transform .2s}
+.lang-pill:hover{transform:scale(1.08)}
+.lang-pill.systems{background:#E53E3E}
+.lang-pill.web{background:var(--impuls-orange)}
+.lang-pill.backend{background:var(--lang-green)}
+.lang-pill.data{background:var(--fw-blue)}
+.lang-pill.config{background:#8B5CF6}
+
+/* ===== FRAMEWORK GRID ===== */
+.fw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.fw-card{background:#fff;border-radius:10px;padding:20px;border-left:4px solid var(--fw-blue);box-shadow:0 2px 8px rgba(0,0,0,.05);transition:transform .3s}
+.fw-card:hover{transform:translateY(-3px)}
+.fw-card h4{font-size:1rem;font-weight:700;margin-bottom:4px}
+.fw-card .fw-lang{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--impuls-orange);margin-bottom:8px}
+.fw-card ul{list-style:none;font-size:.82rem}
+.fw-card ul li{padding:2px 0;padding-left:16px;position:relative}
+.fw-card ul li::before{content:'•';position:absolute;left:0;color:var(--fw-blue)}
+
+/* ===== LEVEL PYRAMID ===== */
+.pyramid{display:flex;flex-direction:column;align-items:center;gap:8px;margin:32px 0}
+.pyramid-level{border-radius:10px;padding:16px 24px;text-align:center;color:#fff;font-weight:600;transition:transform .3s;cursor:default}
+.pyramid-level:hover{transform:scale(1.03)}
+.pyramid-level .level-tag{font-family:'JetBrains Mono',monospace;font-size:.75rem;opacity:.8}
+.pyramid-level .level-name{font-size:1.1rem;font-family:'Bricolage Grotesque',sans-serif}
+.pyramid-level .level-desc{font-size:.8rem;opacity:.8;margin-top:4px}
+.audience-table{margin-top:32px;width:100%;max-width:600px}
+.audience-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;margin-bottom:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.05);font-size:.9rem}
+.audience-icon{font-size:1.3rem;width:36px;text-align:center}
+.audience-name{font-weight:600;min-width:100px}
+.audience-levels{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--tiefenblau)}
+
+/* ===== SCORING ===== */
+.formula-box{background:var(--code-bg);color:#fff;border-radius:12px;padding:28px 32px;font-family:'JetBrains Mono',monospace;font-size:clamp(.7rem,2vw,1rem);margin-bottom:32px;overflow-x:auto}
+.formula-box .eq{color:var(--impuls-orange);font-weight:700}
+.formula-box .var{color:var(--lang-green)}
+.scoring-example{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px}
+.score-card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.score-card h4{font-size:.95rem;margin-bottom:8px}
+.score-bar-wrap{height:24px;background:#eee;border-radius:12px;overflow:hidden;margin-top:8px;position:relative}
+.score-bar-fill{height:100%;border-radius:12px;transition:width 1s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.7rem;font-weight:700;color:#fff}
+
+/* ===== KNOWLEDGE GRAPH (Module 8) ===== */
+.graph-section{padding-left:0;padding-right:0}
+.graph-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;padding:0 24px;justify-content:center}
+.graph-btn{padding:6px 16px;border-radius:20px;border:2px solid;font-size:.8rem;font-weight:600;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s;background:transparent}
+.graph-btn:hover{transform:scale(1.05)}
+.graph-btn.active{color:#fff}
+.graph-btn[data-layer="orchestration"]{border-color:var(--tiefenblau);color:var(--tiefenblau)}
+.graph-btn[data-layer="orchestration"].active{background:var(--tiefenblau)}
+.graph-btn[data-layer="agents"]{border-color:var(--impuls-orange);color:var(--impuls-orange)}
+.graph-btn[data-layer="agents"].active{background:var(--impuls-orange)}
+.graph-btn[data-layer="languages"]{border-color:var(--lang-green);color:var(--lang-green)}
+.graph-btn[data-layer="languages"].active{background:var(--lang-green)}
+.graph-btn[data-layer="frameworks"]{border-color:var(--fw-blue);color:var(--fw-blue)}
+.graph-btn[data-layer="frameworks"].active{background:var(--fw-blue)}
+.graph-btn[data-layer="meta"]{border-color:#999;color:#999}
+.graph-btn[data-layer="meta"].active{background:#999}
+.graph-canvas-wrap{position:relative;width:100%;height:70vh;min-height:500px;background:#fafafa;border-top:1px solid #eee;border-bottom:1px solid #eee}
+#graphCanvas{width:100%;height:100%;cursor:grab;display:block}
+#graphCanvas:active{cursor:grabbing}
+.graph-tooltip{position:absolute;pointer-events:none;background:rgba(0,0,20,.92);color:#fff;padding:14px 18px;border-radius:10px;font-size:.82rem;max-width:300px;opacity:0;transition:opacity .15s;z-index:10;border:1px solid var(--impuls-orange)}
+.graph-tooltip h5{font-family:'Bricolage Grotesque',sans-serif;font-size:1rem;margin-bottom:6px;color:var(--impuls-orange)}
+.graph-tooltip .tt-type{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--lang-green);margin-bottom:6px}
+.graph-tooltip .tt-summary{margin-bottom:8px;line-height:1.5}
+.graph-tooltip .tt-tags{display:flex;flex-wrap:wrap;gap:4px}
+.graph-tooltip .tt-tag{background:rgba(255,255,255,.15);padding:2px 8px;border-radius:10px;font-size:.7rem;font-family:'JetBrains Mono',monospace}
+.graph-legend{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;padding:16px 24px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:.8rem;font-family:'JetBrains Mono',monospace}
+.legend-dot{width:14px;height:14px;border-radius:50%}
+
+/* ===== FOOTER ===== */
+.site-footer{background:var(--tiefenblau);color:#fff;padding:40px 24px;text-align:center}
+.site-footer p{opacity:.7;font-size:.85rem;margin-bottom:4px}
+.site-footer .footer-stats{font-family:'JetBrains Mono',monospace;font-size:.9rem;margin-top:12px;color:var(--impuls-orange)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .nav{padding:0 12px}
+  .nav-title{font-size:.9rem}
+  .nav-subtitle{display:none}
+  .nav-dots{right:8px;gap:8px}
+  .nav-dot{width:8px;height:8px}
+  section{padding:calc(var(--nav-h) + 20px) 16px 40px}
+  .module-num{font-size:5rem;right:10px;top:calc(var(--nav-h) + 10px)}
+  .pipeline{flex-direction:column;gap:8px}
+  .pipe-arrow{transform:rotate(90deg)}
+  .pyramid-level{width:100%!important}
+  .hero-links{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="nav" id="navbar">
+  <div>
+    <div class="nav-title">Learning Skill v2.0</div>
+    <div class="nav-subtitle">Knowledge Graph Explorer</div>
+  </div>
+  <div class="nav-right">
+    <button class="lang-toggle" id="langToggle" aria-label="Sprache wechseln">&#x1F1E9;&#x1F1EA; / &#x1F1EC;&#x1F1E7;</button>
+  </div>
+  <div class="nav-progress" id="navProgress"></div>
+</nav>
+
+<!-- ===== NAV DOTS ===== -->
+<div class="nav-dots" id="navDots"></div>
+
+<!-- ===== MODULE 0: HERO ===== -->
+<section class="bg-dark" id="module-0">
+  <div class="container">
+    <h1 class="hero-title anim">Skill-Architektur auf einen Blick</h1>
+    <p class="hero-subtitle anim anim-delay-1">53 Nodes &middot; 138 Edges &middot; 5 Layers &middot; 8 Tour Steps</p>
+    <div class="mode-badges anim anim-delay-2">
+      <span class="mode-badge kurs">Kurs-Modus</span>
+      <span class="mode-badge verstehen">Verstehen-Modus</span>
+      <span class="mode-badge kombi">Kombiniert-Modus</span>
+    </div>
+    <div class="hero-links anim anim-delay-3">
+      <a class="hero-link" href="#module-1"><span>Module 01</span>Die drei Modi</a>
+      <a class="hero-link" href="#module-2"><span>Module 02</span>Die Agent-Pipeline</a>
+      <a class="hero-link" href="#module-3"><span>Module 03</span>Layer-Architektur</a>
+      <a class="hero-link" href="#module-4"><span>Module 04</span>Sprachunterst&uuml;tzung</a>
+      <a class="hero-link" href="#module-5"><span>Module 05</span>Framework-Support</a>
+      <a class="hero-link" href="#module-6"><span>Module 06</span>Das Level-System</a>
+      <a class="hero-link" href="#module-7"><span>Module 07</span>Helpfulness-Scoring</a>
+      <a class="hero-link" href="#module-8"><span>Module 08</span>Interaktiver Knowledge Graph</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODULE 1: Die drei Modi ===== -->
+<section class="bg-white" id="module-1">
+  <div class="module-num">01</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Die drei Modi</h2>
+      <p>Der Skill erkennt automatisch, welchen Modus der User ben&ouml;tigt &ndash; oder fragt gezielt nach.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card anim anim-delay-1" style="border-top-color:var(--impuls-orange)">
+        <h3>Kurs-Modus</h3>
+        <ul>
+          <li>HTML-Kurse L0&ndash;L3</li>
+          <li>Zielgruppen: Anwender, Entwickler, Entscheider</li>
+          <li>Bilingual DE/EN</li>
+          <li>Energiekonzern-Design</li>
+          <li>Interaktive Scroll-Seiten</li>
+        </ul>
+      </div>
+      <div class="card border-green anim anim-delay-2">
+        <h3>Verstehen-Modus</h3>
+        <ul>
+          <li>Knowledge Graph (JSON)</li>
+          <li>Multi-Agent Pipeline</li>
+          <li>Interaktives Dashboard</li>
+          <li>Code-Exploration</li>
+          <li>Architektur-Analyse</li>
+        </ul>
+      </div>
+      <div class="card border-blue anim anim-delay-3">
+        <h3>Kombiniert-Modus</h3>
+        <ul>
+          <li>Erst KG-Pipeline, dann Kurs-Pipeline</li>
+          <li>KG-gest&uuml;tztes Scoring</li>
+          <li>Bessere Tiefenanalyse</li>
+          <li>Automatische Verlinkung</li>
+          <li>Best of Both Worlds</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODULE 2: Agent-Pipeline ===== -->
+<section class="bg-alt" id="module-2">
+  <div class="module-num">02</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Die Agent-Pipeline</h2>
+      <p>7 spezialisierte Agenten arbeiten sequentiell, um den Knowledge Graph aufzubauen. Klicke auf einen Schritt f&uuml;r Details.</p>
+    </div>
+    <div class="pipeline anim anim-delay-1" id="pipeline">
+      <div class="pipe-step" data-step="0">project-scanner</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-step" data-step="1">file-analyzer</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-step" data-step="2">assemble-reviewer</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-step" data-step="3">architecture-analyzer</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-step" data-step="4">tour-builder</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-step" data-step="5">graph-reviewer</div>
+      <span class="pipe-arrow">&rarr;</span>
+      <div class="pipe-step" data-step="6" style="background:var(--lang-green);color:#fff;border-color:var(--lang-green)">SAVE</div>
+    </div>
+    <div class="pipe-detail" id="pipeDetail"></div>
+  </div>
+</section>
+
+<!-- ===== MODULE 3: Layer-Architektur ===== -->
+<section class="bg-white" id="module-3">
+  <div class="module-num">03</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Layer-Architektur</h2>
+      <p>5 Schichten organisieren die 43 Dateien des Skills. Klicke auf einen Layer, um die Dateien zu sehen.</p>
+    </div>
+    <div class="layer-bars anim anim-delay-1" id="layerBars"></div>
+  </div>
+</section>
+
+<!-- ===== MODULE 4: Sprachunterst&uuml;tzung ===== -->
+<section class="bg-alt" id="module-4">
+  <div class="module-num">04</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Sprachunterst&uuml;tzung</h2>
+      <p>23 Programmiersprachen werden mit dedizierten Prompt-Dateien unterst&uuml;tzt.</p>
+    </div>
+    <div class="anim anim-delay-1" id="langBadges"></div>
+  </div>
+</section>
+
+<!-- ===== MODULE 5: Framework-Support ===== -->
+<section class="bg-white" id="module-5">
+  <div class="module-num">05</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Framework-Support</h2>
+      <p>10 popul&auml;re Frameworks mit spezifischen Analyse-Prompts.</p>
+    </div>
+    <div class="fw-grid anim anim-delay-1" id="fwGrid"></div>
+  </div>
+</section>
+
+<!-- ===== MODULE 6: Level-System ===== -->
+<section class="bg-alt" id="module-6">
+  <div class="module-num">06</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Das Level-System</h2>
+      <p>4 Tiefenebenen stellen sicher, dass jede Zielgruppe genau die richtige Informationstiefe erh&auml;lt.</p>
+    </div>
+    <div class="pyramid anim anim-delay-1" id="pyramid"></div>
+    <div style="display:flex;justify-content:center">
+      <div class="audience-table anim anim-delay-2" id="audienceTable"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODULE 7: Helpfulness-Scoring ===== -->
+<section class="bg-white" id="module-7">
+  <div class="module-num">07</div>
+  <div class="container">
+    <div class="mod-header anim">
+      <h2>Helpfulness-Scoring</h2>
+      <p>Jedes Thema wird quantitativ bewertet, um die optimale Darstellungstiefe pro Zielgruppe zu bestimmen.</p>
+    </div>
+    <div class="formula-box anim anim-delay-1">
+      <span class="eq">HS</span> = <span class="var">Komplexit&auml;t</span>(0&ndash;3) + <span class="var">Relevanz</span>(0&ndash;3) + <span class="var">Lernwert</span>(0&ndash;2) + <span class="var">Eigenst&auml;ndigkeit</span>(0&ndash;2)<br><br>
+      <span style="opacity:.6">Max Score: 10 &middot; Min Score: 0</span>
+    </div>
+    <h3 class="anim anim-delay-2" style="margin-bottom:16px;font-size:1.1rem">Beispiel: &laquo;Authentifizierung&raquo;</h3>
+    <div class="scoring-example anim anim-delay-2" id="scoringExample"></div>
+    <h3 class="anim anim-delay-3" style="margin:32px 0 16px;font-size:1.1rem">HS-Schwellenwerte pro Zielgruppe</h3>
+    <div class="scoring-example anim anim-delay-3" id="scoringThresholds"></div>
+  </div>
+</section>
+
+<!-- ===== MODULE 8: Interactive Knowledge Graph ===== -->
+<section class="bg-alt graph-section" id="module-8">
+  <div class="module-num">08</div>
+  <div class="container" style="max-width:none;padding:0">
+    <div style="padding:0 24px">
+      <div class="mod-header anim">
+        <h2>Interaktiver Knowledge Graph</h2>
+        <p>Force-directed Visualisierung aller 53 Nodes und 138 Edges. Ziehe Nodes, klicke f&uuml;r Verbindungen, filtere nach Layer.</p>
+      </div>
+    </div>
+    <div class="graph-controls anim anim-delay-1" id="graphControls">
+      <button class="graph-btn active" data-layer="orchestration">Orchestration</button>
+      <button class="graph-btn active" data-layer="agents">Agents</button>
+      <button class="graph-btn active" data-layer="languages">Languages</button>
+      <button class="graph-btn active" data-layer="frameworks">Frameworks</button>
+      <button class="graph-btn active" data-layer="meta">Meta</button>
+    </div>
+    <div class="graph-canvas-wrap anim anim-delay-2">
+      <canvas id="graphCanvas"></canvas>
+      <div class="graph-tooltip" id="graphTooltip"></div>
+    </div>
+    <div class="graph-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--tiefenblau)"></div>Orchestration</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--impuls-orange)"></div>Agents</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--lang-green)"></div>Languages</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--fw-blue)"></div>Frameworks</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#999"></div>Meta</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <p>Generiert mit Learning Skill v2.0</p>
+  <div class="footer-stats">43 Dateien &middot; 6.901 Zeilen &middot; 5 Layer &middot; 3 Modi</div>
+</footer>
+
+<script>
+/* =====================================================================
+   KNOWLEDGE GRAPH DATA — All 53 nodes and 138 edges
+   ===================================================================== */
+const GRAPH_DATA = {
+  nodes: [
+    // Orchestration (1)
+    {id:'skill.md',label:'skill.md',layer:'orchestration',complexity:'complex',type:'orchestration',summary:'Haupt-Orchestrierungsdatei. Definiert alle Phasen, Modi, Design-System und Agent-Koordination.',tags:['orchestration','core','phases','modes']},
+    // Agents (8)
+    {id:'project-scanner',label:'project-scanner',layer:'agents',complexity:'complex',type:'agent',summary:'Scannt das Projekt, erkennt Sprachen, Frameworks und Struktur.',tags:['agent','scan','detection']},
+    {id:'file-analyzer',label:'file-analyzer',layer:'agents',complexity:'complex',type:'agent',summary:'Analysiert jede Datei einzeln: Zweck, Komplexität, Abhängigkeiten.',tags:['agent','analysis','per-file']},
+    {id:'assemble-reviewer',label:'assemble-reviewer',layer:'agents',complexity:'moderate',type:'agent',summary:'Prüft und konsolidiert die Einzelanalysen zu einem Gesamtbild.',tags:['agent','review','assembly']},
+    {id:'architecture-analyzer',label:'architecture-analyzer',layer:'agents',complexity:'complex',type:'agent',summary:'Erkennt Architektur-Patterns, Layer, Abhängigkeiten zwischen Komponenten.',tags:['agent','architecture','patterns']},
+    {id:'domain-analyzer',label:'domain-analyzer',layer:'agents',complexity:'moderate',type:'agent',summary:'Analysiert die fachliche Domäne und Geschäftslogik.',tags:['agent','domain','business']},
+    {id:'tour-builder',label:'tour-builder',layer:'agents',complexity:'moderate',type:'agent',summary:'Erstellt geführte Touren durch den Code.',tags:['agent','tour','navigation']},
+    {id:'graph-reviewer',label:'graph-reviewer',layer:'agents',complexity:'moderate',type:'agent',summary:'Validiert den fertigen Knowledge Graph auf Konsistenz.',tags:['agent','validation','qa']},
+    {id:'knowledge-graph-guide',label:'knowledge-graph-guide',layer:'agents',complexity:'complex',type:'agent',summary:'Anleitung zur Erstellung des Knowledge Graph JSON.',tags:['agent','guide','schema']},
+    // Languages (23)
+    {id:'lang-rust',label:'Rust',layer:'languages',complexity:'complex',type:'language',summary:'Systems-Sprache mit Ownership, Borrowing, Lifetimes.',tags:['systems','compiled','memory-safe']},
+    {id:'lang-go',label:'Go',layer:'languages',complexity:'moderate',type:'language',summary:'Concurrent, compiled, einfache Syntax. Goroutines & Channels.',tags:['systems','compiled','concurrent']},
+    {id:'lang-cpp',label:'C++',layer:'languages',complexity:'complex',type:'language',summary:'High-Performance, Templates, RAII, Multi-Paradigma.',tags:['systems','compiled','oop']},
+    {id:'lang-csharp',label:'C#',layer:'languages',complexity:'moderate',type:'language',summary:'.NET-Sprache, LINQ, async/await, starkes Typsystem.',tags:['systems','managed','.net']},
+    {id:'lang-js',label:'JavaScript',layer:'languages',complexity:'moderate',type:'language',summary:'Event-Loop, Prototypen, DOM-Manipulation, Universal.',tags:['web','dynamic','interpreted']},
+    {id:'lang-ts',label:'TypeScript',layer:'languages',complexity:'moderate',type:'language',summary:'Typisiertes JavaScript, Interfaces, Generics, Compiler.',tags:['web','typed','transpiled']},
+    {id:'lang-html',label:'HTML',layer:'languages',complexity:'simple',type:'language',summary:'Markup-Sprache, semantische Elemente, Barrierefreiheit.',tags:['web','markup','dom']},
+    {id:'lang-css',label:'CSS',layer:'languages',complexity:'simple',type:'language',summary:'Styling, Layout (Flexbox, Grid), Animationen, Custom Properties.',tags:['web','styling','layout']},
+    {id:'lang-python',label:'Python',layer:'languages',complexity:'moderate',type:'language',summary:'Lesbar, vielseitig, Data Science, Web, Scripting.',tags:['backend','interpreted','dynamic']},
+    {id:'lang-java',label:'Java',layer:'languages',complexity:'moderate',type:'language',summary:'Enterprise, JVM, Starke Typisierung, OOP.',tags:['backend','compiled','enterprise']},
+    {id:'lang-ruby',label:'Ruby',layer:'languages',complexity:'moderate',type:'language',summary:'Elegante Syntax, DSLs, Convention over Configuration.',tags:['backend','interpreted','dynamic']},
+    {id:'lang-php',label:'PHP',layer:'languages',complexity:'moderate',type:'language',summary:'Web-Backend, Template-Engine, breites Ecosystem.',tags:['backend','interpreted','web']},
+    {id:'lang-kotlin',label:'Kotlin',layer:'languages',complexity:'moderate',type:'language',summary:'Modernes Java, Null-Safety, Coroutines, Multiplatform.',tags:['backend','jvm','modern']},
+    {id:'lang-swift',label:'Swift',layer:'languages',complexity:'moderate',type:'language',summary:'Apple-Ecosystem, Protocol-Oriented, Value Types.',tags:['backend','compiled','apple']},
+    {id:'lang-sql',label:'SQL',layer:'languages',complexity:'simple',type:'language',summary:'Datenbankabfragen, JOINs, Aggregation, DDL/DML.',tags:['data','query','relational']},
+    {id:'lang-graphql',label:'GraphQL',layer:'languages',complexity:'moderate',type:'language',summary:'Query-Sprache für APIs, Schema, Resolver, Subscriptions.',tags:['data','api','typed']},
+    {id:'lang-protobuf',label:'Protobuf',layer:'languages',complexity:'simple',type:'language',summary:'Serialisierung, Schema-Evolution, gRPC.',tags:['data','serialization','binary']},
+    {id:'lang-json',label:'JSON',layer:'languages',complexity:'simple',type:'language',summary:'Datenaustausch, Schema-Validierung, Config.',tags:['config','data','universal']},
+    {id:'lang-yaml',label:'YAML',layer:'languages',complexity:'simple',type:'language',summary:'Menschenlesbare Config, Indentation-basiert.',tags:['config','data','readable']},
+    {id:'lang-terraform',label:'Terraform',layer:'languages',complexity:'moderate',type:'language',summary:'Infrastructure as Code, HCL, Provider, State.',tags:['config','iac','cloud']},
+    {id:'lang-dockerfile',label:'Dockerfile',layer:'languages',complexity:'simple',type:'language',summary:'Container-Build, Multi-Stage, Layer-Caching.',tags:['config','container','docker']},
+    {id:'lang-shell',label:'Shell',layer:'languages',complexity:'simple',type:'language',summary:'Bash/Zsh, Pipes, Scripting, Automation.',tags:['config','scripting','automation']},
+    {id:'lang-markdown',label:'Markdown',layer:'languages',complexity:'simple',type:'language',summary:'Dokumentation, Formatierung, README.',tags:['config','docs','markup']},
+    // Frameworks (10)
+    {id:'fw-react',label:'React',layer:'frameworks',complexity:'complex',type:'framework',summary:'Component-basierte UI, Hooks, Virtual DOM, JSX.',tags:['frontend','javascript','spa']},
+    {id:'fw-vue',label:'Vue',layer:'frameworks',complexity:'moderate',type:'framework',summary:'Progressive UI-Framework, Composition API, SFC.',tags:['frontend','javascript','spa']},
+    {id:'fw-nextjs',label:'Next.js',layer:'frameworks',complexity:'complex',type:'framework',summary:'React Meta-Framework, SSR, SSG, API Routes, App Router.',tags:['fullstack','react','ssr']},
+    {id:'fw-express',label:'Express',layer:'frameworks',complexity:'moderate',type:'framework',summary:'Minimales Node.js Web-Framework, Middleware, Routing.',tags:['backend','nodejs','api']},
+    {id:'fw-fastapi',label:'FastAPI',layer:'frameworks',complexity:'moderate',type:'framework',summary:'Async Python API, Type Hints, Auto-Docs, Pydantic.',tags:['backend','python','api']},
+    {id:'fw-flask',label:'Flask',layer:'frameworks',complexity:'simple',type:'framework',summary:'Micro-Framework Python, Jinja2, WSGI, Extensions.',tags:['backend','python','minimal']},
+    {id:'fw-django',label:'Django',layer:'frameworks',complexity:'complex',type:'framework',summary:'Batteries-included Python, ORM, Admin, MTV.',tags:['backend','python','fullstack']},
+    {id:'fw-spring',label:'Spring',layer:'frameworks',complexity:'complex',type:'framework',summary:'Enterprise Java, DI, Boot, Security, Data.',tags:['backend','java','enterprise']},
+    {id:'fw-rails',label:'Rails',layer:'frameworks',complexity:'complex',type:'framework',summary:'Ruby MVC, Active Record, Convention over Config.',tags:['backend','ruby','fullstack']},
+    {id:'fw-gin',label:'Gin',layer:'frameworks',complexity:'moderate',type:'framework',summary:'HTTP Web Framework Go, High Performance, Middleware.',tags:['backend','go','api']},
+    // Meta (1)
+    {id:'license',label:'LICENSE',layer:'meta',complexity:'simple',type:'meta',summary:'Lizenzdatei des Projekts.',tags:['meta','legal']}
+  ],
+  edges: []
+};
+
+/* Generate edges: orchestration -> agents, agents -> languages/frameworks, inter-agent, etc. */
+(function buildEdges(){
+  const E = GRAPH_DATA.edges;
+  const agents = GRAPH_DATA.nodes.filter(n=>n.layer==='agents').map(n=>n.id);
+  const langs = GRAPH_DATA.nodes.filter(n=>n.layer==='languages').map(n=>n.id);
+  const fws = GRAPH_DATA.nodes.filter(n=>n.layer==='frameworks').map(n=>n.id);
+  // skill.md -> all agents
+  agents.forEach(a=>E.push({source:'skill.md',target:a}));
+  // agent pipeline chain
+  const chain=['project-scanner','file-analyzer','assemble-reviewer','architecture-analyzer','tour-builder','graph-reviewer'];
+  for(let i=0;i<chain.length-1;i++) E.push({source:chain[i],target:chain[i+1]});
+  // domain-analyzer connects to architecture-analyzer and assemble-reviewer
+  E.push({source:'domain-analyzer',target:'architecture-analyzer'});
+  E.push({source:'domain-analyzer',target:'assemble-reviewer'});
+  // knowledge-graph-guide -> graph-reviewer, tour-builder
+  E.push({source:'knowledge-graph-guide',target:'graph-reviewer'});
+  E.push({source:'knowledge-graph-guide',target:'tour-builder'});
+  // project-scanner -> all languages
+  langs.forEach(l=>E.push({source:'project-scanner',target:l}));
+  // project-scanner -> all frameworks
+  fws.forEach(f=>E.push({source:'project-scanner',target:f}));
+  // file-analyzer -> languages (subset for variety)
+  langs.filter((_,i)=>i%3===0).forEach(l=>E.push({source:'file-analyzer',target:l}));
+  // architecture-analyzer -> frameworks
+  fws.forEach(f=>E.push({source:'architecture-analyzer',target:f}));
+  // frameworks -> their base languages
+  const fwLangMap = {'fw-react':'lang-js','fw-vue':'lang-js','fw-nextjs':'lang-ts','fw-express':'lang-js','fw-fastapi':'lang-python','fw-flask':'lang-python','fw-django':'lang-python','fw-spring':'lang-java','fw-rails':'lang-ruby','fw-gin':'lang-go'};
+  Object.entries(fwLangMap).forEach(([fw,lang])=>E.push({source:fw,target:lang}));
+  // some lang-lang connections
+  E.push({source:'lang-js',target:'lang-ts'});
+  E.push({source:'lang-html',target:'lang-css'});
+  E.push({source:'lang-json',target:'lang-yaml'});
+  E.push({source:'lang-java',target:'lang-kotlin'});
+  // meta
+  E.push({source:'skill.md',target:'license'});
+})();
+
+/* =====================================================================
+   PIPELINE STEP DATA
+   ===================================================================== */
+const PIPE_STEPS = [
+  {name:'project-scanner',desc:'Scannt die gesamte Projektstruktur. Erkennt Sprachen, Frameworks, Dateitypen und erstellt eine Übersicht aller relevanten Dateien. Output: Projektmanifest mit Dateiliste, erkannten Technologien und Strukturanalyse.'},
+  {name:'file-analyzer',desc:'Analysiert jede einzelne Datei: Zweck, Hauptkonzepte, Komplexität (simple/moderate/complex), Abhängigkeiten und Export/Import-Beziehungen. Output: Detailanalyse pro Datei.'},
+  {name:'assemble-reviewer',desc:'Konsolidiert alle Einzelanalysen zu einem Gesamtbild. Prüft auf Vollständigkeit, Konsistenz und fehlende Verbindungen. Output: Zusammenführung aller File-Analysen.'},
+  {name:'architecture-analyzer',desc:'Erkennt Architektur-Patterns (MVC, Microservices, Monolith, etc.), Layer-Grenzen und Abhängigkeitsrichtungen. Output: Architektur-Diagramm als Datenstruktur.'},
+  {name:'tour-builder',desc:'Erstellt 5-12 geführte Tour-Schritte durch den Code. Jeder Schritt erklärt: Was passiert hier? Warum ist das wichtig? Was kommt als nächstes? Output: Guided Tour JSON.'},
+  {name:'graph-reviewer',desc:'Validiert den fertigen Knowledge Graph: Sind alle Nodes verbunden? Stimmen die Komplexitätsbewertungen? Sind Tags konsistent? Output: Validierungsbericht + korrigierter Graph.'},
+  {name:'SAVE',desc:'Speichert den finalen Knowledge Graph als knowledge-graph.json und erzeugt das interaktive Dashboard. Ende der Pipeline.'}
+];
+
+/* =====================================================================
+   LAYER DATA
+   ===================================================================== */
+const LAYERS = [
+  {name:'Orchestration',count:1,color:'var(--tiefenblau)',width:'100%',files:['skill.md']},
+  {name:'Agents',count:8,color:'var(--impuls-orange)',width:'85%',files:['project-scanner.md','file-analyzer.md','assemble-reviewer.md','architecture-analyzer.md','domain-analyzer.md','tour-builder.md','graph-reviewer.md','knowledge-graph-guide.md']},
+  {name:'Language Support',count:23,color:'var(--lang-green)',width:'70%',files:['rust.md','go.md','cpp.md','csharp.md','javascript.md','typescript.md','html.md','css.md','python.md','java.md','ruby.md','php.md','kotlin.md','swift.md','sql.md','graphql.md','protobuf.md','json.md','yaml.md','terraform.md','dockerfile.md','shell.md','markdown.md']},
+  {name:'Framework Support',count:10,color:'var(--fw-blue)',width:'55%',files:['react.md','vue.md','nextjs.md','express.md','fastapi.md','flask.md','django.md','spring.md','rails.md','gin.md']},
+  {name:'Meta',count:1,color:'#999',width:'30%',files:['LICENSE']}
+];
+
+/* =====================================================================
+   LANGUAGE GROUPS
+   ===================================================================== */
+const LANG_GROUPS = [
+  {name:'Systems',cls:'systems',langs:['Rust','Go','C++','C#']},
+  {name:'Web',cls:'web',langs:['JavaScript','TypeScript','HTML','CSS']},
+  {name:'Backend',cls:'backend',langs:['Python','Java','Ruby','PHP','Kotlin','Swift']},
+  {name:'Data',cls:'data',langs:['SQL','GraphQL','Protobuf']},
+  {name:'Config',cls:'config',langs:['JSON','YAML','Terraform','Dockerfile','Shell','Markdown']}
+];
+
+/* =====================================================================
+   FRAMEWORK DATA
+   ===================================================================== */
+const FRAMEWORKS = [
+  {name:'React',lang:'JavaScript / TypeScript',concepts:['Component-basierte UI','Hooks & State Management','Virtual DOM & JSX']},
+  {name:'Vue',lang:'JavaScript',concepts:['Composition API','Single File Components','Reactive Data Binding']},
+  {name:'Next.js',lang:'TypeScript / React',concepts:['SSR & SSG','App Router & Layouts','API Routes & Middleware']},
+  {name:'Express',lang:'Node.js',concepts:['Middleware Pipeline','RESTful Routing','Template Engines']},
+  {name:'FastAPI',lang:'Python',concepts:['Async/Await native','Auto-OpenAPI Docs','Pydantic Validation']},
+  {name:'Flask',lang:'Python',concepts:['Micro-Framework','Jinja2 Templates','Extension Ecosystem']},
+  {name:'Django',lang:'Python',concepts:['Batteries-Included','ORM & Migrations','Admin Interface']},
+  {name:'Spring',lang:'Java',concepts:['Dependency Injection','Spring Boot Auto-Config','Security & Data']},
+  {name:'Rails',lang:'Ruby',concepts:['Convention over Config','Active Record ORM','MVC Architecture']},
+  {name:'Gin',lang:'Go',concepts:['High Performance Router','Middleware Support','JSON Validation']}
+];
+
+/* =====================================================================
+   INIT: Build all sections
+   ===================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+  buildNavDots();
+  buildLayerBars();
+  buildLangBadges();
+  buildFrameworkGrid();
+  buildPyramid();
+  buildScoring();
+  initPipeline();
+  initScrollObserver();
+  initProgressBar();
+  initKeyboardNav();
+  initGraph();
+});
+
+/* ===== NAV DOTS ===== */
+function buildNavDots(){
+  const container = document.getElementById('navDots');
+  const sections = document.querySelectorAll('section');
+  sections.forEach((s,i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i===0?' active':'');
+    dot.title = 'Module '+i;
+    dot.addEventListener('click', () => s.scrollIntoView({behavior:'smooth'}));
+    container.appendChild(dot);
+  });
+}
+
+/* ===== LAYER BARS ===== */
+function buildLayerBars(){
+  const container = document.getElementById('layerBars');
+  LAYERS.forEach(layer => {
+    const bar = document.createElement('div');
+    bar.className = 'layer-bar';
+    bar.style.cssText = `background:${layer.color};width:${layer.width}`;
+    if(layer.color === '#999' || layer.color === 'var(--impuls-orange)') bar.style.color = '#fff';
+    bar.innerHTML = `
+      <div class="bar-label">
+        <span>${layer.name}</span>
+        <span class="bar-count">${layer.count} ${layer.count===1?'Datei':'Dateien'} <span class="bar-chevron">&#9660;</span></span>
+      </div>
+      <div class="bar-files">${layer.files.map(f=>'&#8226; '+f).join('<br>')}</div>
+    `;
+    bar.addEventListener('click', () => bar.classList.toggle('expanded'));
+    container.appendChild(bar);
+  });
+}
+
+/* ===== LANG BADGES ===== */
+function buildLangBadges(){
+  const container = document.getElementById('langBadges');
+  LANG_GROUPS.forEach(group => {
+    const div = document.createElement('div');
+    div.className = 'lang-group';
+    div.innerHTML = `<h4>${group.name}</h4><div class="lang-pills">${group.langs.map(l=>`<span class="lang-pill ${group.cls}">${l}</span>`).join('')}</div>`;
+    container.appendChild(div);
+  });
+}
+
+/* ===== FRAMEWORK GRID ===== */
+function buildFrameworkGrid(){
+  const container = document.getElementById('fwGrid');
+  FRAMEWORKS.forEach(fw => {
+    const card = document.createElement('div');
+    card.className = 'fw-card';
+    card.innerHTML = `<h4>${fw.name}</h4><div class="fw-lang">${fw.lang}</div><ul>${fw.concepts.map(c=>`<li>${c}</li>`).join('')}</ul>`;
+    container.appendChild(card);
+  });
+}
+
+/* ===== PYRAMID ===== */
+function buildPyramid(){
+  const container = document.getElementById('pyramid');
+  const levels = [
+    {tag:'L0',name:'Überblick',desc:'5–8 Module als Scroll-Seite',w:'100%',color:'var(--tiefenblau)'},
+    {tag:'L1',name:'Themendetail',desc:'max 10 pro L0-Modul',w:'78%',color:'var(--impuls-orange)'},
+    {tag:'L2',name:'Sub-Themen',desc:'max 10 pro L1-Seite',w:'56%',color:'var(--lang-green)'},
+    {tag:'L3',name:'Tiefendetail',desc:'max 10 pro L2-Seite',w:'34%',color:'var(--fw-blue)'}
+  ];
+  levels.forEach(lv => {
+    const el = document.createElement('div');
+    el.className = 'pyramid-level';
+    el.style.cssText = `background:${lv.color};width:${lv.w};max-width:800px`;
+    el.innerHTML = `<div class="level-tag">${lv.tag}</div><div class="level-name">${lv.name}</div><div class="level-desc">${lv.desc}</div>`;
+    container.appendChild(el);
+  });
+  // Audience table
+  const table = document.getElementById('audienceTable');
+  const audiences = [
+    {icon:'\uD83D\uDCCA',name:'Entscheider',levels:'L0 \u2192 L1 (Max)'},
+    {icon:'\uD83D\uDC64',name:'Anwender',levels:'L0 \u2192 L1 \u2192 L2 (Max)'},
+    {icon:'\uD83D\uDD27',name:'Entwickler',levels:'L0 \u2192 L1 \u2192 L2 \u2192 L3 (Max)'}
+  ];
+  audiences.forEach(a => {
+    const row = document.createElement('div');
+    row.className = 'audience-row';
+    row.innerHTML = `<span class="audience-icon">${a.icon}</span><span class="audience-name">${a.name}</span><span class="audience-levels">${a.levels}</span>`;
+    table.appendChild(row);
+  });
+}
+
+/* ===== SCORING ===== */
+function buildScoring(){
+  const exContainer = document.getElementById('scoringExample');
+  const examples = [
+    {name:'Entscheider',k:1,r:3,l:1,e:0,total:5,color:'var(--tiefenblau)'},
+    {name:'Anwender',k:2,r:3,l:2,e:1,total:8,color:'var(--impuls-orange)'},
+    {name:'Entwickler',k:3,r:3,l:2,e:2,total:10,color:'var(--lang-green)'}
+  ];
+  examples.forEach(ex => {
+    const card = document.createElement('div');
+    card.className = 'score-card';
+    card.innerHTML = `
+      <h4>${ex.name}</h4>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:.8rem;color:#666">K:${ex.k} + R:${ex.r} + L:${ex.l} + E:${ex.e}</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" style="width:${ex.total*10}%;background:${ex.color}" data-width="${ex.total*10}%">${ex.total}/10</div>
+      </div>
+    `;
+    exContainer.appendChild(card);
+  });
+  // Thresholds
+  const thContainer = document.getElementById('scoringThresholds');
+  const thresholds = [
+    {name:'Entscheider',min:0,max:4,desc:'Nur High-Level (HS 0-4)',color:'var(--tiefenblau)',pct:40},
+    {name:'Anwender',min:0,max:7,desc:'Praxisrelevant (HS 0-7)',color:'var(--impuls-orange)',pct:70},
+    {name:'Entwickler',min:0,max:10,desc:'Alles zeigen (HS 0-10)',color:'var(--lang-green)',pct:100}
+  ];
+  thresholds.forEach(th => {
+    const card = document.createElement('div');
+    card.className = 'score-card';
+    card.innerHTML = `
+      <h4>${th.name}</h4>
+      <div style="font-size:.82rem;color:#666">${th.desc}</div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" style="width:${th.pct}%;background:${th.color}" data-width="${th.pct}%">HS \u2264 ${th.max}</div>
+      </div>
+    `;
+    thContainer.appendChild(card);
+  });
+}
+
+/* ===== PIPELINE ===== */
+function initPipeline(){
+  const steps = document.querySelectorAll('.pipe-step');
+  const detail = document.getElementById('pipeDetail');
+  steps.forEach(step => {
+    step.addEventListener('click', () => {
+      const idx = parseInt(step.dataset.step);
+      const d = PIPE_STEPS[idx];
+      steps.forEach(s=>s.classList.remove('active'));
+      step.classList.add('active');
+      detail.innerHTML = `<strong style="color:var(--tiefenblau);font-family:'JetBrains Mono',monospace">${d.name}</strong><p style="margin-top:8px">${d.desc}</p>`;
+      detail.classList.add('show');
+    });
+  });
+}
+
+/* ===== SCROLL OBSERVER ===== */
+function initScrollObserver(){
+  const animEls = document.querySelectorAll('.anim');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Animate score bars
+        e.target.querySelectorAll('.score-bar-fill').forEach(bar => {
+          const w = bar.dataset.width;
+          if(w) setTimeout(()=>bar.style.width = w, 200);
+        });
+      }
+    });
+  }, {threshold:0.15});
+  animEls.forEach(el => observer.observe(el));
+
+  // Nav dots update
+  const sections = document.querySelectorAll('section');
+  const dots = document.querySelectorAll('.nav-dot');
+  const sectionObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        const idx = Array.from(sections).indexOf(e.target);
+        dots.forEach((d,i) => d.classList.toggle('active', i===idx));
+      }
+    });
+  }, {threshold:0.4});
+  sections.forEach(s => sectionObs.observe(s));
+}
+
+/* ===== PROGRESS BAR ===== */
+function initProgressBar(){
+  const bar = document.getElementById('navProgress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+    bar.style.width = pct + '%';
+  }, {passive:true});
+}
+
+/* ===== KEYBOARD NAV ===== */
+function initKeyboardNav(){
+  const sections = document.querySelectorAll('section');
+  document.addEventListener('keydown', e => {
+    if(e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const current = getCurrentSection(sections);
+      if(current < sections.length - 1) sections[current+1].scrollIntoView({behavior:'smooth'});
+    } else if(e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const current = getCurrentSection(sections);
+      if(current > 0) sections[current-1].scrollIntoView({behavior:'smooth'});
+    }
+  });
+}
+function getCurrentSection(sections){
+  let best = 0, bestDist = Infinity;
+  sections.forEach((s,i) => {
+    const d = Math.abs(s.getBoundingClientRect().top);
+    if(d < bestDist){bestDist=d;best=i;}
+  });
+  return best;
+}
+
+/* =====================================================================
+   INTERACTIVE KNOWLEDGE GRAPH — Canvas, force-directed, stabilising
+   ===================================================================== */
+function initGraph(){
+  const canvas = document.getElementById('graphCanvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = document.getElementById('graphTooltip');
+  const wrap = canvas.parentElement;
+
+  let W, H, dpr;
+  function resize(){
+    dpr = window.devicePixelRatio || 1;
+    W = wrap.clientWidth;
+    H = wrap.clientHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resize();
+  window.addEventListener('resize', function(){ resize(); alpha = 0.3; });
+
+  const LAYER_COLORS = {
+    orchestration:'#000099',
+    agents:'#FE8F11',
+    languages:'#84C041',
+    frameworks:'#1195EB',
+    meta:'#999999'
+  };
+  const COMPLEXITY_RADIUS = {simple:8, moderate:13, complex:20};
+
+  /* --- deterministic initial positions by layer cluster --- */
+  const LAYER_CENTERS = {
+    orchestration: {cx:0.5, cy:0.22},
+    agents:        {cx:0.5, cy:0.48},
+    languages:     {cx:0.25,cy:0.78},
+    frameworks:    {cx:0.75,cy:0.78},
+    meta:          {cx:0.88,cy:0.15}
+  };
+  var layerCounters = {};
+
+  var nodes = GRAPH_DATA.nodes.map(function(n){
+    var lc = LAYER_CENTERS[n.layer] || {cx:0.5,cy:0.5};
+    var idx = (layerCounters[n.layer] = (layerCounters[n.layer]||0) + 1);
+    var angle = idx * 2.399 + Math.random()*0.3;
+    var spread = 40 + idx * 6;
+    return {
+      id:n.id, type:n.type, label:n.label, layer:n.layer,
+      summary:n.summary, tags:n.tags, complexity:n.complexity,
+      x: lc.cx * W + Math.cos(angle) * spread,
+      y: lc.cy * H + Math.sin(angle) * spread,
+      vx:0, vy:0,
+      pinned: false,
+      r: COMPLEXITY_RADIUS[n.complexity] || 10,
+      color: LAYER_COLORS[n.layer],
+      visible: true
+    };
+  });
+  var nodeMap = {};
+  nodes.forEach(function(n){ nodeMap[n.id] = n; });
+
+  var edges = [];
+  GRAPH_DATA.edges.forEach(function(e){
+    var s = nodeMap[e.source], t = nodeMap[e.target];
+    if(s && t) edges.push({source:s, target:t, type:e.type, weight:e.weight});
+  });
+
+  /* --- Layer filter --- */
+  var layerVisible = {orchestration:true,agents:true,languages:true,frameworks:true,meta:true};
+  document.querySelectorAll('.graph-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var layer = btn.dataset.layer;
+      layerVisible[layer] = !layerVisible[layer];
+      btn.classList.toggle('active');
+      nodes.forEach(function(n){ n.visible = layerVisible[n.layer]; });
+      alpha = 0.4;
+    });
+  });
+
+  /* --- Interaction state --- */
+  var dragNode = null;
+  var hoveredNode = null;
+  var selectedNode = null;
+  var mouseX = 0, mouseY = 0;
+  var dragStartX = 0, dragStartY = 0;
+  var didDrag = false;
+  var DRAG_THRESHOLD = 5;
+
+  function getNodeAt(x, y){
+    var best = null, bestDist = Infinity;
+    for(var i = nodes.length-1; i >= 0; i--){
+      var n = nodes[i];
+      if(!n.visible) continue;
+      var dx = n.x - x, dy = n.y - y;
+      var d2 = dx*dx + dy*dy;
+      var hitR = n.r + 6;
+      if(d2 < hitR*hitR && d2 < bestDist){ bestDist = d2; best = n; }
+    }
+    return best;
+  }
+
+  /* --- Mouse events --- */
+  canvas.addEventListener('mousedown', function(e){
+    var rect = canvas.getBoundingClientRect();
+    var x = e.clientX - rect.left, y = e.clientY - rect.top;
+    dragStartX = x; dragStartY = y; didDrag = false;
+    var node = getNodeAt(x, y);
+    if(node){
+      dragNode = node;
+      dragNode.pinned = true;
+      alpha = 0.5;
+      canvas.style.cursor = 'grabbing';
+    }
+  });
+
+  canvas.addEventListener('mousemove', function(e){
+    var rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+    if(dragNode){
+      var movedDist = Math.abs(mouseX-dragStartX)+Math.abs(mouseY-dragStartY);
+      if(movedDist > DRAG_THRESHOLD) didDrag = true;
+      dragNode.x = mouseX;
+      dragNode.y = mouseY;
+      dragNode.vx = 0;
+      dragNode.vy = 0;
+      alpha = Math.max(alpha, 0.15);
+    }
+    var node = getNodeAt(mouseX, mouseY);
+    hoveredNode = node;
+    canvas.style.cursor = node ? (dragNode ? 'grabbing' : 'pointer') : 'default';
+    if(node && !dragNode){
+      tooltip.innerHTML = '<h5>'+node.label+'</h5>'
+        +'<div class="tt-type">'+node.layer+' / '+node.type+'</div>'
+        +'<div class="tt-summary">'+node.summary+'</div>'
+        +'<div class="tt-tags">'+node.tags.map(function(t){return '<span class="tt-tag">'+t+'</span>';}).join('')+'</div>';
+      tooltip.style.opacity = '1';
+      var tx = e.clientX - rect.left + 16;
+      var ty = e.clientY - rect.top - 10;
+      if(tx + 300 > W) tx = tx - 320;
+      if(ty + 150 > H) ty = ty - 150;
+      tooltip.style.left = tx + 'px';
+      tooltip.style.top = ty + 'px';
+    } else {
+      tooltip.style.opacity = '0';
+    }
+  });
+
+  canvas.addEventListener('mouseup', function(e){
+    if(dragNode && !didDrag){
+      selectedNode = (selectedNode === dragNode) ? null : dragNode;
+    }
+    if(dragNode){ dragNode.vx = 0; dragNode.vy = 0; }
+    dragNode = null;
+    canvas.style.cursor = hoveredNode ? 'pointer' : 'default';
+  });
+
+  canvas.addEventListener('mouseleave', function(){
+    if(dragNode){ dragNode.vx=0; dragNode.vy=0; }
+    dragNode = null;
+    hoveredNode = null;
+    tooltip.style.opacity = '0';
+  });
+
+  canvas.addEventListener('dblclick', function(e){
+    var rect = canvas.getBoundingClientRect();
+    var node = getNodeAt(e.clientX-rect.left, e.clientY-rect.top);
+    if(node){ node.pinned = false; alpha = 0.4; }
+  });
+
+  /* --- Touch events --- */
+  canvas.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    var touch = e.touches[0];
+    var rect = canvas.getBoundingClientRect();
+    var x = touch.clientX - rect.left, y = touch.clientY - rect.top;
+    dragStartX = x; dragStartY = y; didDrag = false;
+    var node = getNodeAt(x, y);
+    if(node){ dragNode = node; dragNode.pinned = true; alpha = 0.5; }
+  }, {passive:false});
+
+  canvas.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    if(dragNode){
+      var touch = e.touches[0];
+      var rect = canvas.getBoundingClientRect();
+      var x = touch.clientX - rect.left, y = touch.clientY - rect.top;
+      var movedDist = Math.abs(x-dragStartX)+Math.abs(y-dragStartY);
+      if(movedDist > DRAG_THRESHOLD) didDrag = true;
+      dragNode.x = x; dragNode.y = y;
+      dragNode.vx = 0; dragNode.vy = 0;
+      alpha = Math.max(alpha, 0.15);
+    }
+  }, {passive:false});
+
+  canvas.addEventListener('touchend', function(){
+    if(dragNode && !didDrag){
+      selectedNode = (selectedNode === dragNode) ? null : dragNode;
+    }
+    if(dragNode){ dragNode.vx=0; dragNode.vy=0; }
+    dragNode = null;
+  });
+
+  /* =============================================================
+     FORCE SIMULATION with alpha cooling — settles after ~3 sec
+     ============================================================= */
+  var alpha = 1.0;
+  var ALPHA_DECAY = 0.985;
+  var ALPHA_MIN = 0.005;
+  var VELOCITY_DECAY = 0.55;
+  var REPULSION = 800;
+  var SPRING_K = 0.02;
+  var SPRING_LEN = 80;
+
+  function simulate(){
+    if(alpha < ALPHA_MIN && !dragNode) return;
+    alpha *= ALPHA_DECAY;
+
+    for(var i = 0; i < nodes.length; i++){
+      var a = nodes[i];
+      if(!a.visible) continue;
+      for(var j = i+1; j < nodes.length; j++){
+        var b = nodes[j];
+        if(!b.visible) continue;
+        var dx = a.x - b.x, dy = a.y - b.y;
+        var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+        if(dist > 250) continue;
+        var force = alpha * REPULSION / (dist * dist);
+        var fx = (dx / dist) * force;
+        var fy = (dy / dist) * force;
+        if(!a.pinned && a !== dragNode){ a.vx += fx; a.vy += fy; }
+        if(!b.pinned && b !== dragNode){ b.vx -= fx; b.vy -= fy; }
+      }
+    }
+
+    edges.forEach(function(e){
+      if(!e.source.visible || !e.target.visible) return;
+      var dx = e.target.x - e.source.x;
+      var dy = e.target.y - e.source.y;
+      var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+      var force = alpha * (dist - SPRING_LEN) * SPRING_K;
+      var fx = (dx / dist) * force;
+      var fy = (dy / dist) * force;
+      if(!e.source.pinned && e.source !== dragNode){ e.source.vx += fx; e.source.vy += fy; }
+      if(!e.target.pinned && e.target !== dragNode){ e.target.vx -= fx; e.target.vy -= fy; }
+    });
+
+    nodes.forEach(function(n){
+      if(!n.visible || n.pinned || n === dragNode) return;
+      n.vx += (W/2 - n.x) * 0.0001 * alpha;
+      n.vy += (H/2 - n.y) * 0.0001 * alpha;
+    });
+
+    nodes.forEach(function(n){
+      if(!n.visible || n.pinned || n === dragNode) return;
+      n.vx *= VELOCITY_DECAY;
+      n.vy *= VELOCITY_DECAY;
+      n.x += n.vx;
+      n.y += n.vy;
+      n.x = Math.max(n.r+2, Math.min(W - n.r - 2, n.x));
+      n.y = Math.max(n.r+2, Math.min(H - n.r - 2, n.y));
+    });
+  }
+
+  /* =============================================================
+     RENDER
+     ============================================================= */
+  function render(){
+    ctx.clearRect(0, 0, W, H);
+
+    edges.forEach(function(e){
+      if(!e.source.visible || !e.target.visible) return;
+      var isHighlighted = selectedNode && (e.source === selectedNode || e.target === selectedNode);
+      var isDimmed = selectedNode && !isHighlighted;
+      ctx.beginPath();
+      ctx.moveTo(e.source.x, e.source.y);
+      ctx.lineTo(e.target.x, e.target.y);
+      ctx.strokeStyle = isHighlighted ? '#FE8F11' : (isDimmed ? 'rgba(0,0,0,.03)' : 'rgba(0,0,0,.1)');
+      ctx.lineWidth = isHighlighted ? 2.5 : 0.6;
+      ctx.stroke();
+    });
+
+    nodes.forEach(function(n){
+      if(!n.visible) return;
+      var isSelected = n === selectedNode;
+      var isConnected = selectedNode && edges.some(function(e){
+        return (e.source === selectedNode && e.target === n) ||
+               (e.target === selectedNode && e.source === n);
+      });
+      var isDimmed = selectedNode && !isSelected && !isConnected;
+      var isHovered = n === hoveredNode;
+
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r + (isHovered ? 3 : 0), 0, Math.PI*2);
+      ctx.fillStyle = isDimmed ? (n.color + '22') : n.color;
+      ctx.fill();
+
+      if(isSelected || isHovered){
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.strokeStyle = n.color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      if(n.pinned && !isDimmed){
+        ctx.beginPath();
+        ctx.arc(n.x, n.y - n.r - 4, 2.5, 0, Math.PI*2);
+        ctx.fillStyle = '#CC0000';
+        ctx.fill();
+      }
+
+      if(n.r >= 12 || isHovered || isSelected || isConnected){
+        ctx.font = (isHovered||isSelected?'600':'500') + ' ' + (isHovered||isSelected?'11px':'9px') + " 'JetBrains Mono',monospace";
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = isDimmed ? 'rgba(0,0,0,.1)' : 'rgba(0,0,0,.75)';
+        ctx.fillText(n.label, n.x, n.y + n.r + 5);
+      }
+    });
+
+    if(alpha > 0.6){
+      ctx.font = "500 12px 'DM Sans',sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(0,0,0,'+(alpha*0.4)+')';
+      ctx.fillText('Klicken = auswählen · Ziehen = verschieben · Doppelklick = lösen', W/2, H - 20);
+    }
+  }
+
+  /* --- Main loop: only redraws when needed --- */
+  var needsRender = true;
+  function loop(){
+    if(W !== wrap.clientWidth || H !== wrap.clientHeight){ resize(); alpha = 0.3; }
+    if(alpha >= ALPHA_MIN || dragNode || hoveredNode !== null){
+      simulate();
+      needsRender = true;
+    }
+    if(needsRender){
+      render();
+      needsRender = (alpha >= ALPHA_MIN || dragNode !== null);
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1588 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "Learning Skill",
+    "languages": ["markdown"],
+    "frameworks": [],
+    "description": "Combines two AI pipelines: (1) Multi-Level HTML Course Generation with audience segmentation and (2) Interactive Knowledge Graph Generation with dashboard - optimized for Claude.",
+    "analyzedAt": "2026-04-04T23:55:00Z",
+    "gitCommitHash": "670e856"
+  },
+  "nodes": [
+    {
+      "id": "document:skill.md",
+      "type": "document",
+      "name": "skill.md",
+      "filePath": "skill.md",
+      "summary": "Master orchestration document defining three operating modes (Kurs, Verstehen, Kombiniert), the full agent pipeline, design system, and all configuration for the Learning Skill.",
+      "tags": ["orchestration", "modes", "pipeline", "configuration", "master"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:LICENSE",
+      "type": "document",
+      "name": "LICENSE",
+      "filePath": "LICENSE",
+      "summary": "MIT License governing the open-source usage and distribution of the project.",
+      "tags": ["license", "mit", "legal"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:agents/project-scanner.md",
+      "type": "document",
+      "name": "project-scanner.md",
+      "filePath": "agents/project-scanner.md",
+      "summary": "Scans a codebase to discover all files, detect languages and frameworks, and produce an initial project inventory for downstream agents.",
+      "tags": ["scanning", "discovery", "inventory", "agent"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:agents/file-analyzer.md",
+      "type": "document",
+      "name": "file-analyzer.md",
+      "filePath": "agents/file-analyzer.md",
+      "summary": "Extracts structural information from code files in configurable batches, identifying functions, classes, imports, and dependencies.",
+      "tags": ["analysis", "structure", "batching", "extraction", "agent"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:agents/architecture-analyzer.md",
+      "type": "document",
+      "name": "architecture-analyzer.md",
+      "filePath": "agents/architecture-analyzer.md",
+      "summary": "Identifies architectural layers, patterns, and component relationships across the analyzed codebase to build a high-level structural map.",
+      "tags": ["architecture", "layers", "patterns", "analysis", "agent"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:agents/tour-builder.md",
+      "type": "document",
+      "name": "tour-builder.md",
+      "filePath": "agents/tour-builder.md",
+      "summary": "Creates pedagogical learning tours that guide users through a codebase in a logical, progressive order for effective understanding.",
+      "tags": ["tour", "pedagogy", "learning-path", "navigation", "agent"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:agents/domain-analyzer.md",
+      "type": "document",
+      "name": "domain-analyzer.md",
+      "filePath": "agents/domain-analyzer.md",
+      "summary": "Extracts business domain concepts and terminology from the codebase to enrich the knowledge graph with domain-specific context.",
+      "tags": ["domain", "business-logic", "terminology", "agent"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:agents/assemble-reviewer.md",
+      "type": "document",
+      "name": "assemble-reviewer.md",
+      "filePath": "agents/assemble-reviewer.md",
+      "summary": "Validates the merged knowledge graph output from all agents, checking for consistency and completeness before final review.",
+      "tags": ["validation", "assembly", "merge", "agent"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:agents/graph-reviewer.md",
+      "type": "document",
+      "name": "graph-reviewer.md",
+      "filePath": "agents/graph-reviewer.md",
+      "summary": "Performs final QA validation on the completed knowledge graph, verifying structural integrity, edge correctness, and overall quality.",
+      "tags": ["qa", "review", "validation", "quality", "agent"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:agents/knowledge-graph-guide.md",
+      "type": "document",
+      "name": "knowledge-graph-guide.md",
+      "filePath": "agents/knowledge-graph-guide.md",
+      "summary": "Provides help and documentation for navigating and understanding the generated knowledge graph and its interactive dashboard.",
+      "tags": ["documentation", "help", "navigation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/python.md",
+      "type": "document",
+      "name": "python.md",
+      "filePath": "languages/python.md",
+      "summary": "Defines Python-specific analysis patterns including module structure, decorators, type hints, and common idioms for the file analyzer.",
+      "tags": ["python", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/javascript.md",
+      "type": "document",
+      "name": "javascript.md",
+      "filePath": "languages/javascript.md",
+      "summary": "Defines JavaScript-specific analysis patterns including ES modules, CommonJS, async patterns, and DOM interactions.",
+      "tags": ["javascript", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/typescript.md",
+      "type": "document",
+      "name": "typescript.md",
+      "filePath": "languages/typescript.md",
+      "summary": "Defines TypeScript-specific analysis patterns including type system, interfaces, generics, and declaration files.",
+      "tags": ["typescript", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/rust.md",
+      "type": "document",
+      "name": "rust.md",
+      "filePath": "languages/rust.md",
+      "summary": "Defines Rust-specific analysis patterns including ownership, traits, lifetimes, and module system conventions.",
+      "tags": ["rust", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/go.md",
+      "type": "document",
+      "name": "go.md",
+      "filePath": "languages/go.md",
+      "summary": "Defines Go-specific analysis patterns including goroutines, interfaces, package structure, and error handling idioms.",
+      "tags": ["go", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/java.md",
+      "type": "document",
+      "name": "java.md",
+      "filePath": "languages/java.md",
+      "summary": "Defines Java-specific analysis patterns including class hierarchies, annotations, generics, and build system conventions.",
+      "tags": ["java", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/csharp.md",
+      "type": "document",
+      "name": "csharp.md",
+      "filePath": "languages/csharp.md",
+      "summary": "Defines C#-specific analysis patterns including namespaces, LINQ, async/await, and .NET project structure.",
+      "tags": ["csharp", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/ruby.md",
+      "type": "document",
+      "name": "ruby.md",
+      "filePath": "languages/ruby.md",
+      "summary": "Defines Ruby-specific analysis patterns including blocks, mixins, metaprogramming, and gem conventions.",
+      "tags": ["ruby", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/php.md",
+      "type": "document",
+      "name": "php.md",
+      "filePath": "languages/php.md",
+      "summary": "Defines PHP-specific analysis patterns including namespaces, traits, Composer autoloading, and PSR conventions.",
+      "tags": ["php", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/cpp.md",
+      "type": "document",
+      "name": "cpp.md",
+      "filePath": "languages/cpp.md",
+      "summary": "Defines C++-specific analysis patterns including templates, RAII, header/source separation, and STL usage.",
+      "tags": ["cpp", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/swift.md",
+      "type": "document",
+      "name": "swift.md",
+      "filePath": "languages/swift.md",
+      "summary": "Defines Swift-specific analysis patterns including protocols, optionals, value types, and SwiftUI/UIKit conventions.",
+      "tags": ["swift", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/kotlin.md",
+      "type": "document",
+      "name": "kotlin.md",
+      "filePath": "languages/kotlin.md",
+      "summary": "Defines Kotlin-specific analysis patterns including coroutines, data classes, extension functions, and Android conventions.",
+      "tags": ["kotlin", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/sql.md",
+      "type": "document",
+      "name": "sql.md",
+      "filePath": "languages/sql.md",
+      "summary": "Defines SQL-specific analysis patterns including DDL/DML statements, joins, stored procedures, and migration files.",
+      "tags": ["sql", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/graphql.md",
+      "type": "document",
+      "name": "graphql.md",
+      "filePath": "languages/graphql.md",
+      "summary": "Defines GraphQL-specific analysis patterns including schema definitions, resolvers, queries, mutations, and subscriptions.",
+      "tags": ["graphql", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/json.md",
+      "type": "document",
+      "name": "json.md",
+      "filePath": "languages/json.md",
+      "summary": "Defines JSON-specific analysis patterns including configuration files, package manifests, and schema validation.",
+      "tags": ["json", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/yaml.md",
+      "type": "document",
+      "name": "yaml.md",
+      "filePath": "languages/yaml.md",
+      "summary": "Defines YAML-specific analysis patterns including CI/CD configs, Kubernetes manifests, and anchors/aliases.",
+      "tags": ["yaml", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/dockerfile.md",
+      "type": "document",
+      "name": "dockerfile.md",
+      "filePath": "languages/dockerfile.md",
+      "summary": "Defines Dockerfile-specific analysis patterns including multi-stage builds, layer optimization, and base image conventions.",
+      "tags": ["dockerfile", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/html.md",
+      "type": "document",
+      "name": "html.md",
+      "filePath": "languages/html.md",
+      "summary": "Defines HTML-specific analysis patterns including semantic elements, accessibility attributes, and template syntax.",
+      "tags": ["html", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/css.md",
+      "type": "document",
+      "name": "css.md",
+      "filePath": "languages/css.md",
+      "summary": "Defines CSS-specific analysis patterns including selectors, custom properties, media queries, and preprocessor conventions.",
+      "tags": ["css", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/shell.md",
+      "type": "document",
+      "name": "shell.md",
+      "filePath": "languages/shell.md",
+      "summary": "Defines shell script-specific analysis patterns including bash/zsh syntax, pipelines, and scripting conventions.",
+      "tags": ["shell", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/markdown.md",
+      "type": "document",
+      "name": "markdown.md",
+      "filePath": "languages/markdown.md",
+      "summary": "Defines Markdown-specific analysis patterns including heading structure, link references, and documentation conventions.",
+      "tags": ["markdown", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/protobuf.md",
+      "type": "document",
+      "name": "protobuf.md",
+      "filePath": "languages/protobuf.md",
+      "summary": "Defines Protocol Buffer-specific analysis patterns including message definitions, service declarations, and versioning.",
+      "tags": ["protobuf", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:languages/terraform.md",
+      "type": "document",
+      "name": "terraform.md",
+      "filePath": "languages/terraform.md",
+      "summary": "Defines Terraform-specific analysis patterns including resource blocks, modules, providers, and state management.",
+      "tags": ["terraform", "language", "analysis-pattern"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:frameworks/react.md",
+      "type": "document",
+      "name": "react.md",
+      "filePath": "frameworks/react.md",
+      "summary": "Defines React-specific conventions including component patterns, hooks, JSX structure, and state management approaches.",
+      "tags": ["react", "framework", "frontend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/vue.md",
+      "type": "document",
+      "name": "vue.md",
+      "filePath": "frameworks/vue.md",
+      "summary": "Defines Vue-specific conventions including SFC structure, Composition API, reactivity system, and Vuex/Pinia patterns.",
+      "tags": ["vue", "framework", "frontend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/express.md",
+      "type": "document",
+      "name": "express.md",
+      "filePath": "frameworks/express.md",
+      "summary": "Defines Express.js-specific conventions including middleware chains, route handling, and request/response patterns.",
+      "tags": ["express", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/fastapi.md",
+      "type": "document",
+      "name": "fastapi.md",
+      "filePath": "frameworks/fastapi.md",
+      "summary": "Defines FastAPI-specific conventions including path operations, Pydantic models, dependency injection, and async endpoints.",
+      "tags": ["fastapi", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/django.md",
+      "type": "document",
+      "name": "django.md",
+      "filePath": "frameworks/django.md",
+      "summary": "Defines Django-specific conventions including MTV pattern, ORM models, URL routing, and admin configuration.",
+      "tags": ["django", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/flask.md",
+      "type": "document",
+      "name": "flask.md",
+      "filePath": "frameworks/flask.md",
+      "summary": "Defines Flask-specific conventions including blueprints, decorators, Jinja2 templates, and extension patterns.",
+      "tags": ["flask", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/nextjs.md",
+      "type": "document",
+      "name": "nextjs.md",
+      "filePath": "frameworks/nextjs.md",
+      "summary": "Defines Next.js-specific conventions including App Router, server components, API routes, and SSR/SSG strategies.",
+      "tags": ["nextjs", "framework", "fullstack", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/spring.md",
+      "type": "document",
+      "name": "spring.md",
+      "filePath": "frameworks/spring.md",
+      "summary": "Defines Spring-specific conventions including dependency injection, annotations, MVC controllers, and Bean lifecycle.",
+      "tags": ["spring", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/rails.md",
+      "type": "document",
+      "name": "rails.md",
+      "filePath": "frameworks/rails.md",
+      "summary": "Defines Ruby on Rails-specific conventions including MVC structure, ActiveRecord, migrations, and convention-over-configuration.",
+      "tags": ["rails", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:frameworks/gin.md",
+      "type": "document",
+      "name": "gin.md",
+      "filePath": "frameworks/gin.md",
+      "summary": "Defines Gin-specific conventions including router groups, middleware, context handling, and JSON binding patterns.",
+      "tags": ["gin", "framework", "backend", "analysis-pattern"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "concept:kurs-modus",
+      "type": "concept",
+      "name": "Kurs-Modus",
+      "summary": "HTML course generation pipeline that produces multi-level interactive courses with audience segmentation, Energiekonzern design system, and L0-L3 depth levels.",
+      "tags": ["mode", "course-generation", "html", "pipeline", "pedagogy"],
+      "complexity": "complex"
+    },
+    {
+      "id": "concept:verstehen-modus",
+      "type": "concept",
+      "name": "Verstehen-Modus",
+      "summary": "Knowledge graph generation pipeline that orchestrates specialized agents to analyze codebases and produce interactive knowledge graph dashboards.",
+      "tags": ["mode", "knowledge-graph", "analysis", "pipeline", "agents"],
+      "complexity": "complex"
+    },
+    {
+      "id": "concept:kombiniert-modus",
+      "type": "concept",
+      "name": "Kombiniert-Modus",
+      "summary": "Combined mode that runs both Kurs and Verstehen pipelines together, producing both HTML courses and knowledge graph dashboards in a single execution.",
+      "tags": ["mode", "combined", "orchestration"],
+      "complexity": "complex"
+    },
+    {
+      "id": "concept:level-system",
+      "type": "concept",
+      "name": "Level System (L0-L3)",
+      "summary": "Four-tier depth system where L0 provides a high-level overview and L1-L3 offer progressively deeper technical detail, each generated as linked HTML files.",
+      "tags": ["levels", "depth", "progression", "html-output"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "concept:helpfulness-scoring",
+      "type": "concept",
+      "name": "Helpfulness Scoring (HS 1-10)",
+      "summary": "Scoring system from 1 to 10 that rates the pedagogical helpfulness of generated content, ensuring quality and relevance for the target audience.",
+      "tags": ["scoring", "quality", "pedagogy", "validation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "concept:orchestrator",
+      "type": "concept",
+      "name": "Orchestrator",
+      "summary": "Central coordination logic in skill.md that manages phase sequencing, mode selection, agent dispatch, and output assembly across the entire pipeline.",
+      "tags": ["coordination", "phases", "dispatch", "control-flow"],
+      "complexity": "complex"
+    },
+    {
+      "id": "concept:design-system",
+      "type": "concept",
+      "name": "Design System (Energiekonzern)",
+      "summary": "Visual identity system using Tiefenblau and Impuls-Orange color scheme, consistent typography, and responsive layout for all generated HTML outputs.",
+      "tags": ["design", "visual-identity", "css", "branding"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "concept:zielgruppen",
+      "type": "concept",
+      "name": "Zielgruppen (Audience Segmentation)",
+      "summary": "Three target audience segments -- Anwender (users), Entwickler (developers), and Entscheider (decision-makers) -- each receiving tailored content and depth.",
+      "tags": ["audience", "segmentation", "personalization", "targeting"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "concept:knowledge-graph-schema",
+      "type": "concept",
+      "name": "Knowledge Graph Schema",
+      "summary": "Formal definition of node types, edge types, layer structure, and tour format that constitutes the output schema for the Verstehen pipeline.",
+      "tags": ["schema", "definition", "nodes", "edges", "structure"],
+      "complexity": "complex"
+    },
+    {
+      "id": "concept:parallelisierung",
+      "type": "concept",
+      "name": "Parallelisierung (Parallel Strategy)",
+      "summary": "Strategy for dispatching multiple subagents in parallel to analyze different parts of a codebase simultaneously, improving throughput and efficiency.",
+      "tags": ["parallelism", "performance", "subagents", "concurrency"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:skill.md",
+      "target": "concept:kurs-modus",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:verstehen-modus",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:kombiniert-modus",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:level-system",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:helpfulness-scoring",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:orchestrator",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:design-system",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:zielgruppen",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:knowledge-graph-schema",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "concept:parallelisierung",
+      "type": "documents",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/project-scanner.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/tour-builder.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/domain-analyzer.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/assemble-reviewer.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/graph-reviewer.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:agents/knowledge-graph-guide.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/python.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/javascript.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/typescript.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/rust.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/go.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/java.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/csharp.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/ruby.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/php.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/cpp.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/swift.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/kotlin.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/sql.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/graphql.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/json.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/yaml.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/dockerfile.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/html.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/css.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/shell.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/markdown.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/protobuf.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:languages/terraform.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/react.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/vue.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/express.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/fastapi.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/django.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/flask.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/nextjs.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/spring.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/rails.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:skill.md",
+      "target": "document:frameworks/gin.md",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "document:agents/project-scanner.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "related",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:agents/file-analyzer.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "related",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:agents/architecture-analyzer.md",
+      "target": "document:agents/tour-builder.md",
+      "type": "related",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:agents/tour-builder.md",
+      "target": "document:agents/assemble-reviewer.md",
+      "type": "related",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "document:agents/assemble-reviewer.md",
+      "target": "document:agents/graph-reviewer.md",
+      "type": "related",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/project-scanner.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/file-analyzer.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/tour-builder.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/domain-analyzer.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/assemble-reviewer.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/graph-reviewer.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:verstehen-modus",
+      "target": "document:agents/knowledge-graph-guide.md",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:kurs-modus",
+      "target": "concept:level-system",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:kurs-modus",
+      "target": "concept:helpfulness-scoring",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:kurs-modus",
+      "target": "concept:design-system",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:kurs-modus",
+      "target": "concept:zielgruppen",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:kombiniert-modus",
+      "target": "concept:kurs-modus",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:kombiniert-modus",
+      "target": "concept:verstehen-modus",
+      "type": "depends_on",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/python.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/python.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/javascript.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/javascript.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/typescript.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/typescript.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/rust.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/rust.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/go.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/go.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/java.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/java.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/csharp.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/csharp.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/ruby.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/ruby.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/php.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/php.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/cpp.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/cpp.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/swift.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/swift.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/kotlin.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/kotlin.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/sql.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/sql.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/graphql.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/graphql.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/json.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/json.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/yaml.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/yaml.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/dockerfile.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/dockerfile.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/html.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/html.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/css.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/css.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/shell.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/shell.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/markdown.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/markdown.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/protobuf.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/protobuf.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/terraform.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:languages/terraform.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/react.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/react.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/vue.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/vue.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/express.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/express.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/fastapi.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/fastapi.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/django.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/django.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/flask.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/flask.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/nextjs.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/nextjs.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/spring.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/spring.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/rails.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/rails.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/gin.md",
+      "target": "document:agents/file-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "document:frameworks/gin.md",
+      "target": "document:agents/architecture-analyzer.md",
+      "type": "configures",
+      "weight": 0.6,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:orchestrator",
+      "target": "concept:kurs-modus",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    },
+    {
+      "source": "concept:orchestrator",
+      "target": "concept:verstehen-modus",
+      "type": "contains",
+      "weight": 1.0,
+      "direction": "forward"
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:orchestration",
+      "name": "Orchestration",
+      "description": "Central orchestration and mode coordination",
+      "nodes": [
+        "document:skill.md",
+        "concept:kurs-modus",
+        "concept:verstehen-modus",
+        "concept:kombiniert-modus",
+        "concept:level-system",
+        "concept:helpfulness-scoring",
+        "concept:orchestrator",
+        "concept:design-system",
+        "concept:zielgruppen",
+        "concept:knowledge-graph-schema",
+        "concept:parallelisierung"
+      ]
+    },
+    {
+      "id": "layer:agents",
+      "name": "Agents",
+      "description": "Specialized analysis agents for the Verstehen pipeline",
+      "nodes": [
+        "document:agents/project-scanner.md",
+        "document:agents/file-analyzer.md",
+        "document:agents/architecture-analyzer.md",
+        "document:agents/tour-builder.md",
+        "document:agents/domain-analyzer.md",
+        "document:agents/assemble-reviewer.md",
+        "document:agents/graph-reviewer.md",
+        "document:agents/knowledge-graph-guide.md"
+      ]
+    },
+    {
+      "id": "layer:language-support",
+      "name": "Language Support",
+      "description": "Language-specific analysis patterns",
+      "nodes": [
+        "document:languages/python.md",
+        "document:languages/javascript.md",
+        "document:languages/typescript.md",
+        "document:languages/rust.md",
+        "document:languages/go.md",
+        "document:languages/java.md",
+        "document:languages/csharp.md",
+        "document:languages/ruby.md",
+        "document:languages/php.md",
+        "document:languages/cpp.md",
+        "document:languages/swift.md",
+        "document:languages/kotlin.md",
+        "document:languages/sql.md",
+        "document:languages/graphql.md",
+        "document:languages/json.md",
+        "document:languages/yaml.md",
+        "document:languages/dockerfile.md",
+        "document:languages/html.md",
+        "document:languages/css.md",
+        "document:languages/shell.md",
+        "document:languages/markdown.md",
+        "document:languages/protobuf.md",
+        "document:languages/terraform.md"
+      ]
+    },
+    {
+      "id": "layer:framework-support",
+      "name": "Framework Support",
+      "description": "Framework-specific conventions and patterns",
+      "nodes": [
+        "document:frameworks/react.md",
+        "document:frameworks/vue.md",
+        "document:frameworks/express.md",
+        "document:frameworks/fastapi.md",
+        "document:frameworks/django.md",
+        "document:frameworks/flask.md",
+        "document:frameworks/nextjs.md",
+        "document:frameworks/spring.md",
+        "document:frameworks/rails.md",
+        "document:frameworks/gin.md"
+      ]
+    },
+    {
+      "id": "layer:meta",
+      "name": "Meta",
+      "description": "Project metadata and licensing",
+      "nodes": [
+        "document:LICENSE"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "step": 1,
+      "title": "Skill Overview",
+      "nodes": ["document:skill.md"],
+      "description": "Start with the master document to understand the three operating modes and overall architecture of the Learning Skill."
+    },
+    {
+      "step": 2,
+      "title": "The Three Modes",
+      "nodes": ["concept:kurs-modus", "concept:verstehen-modus", "concept:kombiniert-modus"],
+      "description": "Learn about Kurs (course generation), Verstehen (knowledge graph generation), and Kombiniert (combined) modes that form the core operating paradigm."
+    },
+    {
+      "step": 3,
+      "title": "The Agent Pipeline",
+      "nodes": ["document:agents/project-scanner.md", "document:agents/file-analyzer.md"],
+      "description": "Discovery and analysis agents that scan codebases, detect languages and frameworks, and extract structural information from files."
+    },
+    {
+      "step": 4,
+      "title": "Architecture & Tours",
+      "nodes": ["document:agents/architecture-analyzer.md", "document:agents/tour-builder.md"],
+      "description": "How architectural layers and patterns are identified, and how pedagogical learning paths are constructed from the analysis results."
+    },
+    {
+      "step": 5,
+      "title": "Quality Assurance",
+      "nodes": ["document:agents/assemble-reviewer.md", "document:agents/graph-reviewer.md"],
+      "description": "Validation and review agents that ensure the merged knowledge graph is consistent, complete, and meets quality standards."
+    },
+    {
+      "step": 6,
+      "title": "Language Intelligence",
+      "nodes": ["document:languages/python.md", "document:languages/typescript.md", "document:languages/rust.md", "document:languages/go.md"],
+      "description": "How 23 language-specific analysis patterns provide targeted extraction rules for functions, classes, imports, and idioms."
+    },
+    {
+      "step": 7,
+      "title": "Framework Patterns",
+      "nodes": ["document:frameworks/react.md", "document:frameworks/fastapi.md", "document:frameworks/django.md", "document:frameworks/spring.md"],
+      "description": "How 10 framework-specific convention files extend the analysis with knowledge of MVC patterns, component structures, and routing."
+    },
+    {
+      "step": 8,
+      "title": "The Course System",
+      "nodes": ["concept:level-system", "concept:helpfulness-scoring", "concept:design-system"],
+      "description": "How HTML courses are generated with L0-L3 depth levels, HS 1-10 quality scoring, and the Energiekonzern visual identity system."
+    }
+  ]
+}
