@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Three Modes — Learning Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep-blue:#000099;
+  --impulse-orange:#FE8F11;
+  --warm-grey:#E4DAD4;
+  --warm-grey-bg:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --text-muted:#6B6778;
+  --radius:16px;
+  --space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
+  --font-heading:'Bricolage Grotesque',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-code:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#fff}
+.nav-deep{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--deep-blue);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.breadcrumb{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.breadcrumb-link{color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;transition:color .2s;white-space:nowrap}
+.breadcrumb-link:hover{color:#fff}
+.breadcrumb-sep{color:rgba(255,255,255,.35);font-size:.85rem}
+.breadcrumb-current{color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb-level{display:inline-block;background:rgba(254,143,17,.2);color:var(--impulse-orange);padding:.1rem .45rem;border-radius:6px;font-size:.7rem;font-weight:700;font-family:var(--font-code);margin-right:.35rem;vertical-align:middle}
+.nav-links{display:flex;align-items:center;gap:.75rem}
+.nav-link{color:rgba(255,255,255,.75);transition:color .2s}
+.nav-link:hover{color:#fff}
+.nav-lang{color:#fff;text-decoration:none;font-size:1.2rem;margin-left:.5rem;transition:transform .2s;display:inline-block}
+.nav-lang:hover{transform:scale(1.15)}
+.level-indicator{display:flex;gap:.4rem;align-items:center;margin-bottom:var(--space-4);justify-content:center}
+.level-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2)}
+.level-dot-done{background:var(--impulse-orange)}
+.level-dot-active{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.back-button{display:inline-block;padding:.4rem 1.2rem;border-radius:30px;font-size:.85rem;text-decoration:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);transition:all .2s}
+.back-button:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35)}
+.module-hero{background:var(--deep-blue);color:#fff;padding:7rem 1.5rem 4rem;min-height:70vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.module-hero::before{content:'L1';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:20rem;font-weight:800;color:rgba(255,255,255,.03);pointer-events:none}
+.module-hero h1{font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:var(--space-3)}
+.module-hero h1 .accent{color:var(--impulse-orange)}
+.module-hero p{font-size:1.1rem;max-width:600px;margin:0 auto}
+.module-content{max-width:820px;width:100%;margin:0 auto}
+.page-overview{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:var(--space-5)}
+.page-overview a{display:inline-block;padding:.35rem 1rem;border-radius:30px;font-size:.8rem;text-decoration:none;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);transition:all .2s}
+.page-overview a:hover{background:rgba(255,255,255,.12);border-color:var(--impulse-orange);color:#fff}
+.module{padding:var(--space-8) 1.5rem;position:relative;overflow:hidden;min-height:100dvh;display:flex;align-items:center}
+.module-inner{max-width:820px;margin:0 auto;width:100%}
+.module-odd{background:var(--warm-grey-bg)}
+.module-even{background:#fff}
+.module-number{font-family:var(--font-heading);font-size:8rem;font-weight:800;color:rgba(0,0,153,.06);position:absolute;top:1rem;right:2rem;line-height:1;pointer-events:none;user-select:none}
+.module h2{font-family:var(--font-heading);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:var(--space-3);color:var(--text)}
+.module h2 .accent{color:var(--impulse-orange)}
+.module p{margin-bottom:1.25rem;color:var(--text)}
+.module p.subtle{color:var(--text-muted);font-size:.95rem}
+.tooltip-term{border-bottom:1px dashed var(--impulse-orange);cursor:help;position:relative;color:var(--text)}
+.tooltip-term .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(.95);background:var(--code-bg);color:#fff;padding:.6rem 1rem;border-radius:10px;font-size:.8rem;line-height:1.5;white-space:normal;width:260px;opacity:0;pointer-events:none;transition:all .2s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.tooltip-term .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--code-bg)}
+.tooltip-term:hover .tooltip-box,.tooltip-term:focus .tooltip-box{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+.mode-card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:2rem;margin:var(--space-5) 0;transition:all .3s}
+.module-odd .mode-card{background:#fff}
+.mode-card:hover{border-color:var(--impulse-orange);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.mode-card h3{font-family:var(--font-heading);font-size:1.2rem;font-weight:700;margin-bottom:.5rem;color:var(--text)}
+.mode-card-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+.mode-card p{font-size:.95rem;color:var(--text-muted);margin-bottom:.75rem}
+.mode-tag{display:inline-block;padding:.2rem .65rem;border-radius:20px;font-size:.75rem;font-weight:600;margin-right:.4rem;margin-bottom:.3rem}
+.mode-tag-output{background:rgba(0,0,153,.08);color:var(--deep-blue)}
+.mode-tag-use{background:rgba(254,143,17,.12);color:#b86600}
+.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:var(--space-5) 0}
+.feature-item{padding:1.25rem;border:2px solid var(--warm-grey);border-radius:12px;background:#fff;transition:all .3s}
+.module-even .feature-item{background:var(--warm-grey-bg)}
+.feature-item:hover{border-color:var(--impulse-orange);transform:translateY(-2px)}
+.feature-item h4{font-family:var(--font-heading);font-size:.95rem;font-weight:700;margin-bottom:.35rem;color:var(--text)}
+.feature-item p{font-size:.85rem;color:var(--text-muted);margin-bottom:0}
+.compare-table{width:100%;border-collapse:collapse;margin:var(--space-5) 0;font-size:.9rem;border-radius:var(--radius);overflow:hidden;border:2px solid var(--warm-grey)}
+.compare-table th{background:var(--deep-blue);color:#fff;padding:.85rem 1rem;text-align:left;font-family:var(--font-heading);font-weight:700;font-size:.85rem}
+.compare-table td{padding:.75rem 1rem;border-bottom:1px solid var(--warm-grey);vertical-align:top}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr:nth-child(even){background:var(--warm-grey-bg)}
+.compare-table .check{color:#22c55e;font-weight:700;font-size:1.1rem}
+.compare-table .cross{color:var(--warm-grey);font-size:1.1rem}
+.diagram-box{background:var(--code-bg);border-radius:var(--radius);padding:2rem;margin:var(--space-5) 0;position:relative}
+.diagram-title{color:var(--impulse-orange);font-family:var(--font-heading);font-size:.9rem;font-weight:700;margin-bottom:1.25rem}
+.diagram-flow{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap}
+.diagram-node{padding:.6rem 1.2rem;border-radius:10px;font-size:.8rem;font-family:var(--font-code);cursor:pointer;transition:all .3s;text-align:center;min-width:100px}
+.diagram-node-input{background:rgba(254,143,17,.15);color:var(--impulse-orange);border:1px solid rgba(254,143,17,.4)}
+.diagram-node-process{background:rgba(0,0,153,.3);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.2)}
+.diagram-node-output{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.diagram-node:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.diagram-node.active{box-shadow:0 0 0 3px var(--impulse-orange);transform:scale(1.08)}
+.diagram-arrow{color:rgba(255,255,255,.3);font-size:1.2rem;font-weight:700}
+.diagram-detail{margin-top:1.25rem;padding:1rem;background:rgba(255,255,255,.06);border-radius:10px;border:1px solid rgba(255,255,255,.1);min-height:60px;color:rgba(255,255,255,.8);font-size:.85rem;line-height:1.6;transition:all .3s}
+.sibling-nav{background:var(--deep-blue);padding:var(--space-6) 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav h3{color:#fff;font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:var(--space-4)}
+.sibling-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.sibling-card{display:block;padding:1.25rem;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);text-decoration:none;transition:all .3s}
+.sibling-card:hover{background:rgba(255,255,255,.1);border-color:var(--impulse-orange);transform:translateY(-2px)}
+.sibling-card.current{border-color:var(--impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-card-title{color:#fff;font-family:var(--font-heading);font-weight:700;font-size:.95rem;display:block;margin-bottom:.25rem}
+.sibling-card-desc{color:rgba(255,255,255,.6);font-size:.8rem;display:block}
+.site-footer{background:var(--code-bg);color:rgba(255,255,255,.6);padding:2.5rem 1.5rem;text-align:center;font-size:.8rem}
+.site-footer a{color:var(--impulse-orange);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){
+  .feature-grid{grid-template-columns:1fr}
+  .compare-table{font-size:.8rem}
+  .compare-table th,.compare-table td{padding:.6rem .7rem}
+  .module-number{font-size:5rem;right:1rem}
+  .module-hero{padding:6rem 1.5rem 3rem}
+  .module{padding:3.5rem 1.5rem;min-height:auto}
+  .sibling-grid{grid-template-columns:1fr}
+  .nav-deep{padding:.5rem 1rem}
+  .diagram-flow{flex-direction:column}
+  .diagram-arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-deep" role="navigation" aria-label="Breadcrumb Navigation">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index_en.html" class="breadcrumb-link"><span class="breadcrumb-level">L0</span> Overview</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current"><span class="breadcrumb-level">L1</span> The Three Modes</span>
+  </nav>
+  <div class="nav-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" class="nav-link" target="_blank" rel="noopener" aria-label="GitHub Repository">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+  <a href="drei-modi_de.html" class="nav-lang" aria-label="Zur deutschen Version">&#x1F1E9;&#x1F1EA;</a>
+</nav>
+
+<!-- Hero -->
+<section class="module module-hero" id="module-0">
+  <div class="module-content" style="text-align:center">
+    <div class="level-indicator">
+      <span class="level-dot level-dot-done"></span>
+      <span class="level-dot level-dot-active"></span>
+      <span class="level-dot"></span>
+    </div>
+    <a href="../index_en.html" class="back-button">&#8592; Back to Overview</a>
+    <h1 style="color:#FFF;margin-top:var(--space-4)">The Three <span class="accent">Modes</span></h1>
+    <p style="color:rgba(255,255,255,.85)">The Learning Skill offers three operating modes. Each produces different output formats — all as immediately usable HTML files.</p>
+    <div class="page-overview">
+      <a href="#module-1">01 Course Mode</a>
+      <a href="#module-2">02 Understand Mode</a>
+      <a href="#module-3">03 Combined Mode</a>
+      <a href="#module-4">04 Which to choose?</a>
+    </div>
+  </div>
+</section>
+
+<!-- Module 01: Course Mode -->
+<section class="module module-odd" id="module-1">
+  <span class="module-number">01</span>
+  <div class="module-inner">
+    <h2 class="animate-in">The <span class="accent">Course Mode</span></h2>
+    <p class="animate-in">The Course Mode generates interactive HTML courses that systematically explain a codebase. Courses are organized in four <span class="tooltip-term" tabindex="0">depth levels<span class="tooltip-box">L0 = Overview (5 min.), L1 = Deeper (15 min.), L2 = Details (30 min.), L3 = Reference (technical). Each level links to the next.</span></span>:</p>
+
+    <div class="feature-grid animate-in">
+      <div class="feature-item">
+        <h4>L0 — Overview</h4>
+        <p>The entire codebase on one page. What does it do, how is it structured, what technologies are used?</p>
+      </div>
+      <div class="feature-item">
+        <h4>L1 — Deeper</h4>
+        <p>Individual topics are expanded. You are here right now — exactly this level.</p>
+      </div>
+      <div class="feature-item">
+        <h4>L2 — Details</h4>
+        <p>Workflows, processes, configurations in detail. For those who want to know precisely.</p>
+      </div>
+      <div class="feature-item">
+        <h4>L3 — Reference</h4>
+        <p>Technical reference with code examples, API documentation, and architecture diagrams.</p>
+      </div>
+    </div>
+
+    <p class="animate-in">Each course is automatically segmented for the chosen <span class="tooltip-term" tabindex="0">audience<span class="tooltip-box">Users, developers, or decision makers. Each audience gets different content, depth, and language.</span></span>. A user course uses different language and examples than a developer course — even though both cover the same codebase.</p>
+
+    <div class="mode-card animate-in">
+      <span class="mode-card-icon">&#x1F393;</span>
+      <h3>Output</h3>
+      <p>One HTML file per audience and level. With three audiences and four levels, up to 12 files are created, all interlinked.</p>
+      <span class="mode-tag mode-tag-output">HTML files</span>
+      <span class="mode-tag mode-tag-output">Inline CSS+JS</span>
+      <span class="mode-tag mode-tag-use">Onboarding</span>
+      <span class="mode-tag mode-tag-use">Documentation</span>
+    </div>
+  </div>
+</section>
+
+<!-- Module 02: Understand Mode -->
+<section class="module module-even" id="module-2">
+  <span class="module-number">02</span>
+  <div class="module-inner">
+    <h2 class="animate-in">The <span class="accent">Understand Mode</span></h2>
+    <p class="animate-in">The Understand Mode generates a <span class="tooltip-term" tabindex="0">Knowledge Graph<span class="tooltip-box">A knowledge network where concepts are represented as nodes and their relationships as edges. Enables non-linear exploration.</span></span> — an interactive knowledge map of your codebase. Instead of linear text, you get a network to explore.</p>
+
+    <div class="feature-grid animate-in">
+      <div class="feature-item">
+        <h4>13 Node Types</h4>
+        <p>Modules, classes, functions, configurations, concepts, and more — every aspect of your codebase is captured.</p>
+      </div>
+      <div class="feature-item">
+        <h4>26 Edge Types</h4>
+        <p>Dependencies, data flows, inheritance, imports — all relationships between components become visible.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Layer System</h4>
+        <p>Groups nodes into logical layers: frontend, backend, database, infrastructure. Toggle on and off.</p>
+      </div>
+      <div class="feature-item">
+        <h4>Guided Tours</h4>
+        <p>Predefined paths through the graph that explain important relationships step by step.</p>
+      </div>
+    </div>
+
+    <!-- Interactive Diagram -->
+    <div class="diagram-box animate-in">
+      <div class="diagram-title">Interactive: Click on a step</div>
+      <div class="diagram-flow">
+        <div class="diagram-node diagram-node-input" data-info="The Learning Skill scans all files, analyzes imports, exports, dependencies, and structures. Result: a complete inventory of all components.">Codebase</div>
+        <span class="diagram-arrow">&#x2192;</span>
+        <div class="diagram-node diagram-node-process" data-info="From the analysis, nodes (components) and edges (relationships) are extracted. Each node gets a type, layer, and description.">Analysis</div>
+        <span class="diagram-arrow">&#x2192;</span>
+        <div class="diagram-node diagram-node-process" data-info="Nodes are grouped into logical layers. Edges are assigned types (imports, extends, calls, depends_on, etc.).">Graph Build</div>
+        <span class="diagram-arrow">&#x2192;</span>
+        <div class="diagram-node diagram-node-output" data-info="A single HTML file with interactive dashboard: graph view, sidebar, search, filters, tours. Completely self-contained.">Dashboard</div>
+      </div>
+      <div class="diagram-detail">Click on one of the steps above to see details.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Module 03: Combined Mode -->
+<section class="module module-odd" id="module-3">
+  <span class="module-number">03</span>
+  <div class="module-inner">
+    <h2 class="animate-in">The <span class="accent">Combined Mode</span></h2>
+    <p class="animate-in">The Combined Mode unites course and Knowledge Graph. The special part: the graph is not just generated in parallel, but actively used to improve course quality.</p>
+
+    <div class="mode-card animate-in">
+      <span class="mode-card-icon">&#x1F504;</span>
+      <h3>KG-Powered Helpfulness Scoring</h3>
+      <p>The Knowledge Graph evaluates how important each component is for overall understanding. This <span class="tooltip-term" tabindex="0">helpfulness scoring<span class="tooltip-box">An algorithm that calculates which concepts are most important for understanding, based on connectivity, centrality, and dependencies.</span></span> controls which topics are prioritized and deepened in the course.</p>
+      <span class="mode-tag mode-tag-output">Courses + Graph</span>
+      <span class="mode-tag mode-tag-output">Scoring Data</span>
+      <span class="mode-tag mode-tag-use">Large Projects</span>
+      <span class="mode-tag mode-tag-use">Complete Analysis</span>
+    </div>
+
+    <p class="animate-in">In practice, this means: a course generated in Combined Mode is typically better structured than a pure Course Mode course. The graph provides objective data about which parts of the codebase deserve the most explanation.</p>
+
+    <p class="subtle animate-in"><strong>Trade-off:</strong> Combined Mode takes more time since the graph is built first, then the courses. For small projects, pure Course Mode is often sufficient.</p>
+  </div>
+</section>
+
+<!-- Module 04: Comparison -->
+<section class="module module-even" id="module-4">
+  <span class="module-number">04</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Which mode to <span class="accent">choose</span>?</h2>
+    <p class="animate-in">The choice depends on your goal and project size. Here is an overview:</p>
+
+    <table class="compare-table animate-in">
+      <thead>
+        <tr>
+          <th>Criterion</th>
+          <th>Course</th>
+          <th>Understand</th>
+          <th>Combined</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Linear explanation</strong></td>
+          <td><span class="check">&#x2713;</span></td>
+          <td><span class="cross">&#x2014;</span></td>
+          <td><span class="check">&#x2713;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Interactive graph</strong></td>
+          <td><span class="cross">&#x2014;</span></td>
+          <td><span class="check">&#x2713;</span></td>
+          <td><span class="check">&#x2713;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Helpfulness scoring</strong></td>
+          <td><span class="cross">&#x2014;</span></td>
+          <td><span class="cross">&#x2014;</span></td>
+          <td><span class="check">&#x2713;</span></td>
+        </tr>
+        <tr>
+          <td><strong>Ideal for</strong></td>
+          <td>Onboarding, Docs</td>
+          <td>Architecture overview</td>
+          <td>Large projects</td>
+        </tr>
+        <tr>
+          <td><strong>Speed</strong></td>
+          <td>Fast</td>
+          <td>Medium</td>
+          <td>Slowest</td>
+        </tr>
+        <tr>
+          <td><strong>Files</strong></td>
+          <td>Multiple HTML</td>
+          <td>1 HTML</td>
+          <td>Multiple + 1 HTML</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="subtle animate-in"><strong>Rule of thumb:</strong> Start with Course Mode. If you want to explore the architecture, use Understand Mode. For the full picture, choose Combined.</p>
+  </div>
+</section>
+
+<!-- Sibling Navigation -->
+<nav class="sibling-nav" aria-label="More L1 Pages">
+  <div class="sibling-nav-inner">
+    <h3>More topics at this level</h3>
+    <div class="sibling-grid">
+      <a href="what-is-learning-skill_en.html" class="sibling-card">
+        <span class="sibling-card-title">What is the Learning Skill?</span>
+        <span class="sibling-card-desc">Features, audiences, use cases</span>
+      </a>
+      <span class="sibling-card current">
+        <span class="sibling-card-title">The Three Modes</span>
+        <span class="sibling-card-desc">Course, Understand, Combined</span>
+      </span>
+      <a href="create-course_en.html" class="sibling-card">
+        <span class="sibling-card-title">Create a Course</span>
+        <span class="sibling-card-desc">Step-by-step guide</span>
+      </a>
+      <a href="using-knowledge-graph_en.html" class="sibling-card">
+        <span class="sibling-card-title">Using the Knowledge Graph</span>
+        <span class="sibling-card-desc">Dashboard, tours, navigation</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Mark Zimmermann. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener">GitHub</a>
+    <a href="../impressum.html">Imprint</a>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.diagram-node').forEach(node => {
+  node.addEventListener('click', function() {
+    document.querySelectorAll('.diagram-node').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+    const detail = this.closest('.diagram-box').querySelector('.diagram-detail');
+    detail.textContent = this.dataset.info;
+    detail.style.borderColor = 'var(--impulse-orange)';
+  });
+});
+</script>
+</body>
+</html>

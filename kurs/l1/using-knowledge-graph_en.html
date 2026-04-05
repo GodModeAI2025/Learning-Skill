@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Using the Knowledge Graph — Learning Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep-blue:#000099;
+  --impulse-orange:#FE8F11;
+  --warm-grey:#E4DAD4;
+  --warm-grey-bg:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --text-muted:#6B6778;
+  --radius:16px;
+  --space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
+  --font-heading:'Bricolage Grotesque',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-code:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#fff}
+.nav-deep{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--deep-blue);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.breadcrumb{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.breadcrumb-link{color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;transition:color .2s;white-space:nowrap}
+.breadcrumb-link:hover{color:#fff}
+.breadcrumb-sep{color:rgba(255,255,255,.35);font-size:.85rem}
+.breadcrumb-current{color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb-level{display:inline-block;background:rgba(254,143,17,.2);color:var(--impulse-orange);padding:.1rem .45rem;border-radius:6px;font-size:.7rem;font-weight:700;font-family:var(--font-code);margin-right:.35rem;vertical-align:middle}
+.nav-links{display:flex;align-items:center;gap:.75rem}
+.nav-link{color:rgba(255,255,255,.75);transition:color .2s}
+.nav-link:hover{color:#fff}
+.nav-lang{color:#fff;text-decoration:none;font-size:1.2rem;margin-left:.5rem;transition:transform .2s;display:inline-block}
+.nav-lang:hover{transform:scale(1.15)}
+.level-indicator{display:flex;gap:.4rem;align-items:center;margin-bottom:var(--space-4);justify-content:center}
+.level-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2)}
+.level-dot-done{background:var(--impulse-orange)}
+.level-dot-active{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.back-button{display:inline-block;padding:.4rem 1.2rem;border-radius:30px;font-size:.85rem;text-decoration:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);transition:all .2s}
+.back-button:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35)}
+.module-hero{background:var(--deep-blue);color:#fff;padding:7rem 1.5rem 4rem;min-height:70vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.module-hero::before{content:'L1';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:20rem;font-weight:800;color:rgba(255,255,255,.03);pointer-events:none}
+.module-hero h1{font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:var(--space-3)}
+.module-hero h1 .accent{color:var(--impulse-orange)}
+.module-hero p{font-size:1.1rem;max-width:600px;margin:0 auto}
+.module-content{max-width:820px;width:100%;margin:0 auto}
+.page-overview{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:var(--space-5)}
+.page-overview a{display:inline-block;padding:.35rem 1rem;border-radius:30px;font-size:.8rem;text-decoration:none;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);transition:all .2s}
+.page-overview a:hover{background:rgba(255,255,255,.12);border-color:var(--impulse-orange);color:#fff}
+.module{padding:var(--space-8) 1.5rem;position:relative;overflow:hidden;min-height:100dvh;display:flex;align-items:center}
+.module-inner{max-width:820px;margin:0 auto;width:100%}
+.module-odd{background:var(--warm-grey-bg)}
+.module-even{background:#fff}
+.module-number{font-family:var(--font-heading);font-size:8rem;font-weight:800;color:rgba(0,0,153,.06);position:absolute;top:1rem;right:2rem;line-height:1;pointer-events:none;user-select:none}
+.module h2{font-family:var(--font-heading);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:var(--space-3);color:var(--text)}
+.module h2 .accent{color:var(--impulse-orange)}
+.module p{margin-bottom:1.25rem;color:var(--text)}
+.module p.subtle{color:var(--text-muted);font-size:.95rem}
+.tooltip-term{border-bottom:1px dashed var(--impulse-orange);cursor:help;position:relative;color:var(--text)}
+.tooltip-term .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(.95);background:var(--code-bg);color:#fff;padding:.6rem 1rem;border-radius:10px;font-size:.8rem;line-height:1.5;white-space:normal;width:260px;opacity:0;pointer-events:none;transition:all .2s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.tooltip-term .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--code-bg)}
+.tooltip-term:hover .tooltip-box,.tooltip-term:focus .tooltip-box{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:var(--space-5) 0}
+.card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:1.5rem;transition:all .3s}
+.module-odd .card{background:#fff}
+.card:hover{border-color:var(--impulse-orange);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.card-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.card h3{font-family:var(--font-heading);font-size:1rem;font-weight:700;margin-bottom:.35rem}
+.card p{font-size:.85rem;color:var(--text-muted);margin-bottom:0}
+.mockup-box{background:var(--code-bg);border-radius:var(--radius);padding:0;margin:var(--space-5) 0;position:relative;overflow:hidden}
+.mockup-titlebar{background:rgba(0,0,0,.3);padding:.6rem 1.25rem;font-family:var(--font-code);font-size:.75rem;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:.5rem}
+.mockup-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.mockup-dot-r{background:#ff5f57}
+.mockup-dot-y{background:#ffbd2e}
+.mockup-dot-g{background:#28c840}
+.mockup-body{display:grid;grid-template-columns:1fr 280px;min-height:300px}
+.mockup-graph{padding:1.5rem;position:relative;display:flex;align-items:center;justify-content:center}
+.mockup-sidebar{background:rgba(0,0,0,.2);padding:1.25rem;border-left:1px solid rgba(255,255,255,.08)}
+.mockup-sidebar h4{color:var(--impulse-orange);font-family:var(--font-heading);font-size:.85rem;margin-bottom:.75rem}
+.mockup-sidebar p{color:rgba(255,255,255,.6);font-size:.8rem;line-height:1.5;margin-bottom:.5rem}
+.mini-graph{position:relative;width:280px;height:220px}
+.mini-node{position:absolute;padding:.35rem .7rem;border-radius:20px;font-size:.7rem;font-family:var(--font-code);cursor:pointer;transition:all .3s;white-space:nowrap;z-index:2}
+.mini-node:hover{transform:scale(1.15);z-index:10}
+.mini-node.primary{background:rgba(254,143,17,.25);color:var(--impulse-orange);border:1px solid rgba(254,143,17,.5)}
+.mini-node.secondary{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.2)}
+.mini-node.active{background:var(--impulse-orange);color:#fff;border-color:var(--impulse-orange);box-shadow:0 0 16px rgba(254,143,17,.4)}
+.node-detail{color:rgba(255,255,255,.8);font-size:.8rem;line-height:1.5;padding:.75rem;background:rgba(255,255,255,.06);border-radius:8px;border:1px solid rgba(255,255,255,.1);margin-top:.75rem;min-height:60px;transition:all .3s}
+.tour-demo{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:2rem;margin:var(--space-5) 0}
+.module-odd .tour-demo{background:#fff}
+.tour-step-list{display:flex;gap:.5rem;margin-bottom:var(--space-4);flex-wrap:wrap}
+.tour-step-btn{padding:.4rem 1rem;border-radius:30px;border:2px solid var(--warm-grey);background:#fff;cursor:pointer;font-family:var(--font-body);font-size:.85rem;color:var(--text-muted);transition:all .2s}
+.tour-step-btn:hover{border-color:var(--impulse-orange)}
+.tour-step-btn.active{border-color:var(--impulse-orange);background:var(--impulse-orange);color:#fff;font-weight:600}
+.tour-content{padding:1rem;background:var(--warm-grey-bg);border-radius:12px;min-height:80px;font-size:.9rem;line-height:1.6;color:var(--text)}
+.tour-content strong{color:var(--deep-blue)}
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:var(--space-5) 0}
+.tip-item{padding:1.25rem;border:2px solid var(--warm-grey);border-radius:12px;background:#fff;transition:all .3s}
+.module-even .tip-item{background:var(--warm-grey-bg)}
+.tip-item:hover{border-color:var(--impulse-orange);transform:translateY(-2px)}
+.tip-item h4{font-family:var(--font-heading);font-size:.95rem;font-weight:700;margin-bottom:.35rem;color:var(--text)}
+.tip-kbd{display:inline-block;padding:.15rem .45rem;border-radius:5px;background:var(--warm-grey-bg);border:1px solid var(--warm-grey);font-family:var(--font-code);font-size:.75rem;color:var(--text-muted);margin:0 .15rem}
+.tip-item p{font-size:.85rem;color:var(--text-muted);margin-bottom:0}
+.sibling-nav{background:var(--deep-blue);padding:var(--space-6) 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav h3{color:#fff;font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:var(--space-4)}
+.sibling-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.sibling-card{display:block;padding:1.25rem;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);text-decoration:none;transition:all .3s}
+.sibling-card:hover{background:rgba(255,255,255,.1);border-color:var(--impulse-orange);transform:translateY(-2px)}
+.sibling-card.current{border-color:var(--impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-card-title{color:#fff;font-family:var(--font-heading);font-weight:700;font-size:.95rem;display:block;margin-bottom:.25rem}
+.sibling-card-desc{color:rgba(255,255,255,.6);font-size:.8rem;display:block}
+.site-footer{background:var(--code-bg);color:rgba(255,255,255,.6);padding:2.5rem 1.5rem;text-align:center;font-size:.8rem}
+.site-footer a{color:var(--impulse-orange);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){
+  .card-row{grid-template-columns:1fr}
+  .tips-grid{grid-template-columns:1fr}
+  .mockup-body{grid-template-columns:1fr}
+  .mockup-sidebar{border-left:none;border-top:1px solid rgba(255,255,255,.08)}
+  .module-number{font-size:5rem;right:1rem}
+  .module-hero{padding:6rem 1.5rem 3rem}
+  .module{padding:3.5rem 1.5rem;min-height:auto}
+  .sibling-grid{grid-template-columns:1fr}
+  .nav-deep{padding:.5rem 1rem}
+  .mini-graph{transform:scale(.85);transform-origin:top left}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-deep" role="navigation" aria-label="Breadcrumb Navigation">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index_en.html" class="breadcrumb-link"><span class="breadcrumb-level">L0</span> Overview</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current"><span class="breadcrumb-level">L1</span> Using the Knowledge Graph</span>
+  </nav>
+  <div class="nav-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" class="nav-link" target="_blank" rel="noopener" aria-label="GitHub Repository">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+  <a href="knowledge-graph-nutzen_de.html" class="nav-lang" aria-label="Zur deutschen Version">&#x1F1E9;&#x1F1EA;</a>
+</nav>
+
+<!-- Hero -->
+<section class="module module-hero" id="module-0">
+  <div class="module-content" style="text-align:center">
+    <div class="level-indicator">
+      <span class="level-dot level-dot-done"></span>
+      <span class="level-dot level-dot-active"></span>
+      <span class="level-dot"></span>
+    </div>
+    <a href="../index_en.html" class="back-button">&#8592; Back to Overview</a>
+    <h1 style="color:#FFF;margin-top:var(--space-4)">Using the <span class="accent">Knowledge Graph</span></h1>
+    <p style="color:rgba(255,255,255,.85)">An interactive knowledge map of your codebase — with dashboard, guided tours, and powerful filters.</p>
+    <div class="page-overview">
+      <a href="#module-1">01 What is a Knowledge Graph?</a>
+      <a href="#module-2">02 The Dashboard</a>
+      <a href="#module-3">03 Tours</a>
+      <a href="#module-4">04 Tips &amp; Tricks</a>
+    </div>
+  </div>
+</section>
+
+<!-- Module 01 -->
+<section class="module module-odd" id="module-1">
+  <span class="module-number">01</span>
+  <div class="module-inner">
+    <h2 class="animate-in">What is a <span class="accent">Knowledge Graph</span>?</h2>
+    <p class="animate-in">A Knowledge Graph is a knowledge network that represents information as a network of <span class="tooltip-term" tabindex="0">nodes<span class="tooltip-box">Points in the graph. Each node represents a component: a module, a class, a function, a concept, or a configuration.</span></span> and <span class="tooltip-term" tabindex="0">edges<span class="tooltip-box">Connections in the graph. Each edge represents a relationship: imports, extends, calls, depends_on, contains, and many more.</span></span>. In the context of the Learning Skill, this looks like:</p>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F7E0;</span>
+        <h3>Nodes = Components</h3>
+        <p>Every file, every module, every class becomes a node. 13 different node types cover all aspects of a codebase.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x2194;&#xFE0F;</span>
+        <h3>Edges = Relationships</h3>
+        <p>Dependencies, data flows, inheritance — 26 edge types make visible how parts connect.</p>
+      </div>
+    </div>
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F4DA;</span>
+        <h3>Layers = Groups</h3>
+        <p>Nodes are grouped into logical layers: frontend, backend, database, infrastructure. Layers can be toggled on and off.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F3AF;</span>
+        <h3>Tours = Learning Paths</h3>
+        <p>Guided paths through the graph that explain important relationships step by step.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">The major advantage over linear documentation: you can navigate freely and discover connections that would not be visible in a text.</p>
+  </div>
+</section>
+
+<!-- Module 02: Dashboard -->
+<section class="module module-even" id="module-2">
+  <span class="module-number">02</span>
+  <div class="module-inner">
+    <h2 class="animate-in">The <span class="accent">Dashboard</span></h2>
+    <p class="animate-in">The dashboard is your central interface for exploring the Knowledge Graph. It consists of the graph view on the left and the sidebar on the right:</p>
+
+    <div class="mockup-box animate-in">
+      <div class="mockup-titlebar">
+        <span class="mockup-dot mockup-dot-r"></span>
+        <span class="mockup-dot mockup-dot-y"></span>
+        <span class="mockup-dot mockup-dot-g"></span>
+        Knowledge Graph Dashboard
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-graph">
+          <div class="mini-graph" id="mini-graph">
+            <svg style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1" viewBox="0 0 280 220">
+              <line x1="120" y1="50" x2="60" y2="120" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+              <line x1="120" y1="50" x2="200" y2="90" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+              <line x1="120" y1="50" x2="140" y2="140" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+              <line x1="60" y1="120" x2="140" y2="140" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+              <line x1="200" y1="90" x2="220" y2="170" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+              <line x1="140" y1="140" x2="220" y2="170" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+              <line x1="60" y1="120" x2="30" y2="190" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
+            </svg>
+            <div class="mini-node primary" style="left:85px;top:35px" data-name="App.tsx" data-info="Main entry point of the application. Initializes router, providers, and global state.">App.tsx</div>
+            <div class="mini-node secondary" style="left:20px;top:105px" data-name="AuthProvider" data-info="Manages authentication and user sessions. Provides auth context to the component tree.">AuthProvider</div>
+            <div class="mini-node primary" style="left:165px;top:75px" data-name="Router" data-info="Defines all application routes. Maps URLs to components and layouts.">Router</div>
+            <div class="mini-node secondary" style="left:100px;top:125px" data-name="API Client" data-info="Central HTTP client for all backend calls. Contains interceptors and error handling.">API Client</div>
+            <div class="mini-node secondary" style="left:180px;top:155px" data-name="Store" data-info="Global state container. Manages application state with actions and reducers.">Store</div>
+            <div class="mini-node secondary" style="left:0px;top:175px" data-name="Dashboard" data-info="Main page after login. Shows overview of current data and activities.">Dashboard</div>
+          </div>
+        </div>
+        <div class="mockup-sidebar">
+          <h4>Node Details</h4>
+          <div class="node-detail" id="node-detail">Click a node in the graph to see details.</div>
+          <h4 style="margin-top:1rem">Layers</h4>
+          <p style="font-size:.75rem">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--impulse-orange);margin-right:.3rem;vertical-align:middle"></span> Core
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.4);margin-right:.3rem;margin-left:.75rem;vertical-align:middle"></span> Support
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">The entire dashboard is a single HTML file. You can open it in the browser, zoom, pan, and click nodes — all without a server.</p>
+  </div>
+</section>
+
+<!-- Module 03: Tours -->
+<section class="module module-odd" id="module-3">
+  <span class="module-number">03</span>
+  <div class="module-inner">
+    <h2 class="animate-in"><span class="accent">Tours</span> — Guided Learning Paths</h2>
+    <p class="animate-in">Tours are predefined paths through the Knowledge Graph. They guide you step by step through the most important relationships — like an audio guide in a museum.</p>
+
+    <div class="tour-demo animate-in">
+      <h3 style="font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:var(--space-3)">Example Tour: "Architecture Overview"</h3>
+      <div class="tour-step-list" id="tour-steps">
+        <button class="tour-step-btn active" data-step="0">1. Entry</button>
+        <button class="tour-step-btn" data-step="1">2. Routing</button>
+        <button class="tour-step-btn" data-step="2">3. State</button>
+        <button class="tour-step-btn" data-step="3">4. API</button>
+      </div>
+      <div class="tour-content" id="tour-content">
+        <strong>App.tsx</strong> is the entry point. This is where the application is initialized: router, providers, and global state are brought together. The entire architecture branches out from here.
+      </div>
+    </div>
+
+    <p class="animate-in">Each tour step highlights the relevant node in the graph, shows associated edges, and provides an explanation. This way you understand not just individual parts, but also how they interact.</p>
+
+    <p class="subtle animate-in">Tours are automatically generated by the Learning Skill. The most important tour ("Architecture Overview") is always included. Depending on project size, more are added.</p>
+  </div>
+</section>
+
+<!-- Module 04: Tips -->
+<section class="module module-even" id="module-4">
+  <span class="module-number">04</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Tips &amp; <span class="accent">Tricks</span></h2>
+    <p class="animate-in">Get the most out of the Knowledge Graph Dashboard with these tips:</p>
+
+    <div class="tips-grid animate-in">
+      <div class="tip-item">
+        <h4>Navigation</h4>
+        <p>Mouse wheel to zoom, click+drag to pan. Double-click a node to center it.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Search</h4>
+        <p>Press <span class="tip-kbd">Ctrl</span>+<span class="tip-kbd">F</span> or use the search field in the sidebar. Finds nodes by name or type.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Filters</h4>
+        <p>Toggle layers on/off to focus on specific areas. Ideal for large graphs.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Zoom Reset</h4>
+        <p>Press <span class="tip-kbd">Home</span> or the reset button to return to the full view.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Node Details</h4>
+        <p>Click a node to see details in the sidebar: type, description, connected nodes, and code references.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Export</h4>
+        <p>The graph can be exported as PNG or SVG — perfect for presentations or documentation.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in"><strong>Pro tip:</strong> Start with a tour to understand the architecture. Then use filters to explore specific areas.</p>
+  </div>
+</section>
+
+<!-- Sibling Navigation -->
+<nav class="sibling-nav" aria-label="More L1 Pages">
+  <div class="sibling-nav-inner">
+    <h3>More topics at this level</h3>
+    <div class="sibling-grid">
+      <a href="what-is-learning-skill_en.html" class="sibling-card">
+        <span class="sibling-card-title">What is the Learning Skill?</span>
+        <span class="sibling-card-desc">Features, audiences, use cases</span>
+      </a>
+      <a href="three-modes_en.html" class="sibling-card">
+        <span class="sibling-card-title">The Three Modes</span>
+        <span class="sibling-card-desc">Course, Understand, Combined</span>
+      </a>
+      <a href="create-course_en.html" class="sibling-card">
+        <span class="sibling-card-title">Create a Course</span>
+        <span class="sibling-card-desc">Step-by-step guide</span>
+      </a>
+      <span class="sibling-card current">
+        <span class="sibling-card-title">Using the Knowledge Graph</span>
+        <span class="sibling-card-desc">Dashboard, tours, navigation</span>
+      </span>
+    </div>
+  </div>
+</nav>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Mark Zimmermann. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener">GitHub</a>
+    <a href="../impressum.html">Imprint</a>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.mini-node').forEach(node => {
+  node.addEventListener('click', function() {
+    document.querySelectorAll('.mini-node').forEach(n => n.classList.remove('active'));
+    this.classList.add('active');
+    const detail = document.getElementById('node-detail');
+    detail.innerHTML = '<strong style="color:var(--impulse-orange)">' + this.dataset.name + '</strong><br>' + this.dataset.info;
+    detail.style.borderColor = 'var(--impulse-orange)';
+  });
+});
+
+const tourData = [
+  '<strong>App.tsx</strong> is the entry point. This is where the application is initialized: router, providers, and global state are brought together. The entire architecture branches out from here.',
+  '<strong>Router</strong> defines all routes. Each URL is mapped to a component. Protected routes check auth status via the AuthProvider.',
+  '<strong>Store</strong> manages the global application state. All components can access it. Changes flow through actions and reducers — a predictable data model.',
+  '<strong>API Client</strong> is the bridge to the backend. All HTTP requests go through here. Interceptors add auth tokens and handle errors centrally.'
+];
+
+document.querySelectorAll('#tour-steps .tour-step-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('#tour-steps .tour-step-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tour-content').innerHTML = tourData[parseInt(this.dataset.step)];
+  });
+});
+</script>
+</body>
+</html>

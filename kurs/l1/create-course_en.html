@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create a Course — Learning Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep-blue:#000099;
+  --impulse-orange:#FE8F11;
+  --warm-grey:#E4DAD4;
+  --warm-grey-bg:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --text-muted:#6B6778;
+  --radius:16px;
+  --space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
+  --font-heading:'Bricolage Grotesque',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-code:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#fff}
+.nav-deep{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--deep-blue);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.breadcrumb{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.breadcrumb-link{color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;transition:color .2s;white-space:nowrap}
+.breadcrumb-link:hover{color:#fff}
+.breadcrumb-sep{color:rgba(255,255,255,.35);font-size:.85rem}
+.breadcrumb-current{color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb-level{display:inline-block;background:rgba(254,143,17,.2);color:var(--impulse-orange);padding:.1rem .45rem;border-radius:6px;font-size:.7rem;font-weight:700;font-family:var(--font-code);margin-right:.35rem;vertical-align:middle}
+.nav-links{display:flex;align-items:center;gap:.75rem}
+.nav-link{color:rgba(255,255,255,.75);transition:color .2s}
+.nav-link:hover{color:#fff}
+.nav-lang{color:#fff;text-decoration:none;font-size:1.2rem;margin-left:.5rem;transition:transform .2s;display:inline-block}
+.nav-lang:hover{transform:scale(1.15)}
+.level-indicator{display:flex;gap:.4rem;align-items:center;margin-bottom:var(--space-4);justify-content:center}
+.level-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2)}
+.level-dot-done{background:var(--impulse-orange)}
+.level-dot-active{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.back-button{display:inline-block;padding:.4rem 1.2rem;border-radius:30px;font-size:.85rem;text-decoration:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);transition:all .2s}
+.back-button:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35)}
+.module-hero{background:var(--deep-blue);color:#fff;padding:7rem 1.5rem 4rem;min-height:70vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.module-hero::before{content:'L1';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:20rem;font-weight:800;color:rgba(255,255,255,.03);pointer-events:none}
+.module-hero h1{font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:var(--space-3)}
+.module-hero h1 .accent{color:var(--impulse-orange)}
+.module-hero p{font-size:1.1rem;max-width:600px;margin:0 auto}
+.module-content{max-width:820px;width:100%;margin:0 auto}
+.page-overview{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:var(--space-5)}
+.page-overview a{display:inline-block;padding:.35rem 1rem;border-radius:30px;font-size:.8rem;text-decoration:none;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);transition:all .2s}
+.page-overview a:hover{background:rgba(255,255,255,.12);border-color:var(--impulse-orange);color:#fff}
+.module{padding:var(--space-8) 1.5rem;position:relative;overflow:hidden;min-height:100dvh;display:flex;align-items:center}
+.module-inner{max-width:820px;margin:0 auto;width:100%}
+.module-odd{background:var(--warm-grey-bg)}
+.module-even{background:#fff}
+.module-number{font-family:var(--font-heading);font-size:8rem;font-weight:800;color:rgba(0,0,153,.06);position:absolute;top:1rem;right:2rem;line-height:1;pointer-events:none;user-select:none}
+.module h2{font-family:var(--font-heading);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:var(--space-3);color:var(--text)}
+.module h2 .accent{color:var(--impulse-orange)}
+.module p{margin-bottom:1.25rem;color:var(--text)}
+.module p.subtle{color:var(--text-muted);font-size:.95rem}
+.tooltip-term{border-bottom:1px dashed var(--impulse-orange);cursor:help;position:relative;color:var(--text)}
+.tooltip-term .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(.95);background:var(--code-bg);color:#fff;padding:.6rem 1rem;border-radius:10px;font-size:.8rem;line-height:1.5;white-space:normal;width:260px;opacity:0;pointer-events:none;transition:all .2s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.tooltip-term .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--code-bg)}
+.tooltip-term:hover .tooltip-box,.tooltip-term:focus .tooltip-box{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:var(--space-5) 0}
+.step{display:flex;align-items:flex-start;gap:1.25rem;position:relative;padding:1.5rem 0}
+.step-marker{width:48px;height:48px;min-width:48px;border-radius:50%;background:var(--deep-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:700;font-size:1.1rem;position:relative;z-index:2}
+.step:not(:last-child)::after{content:'';position:absolute;left:23px;top:60px;bottom:-12px;width:2px;background:var(--warm-grey);z-index:1}
+.step-content h3{font-family:var(--font-heading);font-size:1.05rem;font-weight:700;margin-bottom:.25rem}
+.step-content p{font-size:.9rem;color:var(--text-muted)}
+.code-block{background:var(--code-bg);border-radius:12px;padding:1.25rem 1.5rem;margin:var(--space-4) 0;font-family:var(--font-code);font-size:.85rem;color:rgba(255,255,255,.9);overflow-x:auto;position:relative;line-height:1.8}
+.code-block .code-comment{color:rgba(255,255,255,.4)}
+.code-block .code-cmd{color:var(--impulse-orange)}
+.code-block .code-flag{color:#4ade80}
+.code-prompt{color:rgba(255,255,255,.5)}
+.option-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:var(--space-5) 0}
+.option-card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:1.5rem;text-align:center;cursor:pointer;transition:all .3s;position:relative}
+.module-odd .option-card{background:#fff}
+.option-card:hover,.option-card.selected{border-color:var(--impulse-orange);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.option-card.selected::after{content:'\\2713';position:absolute;top:.75rem;right:.75rem;width:24px;height:24px;border-radius:50%;background:var(--impulse-orange);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700}
+.option-card h4{font-family:var(--font-heading);font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.option-card p{font-size:.8rem;color:var(--text-muted);margin-bottom:0}
+.option-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.option-result{margin-top:var(--space-4);padding:1rem 1.5rem;border-radius:12px;background:rgba(0,0,153,.04);border:1px solid var(--warm-grey);font-size:.9rem;color:var(--text-muted);min-height:50px;transition:all .3s}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:var(--space-5) 0}
+.card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:1.5rem;transition:all .3s}
+.module-odd .card{background:#fff}
+.card:hover{border-color:var(--impulse-orange);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.card-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.card h3{font-family:var(--font-heading);font-size:1rem;font-weight:700;margin-bottom:.35rem}
+.card p{font-size:.85rem;color:var(--text-muted);margin-bottom:0}
+.timeline{margin:var(--space-5) 0;position:relative}
+.timeline-bar{height:6px;background:var(--warm-grey);border-radius:3px;position:relative;margin-bottom:var(--space-5)}
+.timeline-fill{height:100%;background:var(--impulse-orange);border-radius:3px;width:0;transition:width 1.5s ease}
+.timeline-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.timeline-step{text-align:center;opacity:.4;transition:opacity .5s}
+.timeline-step.active{opacity:1}
+.timeline-step h4{font-family:var(--font-heading);font-size:.95rem;font-weight:700;margin-bottom:.25rem;color:var(--text)}
+.timeline-step p{font-size:.8rem;color:var(--text-muted)}
+.timeline-step-icon{width:40px;height:40px;border-radius:50%;background:var(--warm-grey);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:1.2rem;transition:background .5s}
+.timeline-step.active .timeline-step-icon{background:var(--impulse-orange)}
+.timeline-btn{display:inline-block;padding:.5rem 1.5rem;border-radius:30px;border:2px solid var(--impulse-orange);background:none;color:var(--impulse-orange);font-family:var(--font-body);font-weight:600;font-size:.9rem;cursor:pointer;transition:all .2s;margin-top:var(--space-3)}
+.timeline-btn:hover{background:var(--impulse-orange);color:#fff}
+.deep-dive-link{display:flex;align-items:center;justify-content:space-between;background:#fff;border:2px solid var(--warm-grey);border-radius:14px;padding:1.25rem 1.5rem;margin-top:2.5rem;text-decoration:none;transition:all .3s;gap:1rem}
+.module-odd .deep-dive-link{background:#fff}
+.deep-dive-link:hover{border-color:var(--impulse-orange);transform:translateX(4px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.deep-dive-content{display:flex;flex-direction:column;gap:.15rem}
+.deep-dive-label{font-size:.75rem;color:var(--impulse-orange);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.deep-dive-title{font-family:var(--font-heading);font-size:1.05rem;font-weight:700;color:var(--text)}
+.deep-dive-desc{font-size:.8rem;color:var(--text-muted)}
+.deep-dive-level{background:var(--deep-blue);color:#fff;padding:.35rem .85rem;border-radius:8px;font-family:var(--font-code);font-size:.8rem;font-weight:600;white-space:nowrap}
+.sibling-nav{background:var(--deep-blue);padding:var(--space-6) 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav h3{color:#fff;font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:var(--space-4)}
+.sibling-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.sibling-card{display:block;padding:1.25rem;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);text-decoration:none;transition:all .3s}
+.sibling-card:hover{background:rgba(255,255,255,.1);border-color:var(--impulse-orange);transform:translateY(-2px)}
+.sibling-card.current{border-color:var(--impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-card-title{color:#fff;font-family:var(--font-heading);font-weight:700;font-size:.95rem;display:block;margin-bottom:.25rem}
+.sibling-card-desc{color:rgba(255,255,255,.6);font-size:.8rem;display:block}
+.site-footer{background:var(--code-bg);color:rgba(255,255,255,.6);padding:2.5rem 1.5rem;text-align:center;font-size:.8rem}
+.site-footer a{color:var(--impulse-orange);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){
+  .option-row{grid-template-columns:1fr}
+  .card-row{grid-template-columns:1fr}
+  .timeline-steps{grid-template-columns:1fr;gap:.5rem}
+  .module-number{font-size:5rem;right:1rem}
+  .module-hero{padding:6rem 1.5rem 3rem}
+  .module{padding:3.5rem 1.5rem;min-height:auto}
+  .sibling-grid{grid-template-columns:1fr}
+  .nav-deep{padding:.5rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-deep" role="navigation" aria-label="Breadcrumb Navigation">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index_en.html" class="breadcrumb-link"><span class="breadcrumb-level">L0</span> Overview</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current"><span class="breadcrumb-level">L1</span> Create a Course</span>
+  </nav>
+  <div class="nav-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" class="nav-link" target="_blank" rel="noopener" aria-label="GitHub Repository">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+  <a href="kurs-erstellen_de.html" class="nav-lang" aria-label="Zur deutschen Version">&#x1F1E9;&#x1F1EA;</a>
+</nav>
+
+<!-- Hero -->
+<section class="module module-hero" id="module-0">
+  <div class="module-content" style="text-align:center">
+    <div class="level-indicator">
+      <span class="level-dot level-dot-done"></span>
+      <span class="level-dot level-dot-active"></span>
+      <span class="level-dot"></span>
+    </div>
+    <a href="../index_en.html" class="back-button">&#8592; Back to Overview</a>
+    <h1 style="color:#FFF;margin-top:var(--space-4)"><span class="accent">Create</span> a Course</h1>
+    <p style="color:rgba(255,255,255,.85)">Five steps from code to finished course. The Learning Skill guides you through the process — you just need to answer.</p>
+    <div class="page-overview">
+      <a href="#module-1">01 Launch the Skill</a>
+      <a href="#module-2">02 Choose Audience</a>
+      <a href="#module-3">03 Integration Mode</a>
+      <a href="#module-4">04 The Skill Works</a>
+      <a href="#module-5">05 Use the Result</a>
+    </div>
+  </div>
+</section>
+
+<!-- Module 01 -->
+<section class="module module-odd" id="module-1">
+  <span class="module-number">01</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Launch the <span class="accent">Skill</span></h2>
+    <p class="animate-in">The Learning Skill is invoked directly in <span class="tooltip-term" tabindex="0">Claude Code<span class="tooltip-box">Anthropic's official CLI for AI-assisted software development. Runs in the terminal and has access to your file system.</span></span>. First, navigate to the project directory you want explained:</p>
+
+    <div class="code-block animate-in">
+      <span class="code-comment"># Open terminal and navigate to project directory</span><br>
+      <span class="code-prompt">$</span> <span class="code-cmd">cd</span> <span class="code-flag">/path/to/my/project</span><br><br>
+      <span class="code-comment"># Start Claude Code</span><br>
+      <span class="code-prompt">$</span> <span class="code-cmd">claude</span><br><br>
+      <span class="code-comment"># Invoke the Learning Skill</span><br>
+      <span class="code-prompt">claude&gt;</span> <span class="code-cmd">/learning</span>
+    </div>
+
+    <p class="animate-in">The Skill starts and automatically detects the codebase in your current directory. It then asks you a few questions to tailor the course to your needs.</p>
+
+    <p class="subtle animate-in">No installation or configuration needed. The Skill is available as a plugin directly in Claude Code once set up.</p>
+  </div>
+</section>
+
+<!-- Module 02 -->
+<section class="module module-even" id="module-2">
+  <span class="module-number">02</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Choose <span class="accent">Audience</span></h2>
+    <p class="animate-in">The Skill asks who the course is for. Click on the audiences you need — multiple selection is possible:</p>
+
+    <div class="option-row animate-in" id="audience-selector">
+      <div class="option-card" data-audience="users" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="option-icon">&#x1F464;</span>
+        <h4>Users</h4>
+        <p>Use the software, know no code</p>
+      </div>
+      <div class="option-card" data-audience="developers" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="option-icon">&#x1F4BB;</span>
+        <h4>Developers</h4>
+        <p>Work with the code, need technical details</p>
+      </div>
+      <div class="option-card" data-audience="decision-makers" tabindex="0" role="checkbox" aria-checked="false">
+        <span class="option-icon">&#x1F4CA;</span>
+        <h4>Decision Makers</h4>
+        <p>Responsible for the project, need strategic view</p>
+      </div>
+    </div>
+    <div class="option-result" id="audience-result">Select one or more audiences above to see what will be generated.</div>
+
+    <p class="subtle animate-in">The more audiences you select, the more HTML files are generated. Each audience gets its own content, language, and depth.</p>
+  </div>
+</section>
+
+<!-- Module 03 -->
+<section class="module module-odd" id="module-3">
+  <span class="module-number">03</span>
+  <div class="module-inner">
+    <h2 class="animate-in"><span class="accent">Integration</span> Mode</h2>
+    <p class="animate-in">The Learning Skill can work in two modes, depending on how you want to use the courses:</p>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F4E6;</span>
+        <h3>Standalone</h3>
+        <p>Courses are generated as independent HTML files in a <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">/kurs</code> folder. Perfect for sharing via email or file server. Each file works independently.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F517;</span>
+        <h3>Embedded</h3>
+        <p>Courses are generated to be embedded in existing documentation or wikis. Includes additional metadata and simplified styling.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in"><strong>Recommendation:</strong> Start with Standalone. It is the default setting and works best in most cases.</p>
+  </div>
+</section>
+
+<!-- Module 04 -->
+<section class="module module-even" id="module-4">
+  <span class="module-number">04</span>
+  <div class="module-inner">
+    <h2 class="animate-in">The Skill <span class="accent">Works</span></h2>
+    <p class="animate-in">After you have chosen audience and mode, everything runs automatically. The Skill goes through three phases:</p>
+
+    <div class="timeline animate-in" id="workflow-timeline">
+      <div class="timeline-bar"><div class="timeline-fill" id="timeline-fill"></div></div>
+      <div class="timeline-steps">
+        <div class="timeline-step" id="step-analyse">
+          <div class="timeline-step-icon">&#x1F50D;</div>
+          <h4>Analysis</h4>
+          <p>Scans all files, detects structure, technologies, dependencies, and patterns.</p>
+        </div>
+        <div class="timeline-step" id="step-curriculum">
+          <div class="timeline-step-icon">&#x1F4CB;</div>
+          <h4>Curriculum</h4>
+          <p>Creates a teaching plan: which topics, in what order, at what depth level?</p>
+        </div>
+        <div class="timeline-step" id="step-build">
+          <div class="timeline-step-icon">&#x2699;&#xFE0F;</div>
+          <h4>Build</h4>
+          <p>Generates the HTML files with content, CSS, JavaScript, navigation, and linking.</p>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <button class="timeline-btn" id="timeline-play">Simulate workflow &#x25B6;</button>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">Duration depends on project size. A small project (&lt; 50 files) is done in a few minutes. Large projects can take 10-15 minutes.</p>
+  </div>
+</section>
+
+<!-- Module 05 -->
+<section class="module module-odd" id="module-5">
+  <span class="module-number">05</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Use the <span class="accent">Result</span></h2>
+    <p class="animate-in">After completion, you will find the finished HTML files in your project directory. Here is how to use them:</p>
+
+    <div class="step-flow animate-in">
+      <div class="step">
+        <div class="step-marker">1</div>
+        <div class="step-content">
+          <h3>Find the files</h3>
+          <p>Courses are in the <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">/kurs</code> folder. Start with <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">index_en.html</code> (or <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">index_de.html</code>).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">2</div>
+        <div class="step-content">
+          <h3>Open in browser</h3>
+          <p>Double-click the HTML file or drag it into your browser. No server needed.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">3</div>
+        <div class="step-content">
+          <h3>Navigate</h3>
+          <p>Use the breadcrumb navigation at the top and sibling links at the bottom to switch between pages. Deep-dive links lead to deeper levels.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">4</div>
+        <div class="step-content">
+          <h3>Share</h3>
+          <p>Send the complete <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">/kurs</code> folder to colleagues. All links work relatively — no setup needed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep-Dive Link to L2 -->
+    <a href="../l2/course-workflow_en.html" class="deep-dive-link animate-in">
+      <div class="deep-dive-content">
+        <span class="deep-dive-label">In Detail</span>
+        <span class="deep-dive-title">The Complete Course Workflow &#x2192;</span>
+        <span class="deep-dive-desc">Every step explained: from analysis to the finished HTML file</span>
+      </div>
+      <span class="deep-dive-level">L2</span>
+    </a>
+  </div>
+</section>
+
+<!-- Sibling Navigation -->
+<nav class="sibling-nav" aria-label="More L1 Pages">
+  <div class="sibling-nav-inner">
+    <h3>More topics at this level</h3>
+    <div class="sibling-grid">
+      <a href="what-is-learning-skill_en.html" class="sibling-card">
+        <span class="sibling-card-title">What is the Learning Skill?</span>
+        <span class="sibling-card-desc">Features, audiences, use cases</span>
+      </a>
+      <a href="three-modes_en.html" class="sibling-card">
+        <span class="sibling-card-title">The Three Modes</span>
+        <span class="sibling-card-desc">Course, Understand, Combined</span>
+      </a>
+      <span class="sibling-card current">
+        <span class="sibling-card-title">Create a Course</span>
+        <span class="sibling-card-desc">Step-by-step guide</span>
+      </span>
+      <a href="using-knowledge-graph_en.html" class="sibling-card">
+        <span class="sibling-card-title">Using the Knowledge Graph</span>
+        <span class="sibling-card-desc">Dashboard, tours, navigation</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Mark Zimmermann. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener">GitHub</a>
+    <a href="../impressum.html">Imprint</a>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('#audience-selector .option-card').forEach(card => {
+  card.addEventListener('click', function() {
+    this.classList.toggle('selected');
+    this.setAttribute('aria-checked', this.classList.contains('selected'));
+    updateAudienceResult();
+  });
+  card.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
+  });
+});
+
+function updateAudienceResult() {
+  const selected = document.querySelectorAll('#audience-selector .option-card.selected');
+  const result = document.getElementById('audience-result');
+  if (selected.length === 0) {
+    result.textContent = 'Select one or more audiences above to see what will be generated.';
+    return;
+  }
+  const names = Array.from(selected).map(c => c.querySelector('h4').textContent);
+  const count = selected.length * 4;
+  result.innerHTML = '<strong style="color:var(--text)">' + names.join(' + ') + '</strong> — The Skill generates approx. <strong style="color:var(--impulse-orange)">' + count + ' HTML files</strong> (4 levels per audience, each in DE + EN).';
+}
+
+document.getElementById('timeline-play').addEventListener('click', function() {
+  const steps = ['step-analyse', 'step-curriculum', 'step-build'];
+  const fill = document.getElementById('timeline-fill');
+  this.disabled = true;
+  steps.forEach(s => document.getElementById(s).classList.remove('active'));
+  fill.style.width = '0%';
+
+  steps.forEach((s, i) => {
+    setTimeout(() => {
+      document.getElementById(s).classList.add('active');
+      fill.style.width = ((i + 1) / steps.length * 100) + '%';
+      if (i === steps.length - 1) {
+        setTimeout(() => { document.getElementById('timeline-play').disabled = false; }, 1000);
+      }
+    }, (i + 1) * 1200);
+  });
+});
+</script>
+</body>
+</html>

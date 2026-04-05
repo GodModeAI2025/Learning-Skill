@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subagent-Architektur — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --color-deep-blue:#000099;
+  --color-impulse-orange:#FE8F11;
+  --color-warm-gray:#E4DAD4;
+  --color-warm-gray-bg:#F3EFEB;
+  --color-code-bg:#000066;
+  --color-text:#1A1A2E;
+  --color-text-muted:#5C5A6B;
+  --font-display:'Bricolage Grotesque',Georgia,serif;
+  --font-body:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-breadcrumb{font-family:var(--font-body);font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.nav-breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}
+.nav-breadcrumb a:hover{color:var(--color-impulse-orange)}
+.nav-breadcrumb .sep{color:rgba(255,255,255,.35)}
+.nav-breadcrumb .current{color:rgba(255,255,255,.95);font-weight:600}
+.nav-dots{display:flex;gap:.45rem;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-right a:hover{color:var(--color-impulse-orange)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}
+.github-icon{display:inline-flex;align-items:center}
+.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}
+.github-icon:hover svg{fill:var(--color-impulse-orange)}
+.hero{background:var(--color-deep-blue);color:#fff;padding:6rem 1.5rem 4rem;text-align:center;min-height:80dvh;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:start}
+.hero-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;transition:color .2s}
+.hero-back:hover{color:var(--color-impulse-orange)}
+.hero-back svg{width:16px;height:16px;fill:currentColor}
+.level-indicator{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.level-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.level-dot.done{background:var(--color-impulse-orange);border-color:var(--color-impulse-orange)}
+.level-dot.active{background:var(--color-impulse-orange);border-color:#fff;box-shadow:0 0 0 3px rgba(254,143,17,.4)}
+.level-dot.empty{background:transparent}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem;color:rgba(255,255,255,.95)}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 1.5rem;line-height:1.5}
+.page-overview{max-width:600px;margin:0 auto;text-align:left}
+.page-overview-title{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.page-overview-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.page-overview-list li{font-size:.85rem;color:rgba(255,255,255,.7);padding-left:1rem;position:relative}
+.page-overview-list li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--color-impulse-orange);border-radius:50%}
+.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}
+.module:nth-child(odd){background:#fff}
+.module:nth-child(even){background:var(--color-warm-gray-bg)}
+.module-content{max-width:820px;margin:0 auto}
+.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}
+.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}
+.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem;font-weight:400}
+.module-body{font-size:1rem;line-height:1.7;color:var(--color-text)}
+.module-body p{margin-bottom:1rem;max-width:70ch}
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}
+.code-comment{color:rgba(255,255,255,.4)}
+.code-keyword{color:#7CB7FF}
+.code-string{color:#A8E6A1}
+.code-orange{color:var(--color-impulse-orange)}
+.toggle-block{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}
+.toggle-tabs{display:flex;background:var(--color-deep-blue)}
+.toggle-tab{flex:1;padding:.6rem 1rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;border:none;background:transparent}
+.toggle-tab.active{color:#fff;background:rgba(254,143,17,.2);border-bottom:2px solid var(--color-impulse-orange)}
+.toggle-panel{display:none;padding:1.25rem}
+.toggle-panel.active{display:block}
+.toggle-panel.code-panel{background:var(--color-code-bg)}
+.toggle-panel.text-panel{background:#fff}
+.toggle-panel.text-panel p{margin-bottom:.5rem;font-size:.9rem;color:var(--color-text)}
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help;color:inherit}
+.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}
+.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+.viz{margin:2rem 0;border-radius:10px;overflow:hidden}
+.viz-title{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+.edge-case{background:rgba(254,143,17,.08);border-left:3px solid var(--color-impulse-orange);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.9rem}
+.edge-case strong{color:var(--color-impulse-orange)}
+.sibling-nav{background:var(--color-deep-blue);padding:2.5rem 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav-title{font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:1rem}
+.sibling-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.sibling-nav-link{display:block;padding:.75rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;text-decoration:none;transition:all .2s}
+.sibling-nav-link:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.sibling-nav-link.active{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-nav-link-title{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}
+.sibling-nav-link-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.pipeline-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:1.5rem;background:var(--color-code-bg);border-radius:10px;-webkit-overflow-scrolling:touch}
+.pipeline-step{display:flex;flex-direction:column;align-items:center;min-width:100px;padding:.75rem .5rem;flex-shrink:0}
+.pipeline-step-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);font-weight:600;margin-bottom:.5rem;transition:all .3s}
+.pipeline-step:hover .pipeline-step-icon{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.15)}
+.pipeline-step-name{font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
+.pipeline-step-detail{font-size:.6rem;color:rgba(255,255,255,.5);margin-top:.2rem;text-align:center}
+.pipeline-arrow{color:var(--color-impulse-orange);font-size:1.2rem;flex-shrink:0;margin:0 .15rem}
+.info-table{width:100%;border-collapse:collapse;font-size:.85rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray);margin:1rem 0}
+.info-table th{background:var(--color-deep-blue);color:rgba(255,255,255,.9);font-family:var(--font-display);font-weight:600;padding:.65rem .75rem;text-align:left}
+.info-table td{padding:.55rem .75rem;border-bottom:1px solid var(--color-warm-gray);vertical-align:top;font-size:.85rem}
+.info-table tr:last-child td{border-bottom:none}
+@media(max-width:640px){
+  .nav-breadcrumb{font-size:.7rem}
+  .module{padding:4rem 1rem 3rem}
+  .module-header{flex-direction:column;gap:.5rem}
+  .module-number{font-size:3.5rem}
+  .hero h1{font-size:1.8rem}
+  .sibling-nav-grid{grid-template-columns:1fr}
+  .pipeline-flow{flex-wrap:nowrap}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-breadcrumb">
+    <a href="../index_dev_de.html">L0 Uberblick</a>
+    <span class="sep">&#9656;</span>
+    <a href="../l1/agenten-pipeline_dev_de.html">L1 Agenten-Pipeline</a>
+    <span class="sep">&#9656;</span>
+    <a href="../l2/agenten-kommunikation_dev_de.html">L2 Agenten-Kommunikation</a>
+    <span class="sep">&#9656;</span>
+    <span class="current">L3 Subagent-Architektur</span>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-right">
+    <a href="subagent-architecture_dev_en.html" title="English version">&#127468;&#127463;</a>
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon" title="GitHub">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div>
+    <a href="../l2/agenten-kommunikation_dev_de.html" class="hero-back">
+      <svg viewBox="0 0 16 16"><path d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg>
+      Zuruck zu Agenten-Kommunikation
+    </a>
+    <div class="level-indicator">
+      <div class="level-dot done" title="L0 Uberblick"></div>
+      <div class="level-dot done" title="L1 Vertiefung"></div>
+      <div class="level-dot done" title="L2 Detail"></div>
+      <div class="level-dot active" title="L3 Tiefendetail"></div>
+    </div>
+    <span class="hero-badge">Level 3 — Maximale Tiefe</span>
+    <h1>Subagent-Architektur</h1>
+    <p class="hero-sub">Wie 8 Agenten orchestriert werden: Agent-Definitionen, Batch-Algorithmus, Intermediate Files, Merge-Script, Zwei-Ebenen-Architektur.</p>
+    <div class="page-overview">
+      <div class="page-overview-title">Auf dieser Seite</div>
+      <ul class="page-overview-list">
+        <li>Agent-Definitionen im Detail</li>
+        <li>Batch-Algorithmus</li>
+        <li>Intermediate File Protocol</li>
+        <li>merge-batch-graphs.py</li>
+        <li>Zwei-Ebenen-Subagent-Architektur</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 01 -->
+<section class="module" id="mod1">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">01</span>
+      <div>
+        <div class="module-title">Agent-Definitionen im Detail</div>
+        <div class="module-subtitle">Jede .md-Datei in agents/ definiert Rolle, Constraints, Output-Format</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Jeder der 8 Agenten wird durch eine eigene <span class="tooltip">Markdown-Datei<span class="tooltip-text">Die Dateien in agents/ folgen einem einheitlichen Schema: YAML-Frontmatter (name, description, model: inherit), dann die Rollenbeschreibung, Task-Definition und Output-Format-Spezifikation.</span></span> im <code>agents/</code>-Ordner definiert. Der Frontmatter legt Name, Beschreibung und Modell fest. Der Body beschreibt die Aufgabe in zwei Phasen: Script-Ausfuehrung + LLM-Analyse.</p>
+
+      <div class="toggle-block" id="toggle1">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle1','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle1','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># agents/project-scanner.md — Header-Analyse</span>
+
+<span class="code-keyword">---</span>
+<span class="code-orange">name:</span> <span class="code-string">project-scanner</span>
+<span class="code-orange">description:</span> <span class="code-string">|
+  Scans a codebase directory to produce a structured
+  inventory of all project files, detected languages,
+  frameworks, import maps, and estimated complexity.</span>
+<span class="code-orange">model:</span> <span class="code-string">inherit</span>
+<span class="code-keyword">---</span>
+
+<span class="code-comment"># Rollenbeschreibung</span>
+You are a meticulous project inventory specialist.
+Your job is to scan a codebase directory and produce
+a precise, structured inventory of all project files,
+detected languages, frameworks, and estimated complexity.
+<span class="code-orange">Accuracy is paramount</span> -- every file path you report
+must actually exist on disk.</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>name:</strong> Der Slug wird intern fuer Dispatch und Logging verwendet. Keine Leerzeichen, keine Umlaute.</p>
+          <p><strong>description:</strong> Multi-Line YAML (mit <code>|</code>). Beschreibt praezise was der Agent tut -- nicht was er KOENNTE tun.</p>
+          <p><strong>model: inherit:</strong> Der Agent nutzt dasselbe Modell wie der Haupt-Kontext. Kein Fallback auf ein guenstigeres Modell.</p>
+          <p><strong>Rollenbeschreibung:</strong> Der erste Absatz definiert die Identitaet. "Meticulous" und "Accuracy is paramount" sind gezielte Prompt-Engineering-Techniken die die Praezision des Outputs erhoehen.</p>
+        </div>
+      </div>
+
+      <p>Alle 8 Agenten folgen dem Zwei-Phasen-Muster: Erst ein deterministisches <span class="tooltip">Discovery-Script<span class="tooltip-text">Ein Node.js- oder Python-Script das der Agent schreibt und ausfuehrt. Es extrahiert strukturelle Daten (Dateipfade, Funktionen, Imports) die reproduzierbar sind. Die LLM-Phase baut darauf auf.</span></span>, dann LLM-Semantik-Analyse:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Die 8 Agenten und ihre Aufgaben</span>
+
+<span class="code-keyword">| Agent                  | Phase | Aufgabe                          |</span>
+| <span class="code-orange">project-scanner</span>        | 1     | Datei-Inventar, Sprachen,        |
+|                        |       | Frameworks, Import-Map           |
+| <span class="code-orange">file-analyzer</span>          | 2     | Nodes + Edges pro Datei-Batch    |
+|                        |       | (5 parallel, 20-30 Dateien/Batch)|
+| <span class="code-orange">assemble-reviewer</span>      | 3     | Graph-Validierung nach Merge     |
+| <span class="code-orange">architecture-analyzer</span>  | 4     | Layer-Zuordnung (3-10 Schichten) |
+| <span class="code-orange">tour-builder</span>           | 5     | Lernpfad durch den Graph         |
+| <span class="code-orange">graph-reviewer</span>         | 6     | Finale Graph-Validierung         |
+| <span class="code-orange">domain-analyzer</span>        | -     | Domain-spezifische Erweiterung   |
+| <span class="code-orange">knowledge-graph-guide</span>  | -     | Dashboard-Konfiguration          |
+
+<span class="code-comment"># Jeder Agent hat zwei Phasen:</span>
+<span class="code-keyword">Phase 1:</span> Script schreiben + ausfuehren (deterministisch)
+<span class="code-keyword">Phase 2:</span> LLM-Analyse auf Script-Output (semantisch)</code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> Der <code>file-analyzer</code> ist der einzige Agent der MEHRFACH parallel gestartet wird (bis zu 5 Instanzen). Jede Instanz erhaelt einen anderen Batch von 20-30 Dateien. Die Batches ueberlappen sich NIE -- die Partitionierung ist deterministisch.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> Wenn Node.js nicht verfuegbar ist, fallen alle Agenten auf Python zurueck. Bash wird bewusst NICHT fuer komplexe Extraktion verwendet weil es Multiline-Patterns schlecht handhabt. Die Praeferenz ist: Node.js > Python > niemals Bash.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 02 -->
+<section class="module" id="mod2">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">02</span>
+      <div>
+        <div class="module-title">Batch-Algorithmus</div>
+        <div class="module-subtitle">File-Analyzer: 20-30 Dateien pro Batch, Import-Map-Injection, fileCategory-Grouping</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Der <span class="tooltip">Batch-Algorithmus<span class="tooltip-text">Partitioniert die Dateiliste aus Phase 1 in Gruppen von 20-30 Dateien. Zusammengehoerige Dateien (z.B. Dockerfile + docker-compose.yml) werden im selben Batch gehalten.</span></span> partitioniert die Dateiliste aus dem project-scanner in analysierbare Einheiten. Ziel: Jeder file-analyzer-Agent erhaelt genug Kontext um sinnvolle Edges zu erkennen, aber nicht so viel dass der Kontext-Buffer ueberlaeuft.</p>
+
+      <div class="toggle-block" id="toggle2">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle2','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle2','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Batch-Konstruktion: Pseudocode</span>
+
+<span class="code-keyword">FUNCTION</span> create_batches(files, import_map):
+  <span class="code-comment"># 1. Dateien nach fileCategory gruppieren</span>
+  groups = group_by(files, <span class="code-orange">f.fileCategory</span>)
+  <span class="code-comment"># categories: code, config, docs, infra,</span>
+  <span class="code-comment">#             data, script, markup</span>
+
+  <span class="code-comment"># 2. Zusammengehoerige Dateien identifizieren</span>
+  <span class="code-keyword">co_locate_pairs</span> = [
+    (<span class="code-string">"Dockerfile"</span>, <span class="code-string">"docker-compose.*"</span>),
+    (<span class="code-string">"package.json"</span>, <span class="code-string">"tsconfig.json"</span>),
+    (<span class="code-string">"*.prisma"</span>, <span class="code-string">"*.sql"</span>),
+    (<span class="code-string">"Makefile"</span>, <span class="code-string">"*.sh"</span>),
+  ]
+
+  <span class="code-comment"># 3. Batches fuellen</span>
+  batches = []
+  current_batch = []
+
+  <span class="code-keyword">FOR EACH</span> file <span class="code-keyword">IN</span> files (sortiert nach Pfad):
+    current_batch.append(file)
+
+    <span class="code-comment"># Co-located Partner dazupacken</span>
+    <span class="code-keyword">FOR EACH</span> partner <span class="code-keyword">IN</span> co_locate_pairs:
+      <span class="code-keyword">IF</span> file matches partner[0]:
+        add_matching(partner[1], current_batch)
+
+    <span class="code-comment"># Batch voll? (20-30 Dateien)</span>
+    <span class="code-keyword">IF</span> len(current_batch) >= <span class="code-orange">25</span>:
+      batches.append(current_batch)
+      current_batch = []
+
+  <span class="code-comment"># Rest-Batch anhaengen</span>
+  <span class="code-keyword">IF</span> current_batch:
+    batches.append(current_batch)
+
+  <span class="code-keyword">RETURN</span> batches</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>fileCategory-Grouping:</strong> Dateien werden nach Typ klassifiziert: code, config, docs, infra, data, script, markup. Zusammengehoerige Dateien wie Dockerfile + docker-compose.yml landen im selben Batch, damit der Agent deren Beziehung erkennen kann.</p>
+          <p><strong>Batch-Groesse 20-30:</strong> Ein Kompromiss. Weniger Dateien pro Batch = bessere Analyse-Qualitaet pro Datei, aber mehr Agent-Aufrufe. Mehr Dateien = weniger Aufrufe, aber der Kontext-Buffer kann ueberlaufen und die Analyse-Qualitaet sinkt.</p>
+          <p><strong>25 als Default:</strong> Erfahrungswert. Bei einem typischen Projekt mit 200 Dateien ergeben sich 8 Batches, die in 2 Runden mit 5 parallelen Agents abgearbeitet werden.</p>
+        </div>
+      </div>
+
+      <p>Jeder Batch erhaelt seine eigene <span class="tooltip">batchImportData<span class="tooltip-text">Ein JSON-Objekt das fuer jede Datei im Batch die bereits aufgeloesten Import-Pfade enthaelt. Der file-analyzer muss Imports NICHT selbst aufloesen -- das hat der project-scanner bereits gemacht.</span></span> -- die pre-resolved Import-Daten aus Phase 1:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># batchImportData: Pre-resolved Imports pro Datei</span>
+
+{
+  <span class="code-string">"batchImportData"</span>: {
+    <span class="code-orange">"src/index.ts"</span>: [
+      <span class="code-string">"src/utils.ts"</span>,
+      <span class="code-string">"src/config.ts"</span>,
+      <span class="code-string">"src/routes/api.ts"</span>
+    ],
+    <span class="code-orange">"src/utils.ts"</span>: [
+      <span class="code-string">"src/types.ts"</span>
+    ],
+    <span class="code-orange">"README.md"</span>: [],
+    <span class="code-orange">"Dockerfile"</span>: []
+  }
+}
+
+<span class="code-comment"># WICHTIG: Der file-analyzer darf Imports</span>
+<span class="code-comment"># NICHT selbst aufloesen. Er nutzt NUR diese</span>
+<span class="code-comment"># pre-resolved Daten fuer Import-Edges.</span>
+<span class="code-comment"># Grund: Der project-scanner hat eine globale</span>
+<span class="code-comment"># Sicht auf alle Dateien. Der file-analyzer sieht</span>
+<span class="code-comment"># nur seinen Batch von 20-30 Dateien.</span></code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Cross-Batch-Imports.</strong> Datei A (Batch 1) importiert Datei B (Batch 2). Der file-analyzer in Batch 1 erzeugt trotzdem eine Import-Edge zu B, weil batchImportData den aufgeloesten Pfad enthaelt. Die Edge verweist auf eine Node-ID die erst in Batch 2 erzeugt wird. Das ist OK -- der Merge-Schritt verknuepft sie spaeter.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Grosse Projekte (&gt;500 Dateien).</strong> Bei 500 Dateien entstehen ~20 Batches. Mit max. 5 parallelen Agents dauert das 4 Runden. Der Bottleneck ist nicht die Analyse selbst, sondern der Merge-Schritt danach, der alle Batch-Ergebnisse zusammenfuehren muss.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 03 -->
+<section class="module" id="mod3">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">03</span>
+      <div>
+        <div class="module-title">Intermediate File Protocol</div>
+        <div class="module-subtitle">Agenten schreiben nach .claude-learning/intermediate/: scan-result.json, batch-*.json, assembled-graph.json, layers.json, tour.json</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Alle Agenten kommunizieren ueber <span class="tooltip">Intermediate Files<span class="tooltip-text">JSON-Dateien in .claude-learning/intermediate/. Jeder Agent schreibt sein Ergebnis als JSON-Datei. Der naechste Agent in der Pipeline liest diese Datei als Input. Es gibt keine direkte Agent-zu-Agent-Kommunikation.</span></span> im Verzeichnis <code>.claude-learning/intermediate/</code>. Dieses Verzeichnis wird in Phase 0 erstellt und enthaelt nach Abschluss alle Zwischenergebnisse.</p>
+
+      <div class="toggle-block" id="toggle3">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle3','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle3','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Intermediate-Verzeichnis nach vollstaendiger Pipeline</span>
+
+<span class="code-keyword">.claude-learning/intermediate/</span>
+  <span class="code-orange">scan-result.json</span>        <span class="code-comment"># Phase 1: project-scanner</span>
+  <span class="code-orange">batch-1.json</span>             <span class="code-comment"># Phase 2: file-analyzer #1</span>
+  <span class="code-orange">batch-2.json</span>             <span class="code-comment"># Phase 2: file-analyzer #2</span>
+  <span class="code-orange">batch-3.json</span>             <span class="code-comment"># Phase 2: file-analyzer #3</span>
+  <span class="code-orange">...</span>
+  <span class="code-orange">batch-N.json</span>             <span class="code-comment"># Phase 2: file-analyzer #N</span>
+  <span class="code-orange">assembled-graph.json</span>     <span class="code-comment"># Phase 2→3: Merge-Script</span>
+  <span class="code-orange">assemble-review.json</span>     <span class="code-comment"># Phase 3: assemble-reviewer</span>
+  <span class="code-orange">layers.json</span>              <span class="code-comment"># Phase 4: architecture-analyzer</span>
+  <span class="code-orange">tour.json</span>                <span class="code-comment"># Phase 5: tour-builder</span>
+  <span class="code-orange">graph-review.json</span>        <span class="code-comment"># Phase 6: graph-reviewer</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>scan-result.json:</strong> Enthaelt die komplette Dateiliste mit Pfaden, Sprachen, fileCategory, Zeilenanzahl und die Import-Map. Input fuer den Batch-Algorithmus.</p>
+          <p><strong>batch-*.json:</strong> Jeder file-analyzer schreibt genau eine Datei. Sie enthaelt Nodes (file, function, class, etc.) und Edges (imports, calls, contains, etc.) fuer die Dateien in diesem Batch.</p>
+          <p><strong>assembled-graph.json:</strong> Das Ergebnis des merge-batch-graphs.py Scripts. Alle Batches zu einem Graph kombiniert, Nodes normalisiert, Edges dedupliziert.</p>
+          <p><strong>layers.json:</strong> Die Architektur-Schichten mit Zuordnung jeder Datei zu genau einer Schicht.</p>
+          <p><strong>tour.json:</strong> Der geordnete Lernpfad durch die wichtigsten Knoten des Graphs.</p>
+        </div>
+      </div>
+
+      <p>Die JSON-Strukturen folgen einem einheitlichen Schema. Hier die wichtigsten:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># batch-*.json Schema (Output eines file-analyzer)</span>
+
+{
+  <span class="code-string">"nodes"</span>: [
+    {
+      <span class="code-orange">"id"</span>: <span class="code-string">"file:src/index.ts"</span>,
+      <span class="code-orange">"type"</span>: <span class="code-string">"file"</span>,
+      <span class="code-orange">"name"</span>: <span class="code-string">"index.ts"</span>,
+      <span class="code-orange">"filePath"</span>: <span class="code-string">"src/index.ts"</span>,
+      <span class="code-orange">"summary"</span>: <span class="code-string">"Application entry point..."</span>,
+      <span class="code-orange">"tags"</span>: [<span class="code-string">"entry-point"</span>, <span class="code-string">"server"</span>],
+      <span class="code-orange">"complexity"</span>: <span class="code-string">"moderate"</span>,
+      <span class="code-orange">"lineCount"</span>: <span class="code-keyword">150</span>
+    },
+    {
+      <span class="code-orange">"id"</span>: <span class="code-string">"function:src/index.ts:main"</span>,
+      <span class="code-orange">"type"</span>: <span class="code-string">"function"</span>,
+      <span class="code-orange">"name"</span>: <span class="code-string">"main"</span>,
+      <span class="code-orange">"filePath"</span>: <span class="code-string">"src/index.ts"</span>,
+      <span class="code-orange">"startLine"</span>: <span class="code-keyword">10</span>,
+      <span class="code-orange">"endLine"</span>: <span class="code-keyword">45</span>
+    }
+  ],
+  <span class="code-string">"edges"</span>: [
+    {
+      <span class="code-orange">"source"</span>: <span class="code-string">"file:src/index.ts"</span>,
+      <span class="code-orange">"target"</span>: <span class="code-string">"file:src/utils.ts"</span>,
+      <span class="code-orange">"type"</span>: <span class="code-string">"imports"</span>
+    },
+    {
+      <span class="code-orange">"source"</span>: <span class="code-string">"file:src/index.ts"</span>,
+      <span class="code-orange">"target"</span>: <span class="code-string">"function:src/index.ts:main"</span>,
+      <span class="code-orange">"type"</span>: <span class="code-string">"contains"</span>
+    }
+  ]
+}</code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Node-ID-Format.</strong> IDs folgen dem Muster <code>[type]:[filePath]:[name]</code>. Bei Dateien entfaellt der Name-Teil: <code>file:src/index.ts</code>. Bei Funktionen ist der Name noetig: <code>function:src/index.ts:main</code>. Wenn ein Agent den Typ-Prefix vergisst oder doppelt setzt (z.B. <code>file:file:src/index.ts</code>), korrigiert das merge-batch-graphs.py Script dies automatisch.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Inkrementelles Update.</strong> Bei einem Re-Run werden nur geaenderte Dateien neu analysiert. Die alten Nodes/Edges dieser Dateien werden aus dem bestehenden Graph entfernt. Die neuen Batch-Ergebnisse werden zusammen mit den verbleibenden als <code>batch-existing.json</code> geschrieben und erneut durch den Merge gefahren.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 04 -->
+<section class="module" id="mod4">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">04</span>
+      <div>
+        <div class="module-title">merge-batch-graphs.py</div>
+        <div class="module-subtitle">Node-ID-Normalisierung, Complexity-Normalisierung, Edge-Rewrites, Deduplizierung</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Das <span class="tooltip">merge-batch-graphs.py<span class="tooltip-text">Ein Python-Script das mit dem Skill ausgeliefert wird. Es liest alle batch-*.json aus dem intermediate/-Ordner und erzeugt assembled-graph.json. Der kritischste Schritt: Node-ID-Normalisierung.</span></span> Script ist der zentrale Normalisierungs-Schritt zwischen Phase 2 und Phase 3. Es liest alle Batch-Dateien und erzeugt einen einzigen, konsistenten Graph.</p>
+
+      <div class="toggle-block" id="toggle4">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle4','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle4','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># merge-batch-graphs.py — Algorithmus-Walkthrough</span>
+
+<span class="code-keyword">python</span> &lt;SKILL_DIR&gt;/merge-batch-graphs.py $PROJECT_ROOT
+
+<span class="code-comment"># Das Script fuehrt in EINEM Pass 6 Schritte aus:</span>
+
+<span class="code-orange">Schritt 1: Alle batch-*.json laden</span>
+  <span class="code-keyword">FOR EACH</span> file IN glob(<span class="code-string">"intermediate/batch-*.json"</span>):
+    data = json.load(file)
+    all_nodes.extend(data[<span class="code-string">"nodes"</span>])
+    all_edges.extend(data[<span class="code-string">"edges"</span>])
+
+<span class="code-orange">Schritt 2: Node-ID-Normalisierung</span>
+  <span class="code-keyword">FOR EACH</span> node IN all_nodes:
+    <span class="code-comment"># Doppelte Prefixes strippen</span>
+    <span class="code-string">"file:file:src/x.ts"</span>  <span class="code-keyword">-></span>  <span class="code-string">"file:src/x.ts"</span>
+    <span class="code-comment"># Projekt-Name-Prefixes strippen</span>
+    <span class="code-string">"file:myapp/src/x.ts"</span> <span class="code-keyword">-></span>  <span class="code-string">"file:src/x.ts"</span>
+    <span class="code-comment"># Fehlende Prefixes hinzufuegen</span>
+    <span class="code-string">"src/x.ts"</span>            <span class="code-keyword">-></span>  <span class="code-string">"file:src/x.ts"</span>
+    <span class="code-comment"># Mapping speichern: old_id -> new_id</span>
+
+<span class="code-orange">Schritt 3: Complexity-Normalisierung</span>
+  <span class="code-keyword">normalize_map</span> = {
+    <span class="code-string">"low"</span>:    <span class="code-string">"simple"</span>,
+    <span class="code-string">"medium"</span>: <span class="code-string">"moderate"</span>,
+    <span class="code-string">"high"</span>:   <span class="code-string">"complex"</span>,
+    <span class="code-string">"very high"</span>: <span class="code-string">"complex"</span>,
+  }
+  <span class="code-keyword">FOR EACH</span> node: node.complexity =
+    normalize_map.get(node.complexity, node.complexity)
+
+<span class="code-orange">Schritt 4: Edge-Rewrites</span>
+  <span class="code-keyword">FOR EACH</span> edge IN all_edges:
+    edge.source = id_mapping[edge.source]
+    edge.target = id_mapping[edge.target]
+
+<span class="code-orange">Schritt 5: Deduplizierung</span>
+  <span class="code-comment"># Nodes: by ID (letztes Vorkommen gewinnt)</span>
+  nodes_by_id = {}
+  <span class="code-keyword">FOR EACH</span> node: nodes_by_id[node.id] = node
+  <span class="code-comment"># Edges: by (source, target, type)</span>
+  edge_keys = set()
+  unique_edges = []
+  <span class="code-keyword">FOR EACH</span> edge:
+    key = (edge.source, edge.target, edge.type)
+    <span class="code-keyword">IF</span> key NOT IN edge_keys:
+      unique_edges.append(edge)
+      edge_keys.add(key)
+
+<span class="code-orange">Schritt 6: Dangling Edges droppen</span>
+  valid_ids = set(nodes_by_id.keys())
+  <span class="code-keyword">FOR EACH</span> edge IN unique_edges:
+    <span class="code-keyword">IF</span> edge.source NOT IN valid_ids
+       OR edge.target NOT IN valid_ids:
+      <span class="code-comment">log_warning + DROP</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Schritt 1:</strong> Einfaches Laden aller Batch-Dateien. Die Reihenfolge ist egal -- die Deduplizierung in Schritt 5 handhabt Konflikte.</p>
+          <p><strong>Schritt 2 (kritischster Schritt):</strong> LLM-generierte Node-IDs sind inkonsistent. Manche Agents setzen den Typ-Prefix doppelt ("file:file:"), andere vergessen ihn ganz ("src/x.ts"), wieder andere fuegen den Projektnamen ein ("file:myapp/src/x.ts"). Alle drei Fehlerarten werden korrigiert.</p>
+          <p><strong>Schritt 3:</strong> Verschiedene file-analyzer-Instanzen verwenden unterschiedliche Woerter fuer Komplexitaet: "low" vs "simple", "medium" vs "moderate". Die Normalisierung stellt sicher, dass nur 3 Werte existieren: simple, moderate, complex.</p>
+          <p><strong>Schritt 4:</strong> Nachdem Node-IDs korrigiert wurden, muessen alle Edges aktualisiert werden. Eine Edge die auf die alte ID "file:file:src/x.ts" zeigt, muss jetzt auf "file:src/x.ts" zeigen.</p>
+          <p><strong>Schritt 5:</strong> Nodes mit identischer ID werden dedupliziert (letztes Vorkommen gewinnt). Edges mit identischem (source, target, type)-Tupel werden dedupliziert.</p>
+          <p><strong>Schritt 6:</strong> Edges die auf nicht-existierende Nodes zeigen (weil z.B. eine Datei geloescht wurde oder ein Node-ID-Fehler nicht korrigierbar war) werden geloggt und entfernt.</p>
+        </div>
+      </div>
+
+      <p>Alle Korrekturen und Drops werden auf <code>stderr</code> geloggt. Dieser Output wird in der assemble-review Phase dem Reviewer uebergeben:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Typische stderr-Ausgabe des Merge-Scripts</span>
+
+<span class="code-keyword">[NORMALIZE]</span> <span class="code-string">file:file:src/auth.ts</span>
+  <span class="code-keyword">-></span> <span class="code-orange">file:src/auth.ts</span> <span class="code-comment">(double prefix)</span>
+<span class="code-keyword">[NORMALIZE]</span> <span class="code-string">src/utils.ts</span>
+  <span class="code-keyword">-></span> <span class="code-orange">file:src/utils.ts</span> <span class="code-comment">(missing prefix)</span>
+<span class="code-keyword">[NORMALIZE]</span> <span class="code-string">file:myapp/src/db.ts</span>
+  <span class="code-keyword">-></span> <span class="code-orange">file:src/db.ts</span> <span class="code-comment">(project prefix)</span>
+<span class="code-keyword">[COMPLEXITY]</span> <span class="code-string">file:src/auth.ts</span>
+  low <span class="code-keyword">-></span> <span class="code-orange">simple</span>
+<span class="code-keyword">[DEDUP-NODE]</span> <span class="code-string">file:src/index.ts</span>
+  <span class="code-comment">kept batch-3, dropped batch-1</span>
+<span class="code-keyword">[DEDUP-EDGE]</span> <span class="code-string">file:src/index.ts -> file:src/utils.ts</span>
+  <span class="code-comment">type: imports (duplicate)</span>
+<span class="code-keyword">[DANGLING]</span> <span class="code-string">file:src/old-file.ts -> file:src/auth.ts</span>
+  <span class="code-comment">source not found — DROPPED</span>
+
+<span class="code-keyword">Summary:</span> 142 nodes, 287 edges
+  <span class="code-orange">6 normalizations, 3 dedup-nodes,
+  12 dedup-edges, 1 dangling dropped</span></code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Projekt-Name-Prefix.</strong> Wenn ein Agent den Projektnamen vor den Pfad setzt (z.B. <code>file:my-project/src/x.ts</code>), wird der Projektname entfernt. Die Erkennung basiert darauf, ob das erste Pfad-Segment dem Projektnamen aus scan-result.json entspricht.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: "very high" Complexity.</strong> Einige file-analyzer-Instanzen generieren "very high" statt "complex". Die Normalisierungsmap faengt das ab und mappt auf "complex". Ohne diese Normalisierung wuerde der architecture-analyzer 4 statt 3 Complexity-Stufen sehen, was seine Layer-Zuordnung verfaelscht.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 05 -->
+<section class="module" id="mod5">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">05</span>
+      <div>
+        <div class="module-title">Zwei-Ebenen-Subagent-Architektur</div>
+        <div class="module-subtitle">Pipeline-Agents (1 pro Zielgruppe) steuern Datei-Agents (N pro Level). Prompt-Templates, Wartelogik, Pipeline-Zusammenfassung.</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die <span class="tooltip">Zwei-Ebenen-Architektur<span class="tooltip-text">Ebene 1: Pipeline-Agents (1 pro Zielgruppe, steuert den gesamten Tiefenpfad). Ebene 2: Datei-Agents (1 pro HTML-Datei, werden vom Pipeline-Agent gestartet). Ebenen sind hierarchisch: Pipeline-Agent startet und wartet auf Datei-Agents.</span></span> trennt Orchestrierung (Ebene 1) von Ausfuehrung (Ebene 2). Ein Pipeline-Agent weiss WAS zu bauen ist, ein Datei-Agent weiss WIE eine Seite gebaut wird.</p>
+
+      <div class="viz">
+        <div class="viz-title">Zwei-Ebenen-Architektur</div>
+        <div class="pipeline-flow">
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon" style="border-color:var(--color-impulse-orange)">ORC</div>
+            <div class="pipeline-step-name">skill.md<br>Orchestrator</div>
+            <div class="pipeline-step-detail">Phase 0-3, 5-6</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">P-A</div>
+            <div class="pipeline-step-name">Pipeline<br>Anwender</div>
+            <div class="pipeline-step-detail">Max L2</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">P-D</div>
+            <div class="pipeline-step-name">Pipeline<br>Entwickler</div>
+            <div class="pipeline-step-detail">Max L3</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">P-E</div>
+            <div class="pipeline-step-name">Pipeline<br>Entscheider</div>
+            <div class="pipeline-step-detail">Max L1</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toggle-block" id="toggle5">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle5','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle5','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Ebene 1: Pipeline-Agent (1 pro Zielgruppe)</span>
+<span class="code-comment"># Steuert den kompletten Tiefenpfad</span>
+
+<span class="code-keyword">Pipeline-Agent Entwickler:</span>
+  <span class="code-orange">max_level</span> = L3
+  <span class="code-orange">hs_schwelle</span> = 6
+  <span class="code-orange">hs_tiefer</span> = 8
+
+  <span class="code-keyword">Schritt 1:</span> Baue L0
+    -> Starte Datei-Agent: <span class="code-string">index_dev_de.html</span>
+    -> Starte Datei-Agent: <span class="code-string">index_dev_en.html</span>
+    -> <span class="code-orange">WARTE</span> bis beide fertig
+
+  <span class="code-keyword">Schritt 2:</span> Baue L1 (NUR Themen mit HS >= 6)
+    -> Starte Datei-Agent: <span class="code-string">l1/skill-architektur_dev_de.html</span>
+    -> Starte Datei-Agent: <span class="code-string">l1/skill-architecture_dev_en.html</span>
+    -> Starte Datei-Agent: <span class="code-string">l1/agenten-pipeline_dev_de.html</span>
+    -> Starte Datei-Agent: <span class="code-string">l1/agent-pipeline_dev_en.html</span>
+    -> ... (alle L1-Themen x 2 Sprachen)
+    -> <span class="code-orange">WARTE</span> bis ALLE fertig
+
+  <span class="code-keyword">Schritt 3:</span> Baue L2 (NUR Themen mit HS >= 8)
+    -> <span class="code-comment"># Weniger Themen qualifizieren sich</span>
+    -> Starte Datei-Agents fuer qualifizierte Themen
+    -> <span class="code-orange">WARTE</span> bis ALLE fertig
+
+  <span class="code-keyword">Schritt 4:</span> Baue L3 (NUR Themen mit HS >= 8)
+    -> Starte Datei-Agents
+    -> <span class="code-orange">WARTE</span> bis ALLE fertig
+
+  <span class="code-keyword">Schritt 5:</span> Pipeline-Zusammenfassung zurueckgeben
+    -> Erzeugte Dateien: [...]
+    -> Uebersprungene Themen: [...]
+    -> Stopp-Gruende: [...]</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Warum Ebene 1?</strong> Ohne Pipeline-Agents muesste der Haupt-Orchestrator jede einzelne Datei dispatchen und die Level-Reihenfolge manuell sicherstellen. Pipeline-Agents kapseln diese Logik.</p>
+          <p><strong>WARTE-Semantik:</strong> Der Pipeline-Agent wartet aktiv (poll loop) bis alle Datei-Agents eines Levels abgeschlossen sind. Erst dann startet das naechste Level. Das verhindert, dass L2-Seiten auf L1-Seiten verlinken die noch nicht existieren.</p>
+          <p><strong>HS-Filter:</strong> Der Pipeline-Agent prueft vor jedem Datei-Agent-Start ob der HS des Themas die Schwelle erreicht. Themen unter der Schwelle werden NICHT als Datei-Agents gestartet.</p>
+          <p><strong>Pipeline-Zusammenfassung:</strong> Am Ende meldet der Pipeline-Agent zurueck was gebaut wurde, was uebersprungen wurde und warum. Diese Daten fliessen in die Tiefenkarte (Phase 6).</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Ebene 2: Datei-Agent (1 pro HTML-Datei)</span>
+<span class="code-comment"># Baut eine einzelne HTML-Datei</span>
+
+<span class="code-keyword">Datei-Agent Input:</span>
+{
+  <span class="code-orange">"dateiname"</span>: <span class="code-string">"l1/skill-architektur_dev_de.html"</span>,
+  <span class="code-orange">"zielgruppe"</span>: <span class="code-string">"Entwickler"</span>,
+  <span class="code-orange">"sprache"</span>: <span class="code-string">"DE"</span>,
+  <span class="code-orange">"level"</span>: <span class="code-string">"L1"</span>,
+  <span class="code-orange">"thema"</span>: <span class="code-string">"Skill-Architektur"</span>,
+  <span class="code-orange">"integration"</span>: <span class="code-string">"Eingebettet"</span>,
+  <span class="code-orange">"hs"</span>: <span class="code-keyword">9</span>,
+  <span class="code-orange">"breadcrumb"</span>: [
+    {<span class="code-string">"label"</span>:<span class="code-string">"L0"</span>,<span class="code-string">"href"</span>:<span class="code-string">"../index_dev_de.html"</span>},
+    {<span class="code-string">"label"</span>:<span class="code-string">"L1 Skill-Architektur"</span>,<span class="code-string">"href"</span>:<span class="code-keyword">null</span>}
+  ],
+  <span class="code-orange">"deep_dive_links"</span>: [
+    <span class="code-string">"../l2/phasen-orchestrierung_dev_de.html"</span>
+  ],
+  <span class="code-orange">"siblings"</span>: [
+    <span class="code-string">"agenten-pipeline_dev_de.html"</span>,
+    <span class="code-string">"kg-pipeline_dev_de.html"</span>,
+    <span class="code-string">"kurs-pipeline_dev_de.html"</span>
+  ],
+  <span class="code-orange">"sprach_pendant"</span>: <span class="code-string">"skill-architecture_dev_en.html"</span>,
+  <span class="code-orange">"css_foundation"</span>: <span class="code-string">"[INLINE CSS]"</span>
+}
+
+<span class="code-keyword">Datei-Agent Output:</span>
+  -> Schreibt die komplette HTML-Datei auf Disk
+  -> Gibt Dateipfad + Dateigr&ouml;sse zurueck
+  -> Meldet Fehler falls Qualitaetsgate fehlschlaegt</code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Zielgruppen-Switch PLATZHALTER.</strong> Der Datei-Agent setzt auf L0-Seiten einen Platzhalter statt echte Links zum Zielgruppen-Switch. Grund: Zum Zeitpunkt der Erzeugung weiss er nicht, welche anderen Pipelines existieren. Phase 5 (Polish) ersetzt den Platzhalter nachtraeglich mit echten Links. Bei L1-L3 gibt es keinen Zielgruppen-Switch.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Praxis-Modus vs. Parallel-Modus.</strong> In der Praxis wird meistens SEQUENZIELL gearbeitet (1 Datei nach der anderen, kein Agent-Tool). Die Zwei-Ebenen-Architektur bestimmt trotzdem die REIHENFOLGE: Entscheider-Pipeline zuerst (kuerzeste), dann Anwender, dann Entwickler. Bei echtem Parallel-Modus: maximal 2 parallele Agents (DE + EN desselben Themas), nicht ganze Pipelines parallel.
+      </div>
+
+      <div class="edge-case">
+        <strong>Alternative Implementierung:</strong> Statt hierarchischer Agents koennte man einen flachen Dispatcher mit Dependency-Graph verwenden. Der Learning Skill hat sich fuer die hierarchische Variante entschieden weil sie einfacher zu debuggen ist: Wenn eine Pipeline fehlschlaegt, ist klar WELCHE Zielgruppe betroffen ist. Bei einem flachen Dispatcher waere der Fehler-Kontext unklar.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIBLING NAV -->
+<section class="sibling-nav">
+  <div class="sibling-nav-inner">
+    <div class="sibling-nav-title">Weitere Entwickler-L3-Seiten</div>
+    <div class="sibling-nav-grid">
+      <a href="skill-md-aufbau_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">skill.md Aufbau</div>
+        <div class="sibling-nav-link-sub">Das 3000-Zeilen-Hirn, Zeile fuer Zeile</div>
+      </a>
+      <a href="subagent-architektur_dev_de.html" class="sibling-nav-link active">
+        <div class="sibling-nav-link-title">Subagent-Architektur</div>
+        <div class="sibling-nav-link-sub">Wie 8 Agenten orchestriert werden</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleView(blockId, panel) {
+  const block = document.getElementById(blockId);
+  block.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.toggle-panel').forEach(p => p.classList.remove('active'));
+  block.querySelector(`[data-panel="${panel}"]`).classList.add('active');
+  block.querySelectorAll('.toggle-tab').forEach(t => {
+    if ((panel === 'code' && t.textContent === 'Code') || (panel === 'text' && t.textContent === 'Klartext'))
+      t.classList.add('active');
+  });
+}
+
+const sections = ['hero','mod1','mod2','mod3','mod4','mod5'];
+const navDotsContainer = document.getElementById('navDots');
+sections.forEach((id, i) => {
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot';
+  dot.title = i === 0 ? 'Start' : 'Modul ' + String(i).padStart(2,'0');
+  dot.addEventListener('click', () => document.getElementById(id).scrollIntoView({behavior:'smooth'}));
+  navDotsContainer.appendChild(dot);
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, {threshold: 0.3});
+sections.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (window.scrollY / h * 100) + '%';
+});
+
+document.querySelectorAll('.tooltip').forEach(tip => {
+  tip.addEventListener('mouseenter', e => {
+    const tt = tip.querySelector('.tooltip-text');
+    if (!tt) return;
+    const rect = tip.getBoundingClientRect();
+    tt.style.left = rect.left + 'px';
+    tt.style.top = (rect.bottom + 8) + 'px';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Skill v2.0 — Entwickler-Überblick</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --color-deep-blue:#000099;
+  --color-impulse-orange:#FE8F11;
+  --color-warm-gray:#E4DAD4;
+  --color-warm-gray-bg:#F3EFEB;
+  --color-code-bg:#000066;
+  --color-text:#1A1A2E;
+  --color-text-muted:#5C5A6B;
+  --font-display:'Bricolage Grotesque',Georgia,serif;
+  --font-body:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-title{font-family:var(--font-display);font-weight:700;font-size:.95rem;color:rgba(255,255,255,.95);white-space:nowrap}
+.nav-dots{display:flex;gap:.45rem;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-right a:hover{color:var(--color-impulse-orange)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}
+.github-icon{display:inline-flex;align-items:center}
+.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}
+.github-icon:hover svg{fill:var(--color-impulse-orange)}
+
+/* AUDIENCE SWITCH */
+.audience-switch{display:flex;align-items:center;gap:.5rem;margin:1rem auto;max-width:820px;padding:0 1.5rem;font-size:.85rem}
+.audience-switch-label{color:var(--color-text-muted);font-weight:500}
+.audience-switch-link{color:var(--color-impulse-orange);text-decoration:none;padding:.25rem .6rem;border-radius:4px;transition:all .2s}
+.audience-switch-link:hover{background:rgba(254,143,17,.1)}
+.audience-switch-current{background:var(--color-deep-blue);color:#fff;padding:.25rem .6rem;border-radius:4px;font-weight:600}
+
+/* HERO */
+.hero{background:var(--color-deep-blue);color:#fff;padding:7rem 1.5rem 4rem;text-align:center;min-height:100dvh;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:start}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:1rem;color:rgba(255,255,255,.95)}
+.hero-sub{font-size:1.1rem;color:rgba(255,255,255,.85);max-width:640px;margin:0 auto 1.5rem;line-height:1.5}
+.hero-deep{font-size:.9rem;color:rgba(255,255,255,.7);margin-top:.5rem}
+.hero-deep strong{color:var(--color-impulse-orange)}
+
+/* MODULES */
+.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}
+.module:nth-child(odd){background:#fff}
+.module:nth-child(even){background:var(--color-warm-gray-bg)}
+.module-content{max-width:820px;margin:0 auto}
+.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}
+.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}
+.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem;font-weight:400}
+.module-body{font-size:1rem;line-height:1.7;color:var(--color-text)}
+.module-body p{margin-bottom:1rem;max-width:70ch}
+
+/* DEEP DIVE LINK */
+.deep-dive{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;padding:.65rem 1.3rem;background:var(--color-impulse-orange);color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:.9rem;transition:all .2s}
+.deep-dive:hover{background:#e5800e;transform:translateY(-1px);box-shadow:0 4px 12px rgba(254,143,17,.3)}
+.deep-dive svg{width:16px;height:16px;fill:#fff}
+
+/* VISUALIZATIONS */
+.viz{margin:2rem 0;border-radius:10px;overflow:hidden}
+.viz-title{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+
+/* ARCH DIAGRAM */
+.arch-grid{display:grid;grid-template-columns:1fr;gap:1rem;padding:1.5rem;background:var(--color-code-bg);border-radius:10px}
+.arch-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.arch-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.75rem 1rem;text-align:center;min-width:120px;flex:1;max-width:200px;transition:all .3s;cursor:default}
+.arch-box:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.arch-box-label{font-family:var(--font-mono);font-size:.75rem;color:rgba(255,255,255,.9);font-weight:500}
+.arch-box-sub{font-size:.65rem;color:rgba(255,255,255,.55);margin-top:.2rem}
+.arch-box.core{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.arch-box.core .arch-box-label{color:var(--color-impulse-orange)}
+.arch-connector{text-align:center;color:rgba(255,255,255,.3);font-size:1.2rem;line-height:1}
+
+/* PIPELINE FLOW */
+.pipeline-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:1.5rem;background:var(--color-code-bg);border-radius:10px;-webkit-overflow-scrolling:touch}
+.pipeline-step{display:flex;flex-direction:column;align-items:center;min-width:100px;padding:.75rem .5rem;flex-shrink:0}
+.pipeline-step-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);font-weight:600;margin-bottom:.5rem;transition:all .3s}
+.pipeline-step:hover .pipeline-step-icon{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.15)}
+.pipeline-step-name{font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
+.pipeline-step-detail{font-size:.6rem;color:rgba(255,255,255,.5);margin-top:.2rem;text-align:center}
+.pipeline-arrow{color:var(--color-impulse-orange);font-size:1.2rem;flex-shrink:0;margin:0 .15rem}
+.pipeline-parallel{border:1px dashed rgba(255,255,255,.2);border-radius:8px;padding:.5rem;display:flex;gap:.25rem}
+.pipeline-parallel .pipeline-step{min-width:70px}
+
+/* PHASE TIMELINE */
+.phase-timeline{padding:1.5rem;background:var(--color-code-bg);border-radius:10px}
+.phase-item{display:flex;gap:1rem;padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.08);align-items:flex-start}
+.phase-item:last-child{border-bottom:none}
+.phase-num{font-family:var(--font-mono);font-size:.75rem;color:var(--color-impulse-orange);font-weight:600;min-width:55px;flex-shrink:0}
+.phase-name{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}
+.phase-desc{font-size:.7rem;color:rgba(255,255,255,.55);margin-top:.15rem}
+
+/* HS CALC */
+.hs-calc{background:var(--color-code-bg);border-radius:10px;padding:1.5rem}
+.hs-formula{font-family:var(--font-mono);font-size:.85rem;color:var(--color-impulse-orange);text-align:center;padding:1rem;margin-bottom:1rem;background:rgba(255,255,255,.05);border-radius:6px}
+.hs-sliders{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.hs-slider-group{display:flex;flex-direction:column;gap:.3rem}
+.hs-slider-group label{font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.75)}
+.hs-slider-group input[type=range]{width:100%;accent-color:var(--color-impulse-orange);cursor:pointer}
+.hs-result{text-align:center;margin-top:1rem;font-family:var(--font-mono);font-size:1.1rem;color:rgba(255,255,255,.95);padding:.75rem;background:rgba(255,255,255,.05);border-radius:6px}
+.hs-result .score{font-size:1.8rem;font-weight:700;color:var(--color-impulse-orange)}
+.hs-verdict{font-size:.75rem;color:rgba(255,255,255,.6);margin-top:.3rem}
+
+/* COLOR PALETTE */
+.palette-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.75rem;margin-bottom:1.5rem}
+.palette-swatch{border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.palette-color{height:60px;display:flex;align-items:flex-end;padding:.4rem .6rem}
+.palette-color span{font-family:var(--font-mono);font-size:.65rem;padding:.15rem .4rem;border-radius:3px}
+.palette-info{padding:.5rem .6rem;background:#fff}
+.palette-name{font-size:.75rem;font-weight:600;color:var(--color-text)}
+.palette-var{font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-muted)}
+.typo-preview{padding:1.5rem;background:#fff;border-radius:10px;border:1px solid var(--color-warm-gray)}
+.typo-row{margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--color-warm-gray)}
+.typo-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.typo-label{font-family:var(--font-mono);font-size:.65rem;color:var(--color-text-muted);margin-bottom:.3rem}
+.typo-sample-display{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--color-text)}
+.typo-sample-body{font-family:var(--font-body);font-size:1rem;color:var(--color-text)}
+.typo-sample-mono{font-family:var(--font-mono);font-size:.9rem;color:var(--color-impulse-orange);background:var(--color-code-bg);padding:.5rem .75rem;border-radius:4px}
+
+/* MODES TABLE */
+.modes-table{width:100%;border-collapse:collapse;font-size:.85rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}
+.modes-table th{background:var(--color-deep-blue);color:rgba(255,255,255,.9);font-family:var(--font-display);font-weight:600;padding:.75rem;text-align:left}
+.modes-table td{padding:.65rem .75rem;border-bottom:1px solid var(--color-warm-gray);vertical-align:top}
+.modes-table tr:last-child td{border-bottom:none}
+.modes-table .mode-name{font-weight:600;font-family:var(--font-mono);font-size:.8rem;white-space:nowrap}
+
+/* CODE BLOCK */
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}
+.code-comment{color:rgba(255,255,255,.4)}
+.code-keyword{color:#7CB7FF}
+.code-string{color:#A8E6A1}
+.code-orange{color:var(--color-impulse-orange)}
+
+/* TOOLTIP */
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help;color:inherit}
+.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}
+.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .nav-title{font-size:.8rem}
+  .module{padding:4rem 1rem 3rem}
+  .module-header{flex-direction:column;gap:.5rem}
+  .module-number{font-size:3.5rem}
+  .arch-row{flex-direction:column;align-items:center}
+  .pipeline-flow{flex-wrap:nowrap}
+  .hs-sliders{grid-template-columns:1fr}
+  .palette-grid{grid-template-columns:1fr 1fr}
+  .modes-table{font-size:.75rem}
+  .hero h1{font-size:1.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <span class="nav-title">Learning Skill v2.0 — Dev</span>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-right">
+    <a href="index_dev_en.html" title="English version">&#127468;&#127463;</a>
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon" title="GitHub">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- AUDIENCE SWITCH -->
+<div style="padding-top:3.5rem">
+  <nav class="audience-switch">
+    <span class="audience-switch-label">Perspektive:</span>
+    <a href="index_de.html" class="audience-switch-link">Anwender</a>
+    <span class="audience-switch-link audience-switch-current">Entwickler</span>
+  </nav>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div>
+    <span class="hero-badge">Das Wichtigste auf einen Blick</span>
+    <h1>Learning Skill v2.0<br>von innen betrachtet</h1>
+    <p class="hero-sub">Ein Claude Code Plugin, das Codebases in interaktive HTML-Kurse und Knowledge Graphs verwandelt. Hier siehst du, wie es unter der Haube funktioniert.</p>
+    <p class="hero-deep"><strong>+ 6 Vertiefungsseiten</strong> verfügbar</p>
+  </div>
+</section>
+
+<!-- MODULE 01 -->
+<section class="module" id="mod1">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">01</span>
+      <div>
+        <div class="module-title">Der Learning Skill von innen</div>
+        <div class="module-subtitle">Architektur-Überblick: skill.md als Herz, 8 Agenten, 3 Modi</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Das gesamte System wird durch eine einzige Datei orchestriert: <span class="tooltip"><code>skill.md</code><span class="tooltip-text">Die zentrale Konfigurationsdatei mit YAML-Frontmatter und allen Regeln, Phasen und Templates des Skills.</span></span>. Sie enthält die YAML-Metadaten, die Modus-Erkennung, alle Phasen-Definitionen und die Qualitätsgates. Claude liest diese Datei und führt die darin definierten Pipelines aus.</p>
+      <p>Acht spezialisierte <span class="tooltip">Agenten<span class="tooltip-text">Markdown-Dateien im agents/-Ordner, die als Sub-Agents von Claude dispatcht werden. Jeder Agent hat einen klaren Auftrag und ein definiertes Output-Format.</span></span> übernehmen die Analyse-Arbeit in der Verstehen-Pipeline: vom Projekt-Scan über Datei-Analyse bis zur Graph-Validierung. Drei Modi steuern, was produziert wird: Kurs, Knowledge Graph oder beides.</p>
+
+      <div class="viz">
+        <div class="viz-title">Architektur-Diagramm</div>
+        <div class="arch-grid">
+          <div class="arch-row">
+            <div class="arch-box core">
+              <div class="arch-box-label">skill.md</div>
+              <div class="arch-box-sub">Orchestrator + Regeln</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">Kurs-Modus</div>
+              <div class="arch-box-sub">Phase 0-6</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">Verstehen-Modus</div>
+              <div class="arch-box-sub">Phase 0-7</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">Kombiniert-Modus</div>
+              <div class="arch-box-sub">KG → Kurs</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">project-scanner</div>
+              <div class="arch-box-sub">Inventar</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">file-analyzer</div>
+              <div class="arch-box-sub">5x parallel</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">architecture-analyzer</div>
+              <div class="arch-box-sub">Layer</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">tour-builder</div>
+              <div class="arch-box-sub">Lernpfade</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">graph-reviewer</div>
+              <div class="arch-box-sub">Validierung</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">assemble-reviewer</div>
+              <div class="arch-box-sub">Zusammenbau</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">domain-analyzer</div>
+              <div class="arch-box-sub">Fachdomäne</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">knowledge-graph-guide</div>
+              <div class="arch-box-sub">Dashboard</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">languages/</div>
+              <div class="arch-box-sub">23 Sprachen</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">frameworks/</div>
+              <div class="arch-box-sub">10 Frameworks</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a href="l1/skill-architektur_dev_de.html" class="deep-dive">
+        Architektur vertiefen <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 02 -->
+<section class="module" id="mod2">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">02</span>
+      <div>
+        <div class="module-title">Die Agenten-Pipeline</div>
+        <div class="module-subtitle">8 Agenten im Zusammenspiel: Scan → Analyse → Architektur → Tour → Review</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Verstehen-Pipeline startet mit dem <span class="tooltip"><code>project-scanner</code><span class="tooltip-text">Scannt die Codebase, erkennt Sprachen und Frameworks, erstellt eine Datei-Inventar-JSON mit Pfaden, LOC und Import-Maps.</span></span>, der ein vollständiges Datei-Inventar erstellt. Dann analysieren bis zu fünf <code>file-analyzer</code>-Instanzen parallel die Dateien und extrahieren Nodes und Edges für den Knowledge Graph.</p>
+      <p>Der <span class="tooltip"><code>architecture-analyzer</code><span class="tooltip-text">Identifiziert 3-10 logische Architektur-Layer (z.B. Core, Infrastructure, API) und ordnet jede Datei genau einem Layer zu.</span></span> erkennt die Layer-Struktur, der <code>tour-builder</code> erstellt daraus geführte Lernpfade, und der <code>graph-reviewer</code> validiert den gesamten Graph mit systematischen Checks.</p>
+
+      <div class="viz">
+        <div class="viz-title">Pipeline-Flow</div>
+        <div class="pipeline-flow">
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">PS</div>
+            <div class="pipeline-step-name">project-<br>scanner</div>
+            <div class="pipeline-step-detail">Inventar</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-parallel">
+            <div class="pipeline-step">
+              <div class="pipeline-step-icon">FA1</div>
+              <div class="pipeline-step-name">file-<br>analyzer</div>
+            </div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-icon">FA2</div>
+              <div class="pipeline-step-name">file-<br>analyzer</div>
+            </div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-icon">FA3</div>
+              <div class="pipeline-step-name">file-<br>analyzer</div>
+            </div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-icon">FA4</div>
+              <div class="pipeline-step-name">file-<br>analyzer</div>
+            </div>
+            <div class="pipeline-step">
+              <div class="pipeline-step-icon">FA5</div>
+              <div class="pipeline-step-name">file-<br>analyzer</div>
+            </div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">AR</div>
+            <div class="pipeline-step-name">assemble-<br>reviewer</div>
+            <div class="pipeline-step-detail">Merge</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">AA</div>
+            <div class="pipeline-step-name">architecture-<br>analyzer</div>
+            <div class="pipeline-step-detail">Layer</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">TB</div>
+            <div class="pipeline-step-name">tour-<br>builder</div>
+            <div class="pipeline-step-detail">Pfade</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">GR</div>
+            <div class="pipeline-step-name">graph-<br>reviewer</div>
+            <div class="pipeline-step-detail">Validierung</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="l1/agenten-pipeline_dev_de.html" class="deep-dive">
+        Agenten im Detail <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 03 -->
+<section class="module" id="mod3">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">03</span>
+      <div>
+        <div class="module-title">Knowledge Graph Pipeline</div>
+        <div class="module-subtitle">Phase 0-7: Vom Pre-flight zum fertigen Graph mit 16 Node-Typen und 29 Edge-Typen</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Verstehen-Pipeline durchläuft acht Phasen, die einen vollständigen <span class="tooltip">Knowledge Graph<span class="tooltip-text">Eine JSON-Datenstruktur mit Nodes (Dateien, Funktionen, Klassen, Konzepte ...), Edges (imports, calls, contains ...), Layers und einem geführten Tour-Pfad.</span></span> erzeugen. Jede Phase hat klare Input/Output-Verträge und wird vom Orchestrator in <code>skill.md</code> gesteuert.</p>
+      <p>Der Graph kennt 16 Node-Typen (13 strukturelle + 3 Domain-Typen) und 29 Edge-Typen (26 strukturelle + 3 Domain-Typen). Die Typen sind in <code>graph-reviewer.md</code> als Schema definiert und werden bei der Validierung streng geprüft.</p>
+
+      <div class="viz">
+        <div class="viz-title">Phase-Übersicht</div>
+        <div class="phase-timeline">
+          <div class="phase-item">
+            <div class="phase-num">Phase 0</div>
+            <div>
+              <div class="phase-name">PRE-FLIGHT</div>
+              <div class="phase-desc">Git-Status prüfen, Config laden, Output-Verzeichnis .claude-learning/ anlegen</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 1</div>
+            <div>
+              <div class="phase-name">SCAN</div>
+              <div class="phase-desc">project-scanner erstellt Datei-Inventar: Pfade, Sprachen, LOC, Import-Maps</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 2</div>
+            <div>
+              <div class="phase-name">ANALYZE</div>
+              <div class="phase-desc">5 file-analyzer Instanzen extrahieren parallel Nodes + Edges pro Datei-Batch</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 3</div>
+            <div>
+              <div class="phase-name">ASSEMBLE REVIEW</div>
+              <div class="phase-desc">assemble-reviewer merged alle Batches, normalisiert IDs, entfernt Duplikate</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 4</div>
+            <div>
+              <div class="phase-name">ARCHITECTURE</div>
+              <div class="phase-desc">architecture-analyzer identifiziert 3-10 Layer und ordnet jede Datei zu</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 5</div>
+            <div>
+              <div class="phase-name">TOUR</div>
+              <div class="phase-desc">tour-builder erstellt 5-15 geführte Lernschritte durch die Codebase</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 6</div>
+            <div>
+              <div class="phase-name">REVIEW</div>
+              <div class="phase-desc">graph-reviewer validiert Schema, referentielle Integrität, Vollständigkeit</div>
+            </div>
+          </div>
+          <div class="phase-item">
+            <div class="phase-num">Phase 7</div>
+            <div>
+              <div class="phase-name">SAVE</div>
+              <div class="phase-desc">knowledge-graph.json speichern + Dashboard auto-launch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a href="l1/kg-pipeline_dev_de.html" class="deep-dive">
+        KG-Pipeline vertiefen <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 04 -->
+<section class="module" id="mod4">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">04</span>
+      <div>
+        <div class="module-title">HTML-Kurs-Pipeline</div>
+        <div class="module-subtitle">Phase 0-6: Vom Bootstrap zur Tiefenkarte mit Helpfulness-Scoring</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Kurs-Pipeline erzeugt interaktive HTML-Seiten in sieben Phasen. Zentral ist das <span class="tooltip">Helpfulness-Scoring<span class="tooltip-text">Jedes Thema wird auf einer Skala 1-10 bewertet. Nur Themen über der zielgruppenspezifischen Schwelle (Dev: >=6) erhalten eine eigene Unterseite.</span></span> in Phase 2: Es entscheidet autonom, welche Themen eine eigene Vertiefungsseite verdienen und welche als Absatz auf der Eltern-Seite bleiben.</p>
+      <p>Pro Zielgruppe läuft eine unabhängige Pipeline mit eigenem Tiefenprofil. Entwickler bekommen bis zu L3 (Tiefendetail), Anwender bis L2, Entscheider nur L1. Innerhalb einer Pipeline werden Themen und Sprachen (DE/EN) parallel gebaut.</p>
+
+      <div class="viz">
+        <div class="viz-title">HS-Scoring — Interaktive Berechnung</div>
+        <div class="hs-calc">
+          <div class="hs-formula">HS = Komplexität(0-3) + Relevanz(0-3) + Lernwert(0-2) + Eigenständigkeit(0-2)</div>
+          <div class="hs-sliders">
+            <div class="hs-slider-group">
+              <label>Komplexität: <span id="hsK">2</span></label>
+              <input type="range" min="0" max="3" value="2" id="sliderK" oninput="updateHS()">
+            </div>
+            <div class="hs-slider-group">
+              <label>Relevanz: <span id="hsR">2</span></label>
+              <input type="range" min="0" max="3" value="2" id="sliderR" oninput="updateHS()">
+            </div>
+            <div class="hs-slider-group">
+              <label>Lernwert: <span id="hsL">1</span></label>
+              <input type="range" min="0" max="2" value="1" id="sliderL" oninput="updateHS()">
+            </div>
+            <div class="hs-slider-group">
+              <label>Eigenständigkeit: <span id="hsE">1</span></label>
+              <input type="range" min="0" max="2" value="1" id="sliderE" oninput="updateHS()">
+            </div>
+          </div>
+          <div class="hs-result">
+            <div>Helpfulness-Score: <span class="score" id="hsTotal">6</span> / 10</div>
+            <div class="hs-verdict" id="hsVerdict">Entwickler: Eigene Seite erstellen</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="l1/kurs-pipeline_dev_de.html" class="deep-dive">
+        Kurs-Pipeline vertiefen <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 05 -->
+<section class="module" id="mod5">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">05</span>
+      <div>
+        <div class="module-title">Design-System &amp; Templates</div>
+        <div class="module-subtitle">Energiekonzern-Palette, Typografie, CSS-Variablen, Modul-Templates</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Alle generierten Kurse verwenden das Energiekonzern-Design mit drei Primärfarben: <span class="tooltip">Tiefenblau<span class="tooltip-text">#000099 — für Navigation, Hero-Sektionen und Modulnummern (bei 12% Opacity).</span></span> (#000099), <span class="tooltip">Impuls-Orange<span class="tooltip-text">#FE8F11 — für Akzente, Buttons, Links, Fortschrittsbalken und Deep-Dive-Links.</span></span> (#FE8F11) und <span class="tooltip">Warmgrau<span class="tooltip-text">#E4DAD4 — für Borders, alternierenden Hintergrund (ungerade Module) und dezente Trennlinien.</span></span> (#E4DAD4).</p>
+      <p>Die Typografie-Hierarchie nutzt Bricolage Grotesque für Headlines, DM Sans als Body-Schrift und JetBrains Mono für Code. Das CSS wird über Custom Properties gesteuert und ist vollständig in jeder HTML-Datei eingebettet — kein externer Build-Prozess nötig.</p>
+
+      <div class="viz">
+        <div class="viz-title">Farbpalette</div>
+        <div class="palette-grid">
+          <div class="palette-swatch">
+            <div class="palette-color" style="background:#000099"><span style="color:rgba(255,255,255,.9);background:rgba(0,0,0,.3)">#000099</span></div>
+            <div class="palette-info"><div class="palette-name">Tiefenblau</div><div class="palette-var">--color-deep-blue</div></div>
+          </div>
+          <div class="palette-swatch">
+            <div class="palette-color" style="background:#FE8F11"><span style="color:#fff;background:rgba(0,0,0,.2)">#FE8F11</span></div>
+            <div class="palette-info"><div class="palette-name">Impuls-Orange</div><div class="palette-var">--color-impulse-orange</div></div>
+          </div>
+          <div class="palette-swatch">
+            <div class="palette-color" style="background:#E4DAD4"><span style="color:#1A1A2E;background:rgba(255,255,255,.5)">#E4DAD4</span></div>
+            <div class="palette-info"><div class="palette-name">Warmgrau</div><div class="palette-var">--color-warm-gray</div></div>
+          </div>
+          <div class="palette-swatch">
+            <div class="palette-color" style="background:#F3EFEB"><span style="color:#1A1A2E;background:rgba(255,255,255,.5)">#F3EFEB</span></div>
+            <div class="palette-info"><div class="palette-name">Warmgrau BG</div><div class="palette-var">--color-warm-gray-bg</div></div>
+          </div>
+          <div class="palette-swatch">
+            <div class="palette-color" style="background:#000066"><span style="color:rgba(255,255,255,.9);background:rgba(0,0,0,.3)">#000066</span></div>
+            <div class="palette-info"><div class="palette-name">Code-BG</div><div class="palette-var">--color-code-bg</div></div>
+          </div>
+          <div class="palette-swatch">
+            <div class="palette-color" style="background:#1A1A2E"><span style="color:rgba(255,255,255,.9);background:rgba(0,0,0,.3)">#1A1A2E</span></div>
+            <div class="palette-info"><div class="palette-name">Text</div><div class="palette-var">--color-text</div></div>
+          </div>
+        </div>
+
+        <div class="viz-title" style="margin-top:1.5rem">Typografie-Preview</div>
+        <div class="typo-preview">
+          <div class="typo-row">
+            <div class="typo-label">Bricolage Grotesque — Display / Headlines</div>
+            <div class="typo-sample-display">Architektur des Learning Skills</div>
+          </div>
+          <div class="typo-row">
+            <div class="typo-label">DM Sans — Body / Fließtext</div>
+            <div class="typo-sample-body">Der Skill verwandelt beliebige Codebases in interaktive Multi-Level-HTML-Kurse mit bis zu vier Tiefenebenen und zielgruppenspezifischem Helpfulness-Scoring.</div>
+          </div>
+          <div class="typo-row">
+            <div class="typo-label">JetBrains Mono — Code / Mono</div>
+            <div class="typo-sample-mono">HS = Komplexität(0-3) + Relevanz(0-3) + Lernwert(0-2) + Eigenständigkeit(0-2)</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="l1/design-system_dev_de.html" class="deep-dive">
+        Design-System vertiefen <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 06 -->
+<section class="module" id="mod6">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">06</span>
+      <div>
+        <div class="module-title">Das Zusammenspiel der Modi</div>
+        <div class="module-subtitle">Kurs-Modus, Verstehen-Modus, Kombiniert-Modus — und wie KG-Daten das Scoring verbessern</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Im <strong>Kurs-Modus</strong> analysiert Claude die Codebase direkt und erzeugt HTML-Kurse. Im <strong>Verstehen-Modus</strong> entsteht nur der Knowledge Graph mit Dashboard. Der <strong>Kombiniert-Modus</strong> ist das Beste aus beiden: Erst wird der KG erzeugt, dann fließen dessen Daten in die Kurs-Erstellung ein.</p>
+      <p>Der entscheidende Vorteil des Kombiniert-Modus: KG-Daten wie <span class="tooltip">Fan-in/Fan-out<span class="tooltip-text">Fan-in = Anzahl eingehender Edges (wie viele andere Dateien importieren diese). Fan-out = ausgehende Edges. Hoher Fan-in deutet auf eine Kern-Komponente hin.</span></span>, Layer-Zuordnung und Complexity-Ratings machen das Helpfulness-Scoring objektiver. Ein Node mit hohem Fan-in bekommt automatisch einen Relevanz-Bonus.</p>
+
+      <div class="viz">
+        <div class="viz-title">Modi-Vergleich</div>
+        <table class="modes-table">
+          <thead>
+            <tr>
+              <th>Eigenschaft</th>
+              <th>Kurs-Modus</th>
+              <th>Verstehen-Modus</th>
+              <th>Kombiniert-Modus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mode-name">Output</td>
+              <td>HTML-Kurse (L0-L3)</td>
+              <td>knowledge-graph.json + Dashboard</td>
+              <td>Beides</td>
+            </tr>
+            <tr>
+              <td class="mode-name">Phasen</td>
+              <td>Phase 0-6</td>
+              <td>Phase 0-7</td>
+              <td>Phase A0-A7, dann B0-B6</td>
+            </tr>
+            <tr>
+              <td class="mode-name">Agenten</td>
+              <td>Keine (Claude direkt)</td>
+              <td>8 spezialisierte Agenten</td>
+              <td>8 Agenten + Claude direkt</td>
+            </tr>
+            <tr>
+              <td class="mode-name">HS-Scoring</td>
+              <td>Heuristik-basiert</td>
+              <td>Nicht relevant</td>
+              <td>KG-gestützt (objektiver)</td>
+            </tr>
+            <tr>
+              <td class="mode-name">KG-Bonus</td>
+              <td>Nicht verfügbar</td>
+              <td>Nicht relevant</td>
+              <td>+1 Complexity, +1 Fan-in, +1 Core-Layer, +1 Edge-Dichte</td>
+            </tr>
+            <tr>
+              <td class="mode-name">Schlüsselwörter</td>
+              <td style="font-family:var(--font-mono);font-size:.75rem">"Kurs", "Tutorial", "HTML"</td>
+              <td style="font-family:var(--font-mono);font-size:.75rem">"verstehen", "graph", "dashboard"</td>
+              <td style="font-family:var(--font-mono);font-size:.75rem">"beides", "kombiniert", "alles"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <a href="l1/modi-zusammenspiel_dev_de.html" class="deep-dive">
+        Modi-Zusammenspiel vertiefen <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 07 -->
+<section class="module" id="mod7">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">07</span>
+      <div>
+        <div class="module-title">Erweiterbarkeit</div>
+        <div class="module-subtitle">Sprachen, Frameworks, Agent-Definitionen, Custom-Zielgruppen</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Der Learning Skill ist modular aufgebaut. Neue Programmiersprachen werden als Markdown-Dateien in <code>languages/</code> hinzugefügt (aktuell 23 Sprachen von C++ bis YAML). Framework-spezifische Regeln liegen in <code>frameworks/</code> (10 Frameworks von Django bis Vue). Jede Datei erweitert das Wissen der Agenten, ohne dass <code>skill.md</code> geändert werden muss.</p>
+      <p>Neben den drei vordefinierten Zielgruppen (Anwender, Entwickler, Entscheider) können Custom-Zielgruppen mit eigenem Tiefenprofil definiert werden. Die Agent-Definitionen in <code>agents/</code> sind ebenfalls erweiterbar — jeder Agent ist eine eigenständige Markdown-Datei mit YAML-Frontmatter und klarem Prompt-Template.</p>
+
+      <div class="viz">
+        <div class="viz-title">Ordnerstruktur</div>
+        <div class="code-block"><code><span class="code-comment"># Learning Skill v2.0 — Verzeichnisbaum</span>
+<span class="code-keyword">skill.md</span>                        <span class="code-comment"># Orchestrator + Regeln</span>
+<span class="code-keyword">agents/</span>
+  <span class="code-string">project-scanner.md</span>            <span class="code-comment"># Datei-Inventar</span>
+  <span class="code-string">file-analyzer.md</span>              <span class="code-comment"># Nodes + Edges extrahieren</span>
+  <span class="code-string">architecture-analyzer.md</span>      <span class="code-comment"># Layer-Erkennung</span>
+  <span class="code-string">tour-builder.md</span>               <span class="code-comment"># Lernpfade</span>
+  <span class="code-string">graph-reviewer.md</span>             <span class="code-comment"># Graph-Validierung</span>
+  <span class="code-string">assemble-reviewer.md</span>          <span class="code-comment"># Batch-Merge</span>
+  <span class="code-string">domain-analyzer.md</span>            <span class="code-comment"># Fachdomäne</span>
+  <span class="code-string">knowledge-graph-guide.md</span>      <span class="code-comment"># Dashboard</span>
+<span class="code-keyword">languages/</span>                       <span class="code-comment"># 23 Sprach-Addenda</span>
+  <span class="code-string">typescript.md</span>  <span class="code-string">python.md</span>  <span class="code-string">rust.md</span>  <span class="code-string">go.md</span>  <span class="code-comment">...</span>
+<span class="code-keyword">frameworks/</span>                      <span class="code-comment"># 10 Framework-Addenda</span>
+  <span class="code-string">react.md</span>  <span class="code-string">nextjs.md</span>  <span class="code-string">django.md</span>  <span class="code-string">spring.md</span>  <span class="code-comment">...</span></code></div>
+      </div>
+
+      <!-- KEIN Deep-Dive — HS=5 < 6 -->
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// === SECTIONS & NAV DOTS ===
+const sections = ['hero','mod1','mod2','mod3','mod4','mod5','mod6','mod7'];
+const navDotsContainer = document.getElementById('navDots');
+sections.forEach((id, i) => {
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot';
+  dot.title = i === 0 ? 'Start' : 'Modul ' + String(i).padStart(2,'0');
+  dot.addEventListener('click', () => {
+    document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  });
+  navDotsContainer.appendChild(dot);
+});
+
+// === INTERSECTION OBSERVER ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      document.querySelectorAll('.nav-dot').forEach((d, i) => {
+        d.classList.toggle('active', i === idx);
+      });
+    }
+  });
+}, {threshold: 0.3});
+sections.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) observer.observe(el);
+});
+
+// === SCROLL PROGRESS ===
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  document.getElementById('progressBar').style.width = progress + '%';
+}, {passive: true});
+
+// === KEYBOARD NAV ===
+let currentSection = 0;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'j') {
+    e.preventDefault();
+    currentSection = Math.min(currentSection + 1, sections.length - 1);
+    document.getElementById(sections[currentSection]).scrollIntoView({behavior:'smooth'});
+  } else if (e.key === 'ArrowUp' || e.key === 'k') {
+    e.preventDefault();
+    currentSection = Math.max(currentSection - 1, 0);
+    document.getElementById(sections[currentSection]).scrollIntoView({behavior:'smooth'});
+  }
+});
+
+// === HS CALCULATOR ===
+function updateHS() {
+  const k = parseInt(document.getElementById('sliderK').value);
+  const r = parseInt(document.getElementById('sliderR').value);
+  const l = parseInt(document.getElementById('sliderL').value);
+  const e = parseInt(document.getElementById('sliderE').value);
+  document.getElementById('hsK').textContent = k;
+  document.getElementById('hsR').textContent = r;
+  document.getElementById('hsL').textContent = l;
+  document.getElementById('hsE').textContent = e;
+  const total = k + r + l + e;
+  document.getElementById('hsTotal').textContent = total;
+  const verdict = document.getElementById('hsVerdict');
+  if (total < 5) {
+    verdict.textContent = 'Absatz auf Eltern-Seite (alle Zielgruppen)';
+  } else if (total < 6) {
+    verdict.textContent = 'Entwickler: Erweiterter Absatz | Anwender/Entscheider: Absatz';
+  } else if (total < 7) {
+    verdict.textContent = 'Entwickler: Eigene Seite | Anwender: Erweiterter Absatz | Entscheider: Absatz';
+  } else if (total < 8) {
+    verdict.textContent = 'Entwickler: Eigene Seite + prüfe L+1 | Anwender: Eigene Seite | Entscheider: Absatz';
+  } else if (total < 9) {
+    verdict.textContent = 'Entwickler: Eigene Seite + L+1 | Anwender: Eigene Seite | Entscheider: Eigene Seite';
+  } else {
+    verdict.textContent = 'Alle Zielgruppen: Eigene Seite + prüfe noch tieferes Level';
+  }
+}
+
+// === TOOLTIP POSITIONING ===
+document.querySelectorAll('.tooltip').forEach(tip => {
+  const text = tip.querySelector('.tooltip-text');
+  if (!text) return;
+  tip.addEventListener('mouseenter', (e) => {
+    const rect = tip.getBoundingClientRect();
+    text.style.left = Math.min(rect.left, window.innerWidth - 300) + 'px';
+    text.style.top = (rect.bottom + 8) + 'px';
+  });
+});
+</script>
+</body>
+</html>

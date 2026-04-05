@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Skill v2.0 — Anwender-Überblick</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep-blue:#000099;
+  --impulse-orange:#FE8F11;
+  --warm-grey:#E4DAD4;
+  --warm-grey-bg:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --text-muted:#6B6778;
+  --font-heading:'Bricolage Grotesque',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-code:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#fff}
+
+/* NAV */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--deep-blue);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.top-nav .logo{color:#fff;font-family:var(--font-heading);font-weight:700;font-size:1.1rem;text-decoration:none}
+.top-nav .logo span{color:var(--impulse-orange)}
+.nav-dots{display:flex;gap:.5rem;align-items:center}
+.nav-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:all .3s;border:none}
+.nav-dot.active{background:var(--impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.lang-link{color:#fff;text-decoration:none;font-size:1.3rem;transition:transform .2s}
+.lang-link:hover{transform:scale(1.15)}
+.progress-bar{position:fixed;top:52px;left:0;height:3px;background:var(--impulse-orange);z-index:1001;transition:width .15s ease-out;width:0}
+
+/* AUDIENCE SWITCH */
+.audience-switch{position:fixed;top:52px;left:0;right:0;z-index:999;background:#fff;border-bottom:2px solid var(--warm-grey);padding:.5rem 1.5rem;display:flex;align-items:center;gap:.75rem;font-size:.85rem}
+.audience-switch-label{color:var(--text-muted);font-weight:500}
+.audience-switch-link{padding:.25rem .75rem;border-radius:20px;text-decoration:none;color:var(--text-muted);transition:all .2s}
+.audience-switch-link:hover{color:var(--deep-blue)}
+.audience-switch-current{background:var(--deep-blue);color:#fff;font-weight:600}
+
+/* HERO */
+.hero{background:var(--deep-blue);color:#fff;padding:8rem 1.5rem 4rem;text-align:center;min-height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;overflow:hidden}
+.hero::before{content:'L0';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:20rem;font-weight:800;color:rgba(255,255,255,.03);pointer-events:none}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--impulse-orange);padding:.4rem 1.2rem;border-radius:30px;font-size:.85rem;font-weight:600;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.15;margin-bottom:1rem;max-width:700px}
+.hero h1 span{color:var(--impulse-orange)}
+.hero p{font-size:1.15rem;color:rgba(255,255,255,.85);max-width:600px;margin-bottom:1.5rem}
+.hero-sub{font-size:.9rem;color:rgba(255,255,255,.55);margin-top:.5rem}
+
+/* MODULES */
+.module{padding:5rem 1.5rem;position:relative;overflow:hidden}
+.module-inner{max-width:820px;margin:0 auto}
+.module-odd{background:var(--warm-grey-bg)}
+.module-even{background:#fff}
+.module-number{font-family:var(--font-heading);font-size:8rem;font-weight:800;color:rgba(0,0,153,.08);position:absolute;top:1rem;right:2rem;line-height:1;pointer-events:none;user-select:none}
+.module h2{font-family:var(--font-heading);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:1rem;color:var(--text)}
+.module h2 .accent{color:var(--impulse-orange)}
+.module p{margin-bottom:1.25rem;color:var(--text)}
+.module p.subtle{color:var(--text-muted);font-size:.95rem}
+
+/* CARDS (Modul 1 & 2) */
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}
+.card-row.three{grid-template-columns:repeat(3,1fr)}
+.card{background:#fff;border:2px solid var(--warm-grey);border-radius:16px;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.module-odd .card{background:#fff}
+.card:hover{border-color:var(--impulse-orange);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,153,.1)}
+.card-icon{font-size:3rem;margin-bottom:1rem;display:block}
+.card h3{font-family:var(--font-heading);font-size:1.15rem;font-weight:700;margin-bottom:.5rem;color:var(--text)}
+.card p{font-size:.9rem;color:var(--text-muted);line-height:1.5}
+.card-expand{max-height:0;overflow:hidden;transition:max-height .4s ease;font-size:.85rem;color:var(--text);line-height:1.6;text-align:left;margin-top:0}
+.card-expand.open{max-height:300px;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--warm-grey)}
+.card-toggle{font-size:.75rem;color:var(--impulse-orange);margin-top:.75rem;display:inline-block;font-weight:600}
+
+/* STEP FLOW (Modul 3) */
+.step-flow{display:flex;flex-direction:column;gap:0;margin:2rem 0}
+.step{display:flex;align-items:flex-start;gap:1.25rem;position:relative;padding:1.5rem 0}
+.step-marker{width:48px;height:48px;min-width:48px;border-radius:50%;background:var(--deep-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:700;font-size:1.1rem;position:relative;z-index:2}
+.step:not(:last-child)::after{content:'';position:absolute;left:23px;top:60px;bottom:-12px;width:2px;background:var(--warm-grey);z-index:1}
+.step-content h3{font-family:var(--font-heading);font-size:1.05rem;font-weight:700;margin-bottom:.25rem}
+.step-content p{font-size:.9rem;color:var(--text-muted)}
+.step.animate-in .step-marker{animation:stepPop .5s ease forwards}
+@keyframes stepPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
+
+/* MOCKUP (Modul 4) */
+.mockup-box{background:var(--code-bg);border-radius:16px;padding:2rem;color:rgba(255,255,255,.9);margin:2rem 0;position:relative;overflow:hidden}
+.mockup-box::before{content:'Knowledge Graph Dashboard';position:absolute;top:0;left:0;right:0;background:rgba(0,0,0,.3);padding:.6rem 1.25rem;font-family:var(--font-code);font-size:.75rem;color:rgba(255,255,255,.6);border-radius:16px 16px 0 0}
+.mockup-content{margin-top:2rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+.mockup-panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:1.25rem}
+.mockup-panel h4{font-family:var(--font-heading);font-size:.9rem;color:var(--impulse-orange);margin-bottom:.75rem}
+.mockup-panel p{font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.5}
+.mockup-node{display:inline-block;padding:.25rem .7rem;border-radius:20px;font-size:.7rem;font-family:var(--font-code);margin:.2rem;cursor:default}
+.mockup-node.core{background:rgba(254,143,17,.2);color:var(--impulse-orange);border:1px solid rgba(254,143,17,.4)}
+.mockup-node.secondary{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.15)}
+
+/* FAQ (Modul 5) */
+.faq-list{margin:2rem 0}
+.faq-item{border:2px solid var(--warm-grey);border-radius:12px;margin-bottom:1rem;overflow:hidden;transition:border-color .3s}
+.faq-item:hover{border-color:var(--impulse-orange)}
+.faq-question{width:100%;background:none;border:none;padding:1.25rem 1.5rem;font-family:var(--font-body);font-size:1rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.faq-question::after{content:'+';font-size:1.5rem;color:var(--impulse-orange);transition:transform .3s;font-weight:400;min-width:1.5rem;text-align:center}
+.faq-item.open .faq-question::after{transform:rotate(45deg)}
+.faq-answer{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.faq-answer-inner{padding:0 1.5rem 1.25rem;color:var(--text-muted);font-size:.95rem;line-height:1.7}
+
+/* DEEP DIVE LINK */
+.deep-dive-link{display:flex;align-items:center;justify-content:space-between;background:#fff;border:2px solid var(--warm-grey);border-radius:14px;padding:1.25rem 1.5rem;margin-top:2.5rem;text-decoration:none;transition:all .3s;gap:1rem}
+.module-odd .deep-dive-link{background:#fff}
+.deep-dive-link:hover{border-color:var(--impulse-orange);transform:translateX(4px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.deep-dive-content{display:flex;flex-direction:column;gap:.15rem}
+.deep-dive-label{font-size:.75rem;color:var(--impulse-orange);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.deep-dive-title{font-family:var(--font-heading);font-size:1.05rem;font-weight:700;color:var(--text)}
+.deep-dive-desc{font-size:.8rem;color:var(--text-muted)}
+.deep-dive-level{background:var(--deep-blue);color:#fff;padding:.35rem .85rem;border-radius:8px;font-family:var(--font-code);font-size:.8rem;font-weight:600;white-space:nowrap}
+
+/* ANIMATE */
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .card-row,.card-row.three{grid-template-columns:1fr}
+  .mockup-content{grid-template-columns:1fr}
+  .module-number{font-size:5rem;right:1rem}
+  .hero{padding:7rem 1.5rem 3rem}
+  .module{padding:3.5rem 1.5rem}
+}
+@media(max-width:480px){
+  .top-nav{padding:.6rem 1rem}
+  .nav-dots{gap:.35rem}
+  .audience-switch{font-size:.78rem;padding:.4rem 1rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav" role="navigation" aria-label="Hauptnavigation">
+  <a href="#hero" class="logo">Learning <span>Skill</span> v2.0</a>
+  <div class="nav-dots" role="tablist" aria-label="Module">
+    <button class="nav-dot active" data-target="hero" aria-label="Start" title="Start"></button>
+    <button class="nav-dot" data-target="mod1" aria-label="Modul 1" title="Was ist der Learning Skill?"></button>
+    <button class="nav-dot" data-target="mod2" aria-label="Modul 2" title="Die drei Modi"></button>
+    <button class="nav-dot" data-target="mod3" aria-label="Modul 3" title="Kurs erstellen"></button>
+    <button class="nav-dot" data-target="mod4" aria-label="Modul 4" title="Knowledge Graph"></button>
+    <button class="nav-dot" data-target="mod5" aria-label="Modul 5" title="Tipps & FAQ"></button>
+  </div>
+  <div class="nav-right">
+    <a href="index_en.html" class="lang-link" aria-label="Switch to English" title="English version">&#x1F1EC;&#x1F1E7;</a>
+  </div>
+</nav>
+<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+
+<!-- AUDIENCE SWITCH -->
+<nav class="audience-switch" aria-label="Zielgruppen-Auswahl">
+  <span class="audience-switch-label">Perspektive:</span>
+  <span class="audience-switch-link audience-switch-current">Anwender</span>
+  <a href="index_dev_de.html" class="audience-switch-link">Entwickler</a>
+</nav>
+
+<!-- HERO (Modul 0) -->
+<section class="hero" id="hero">
+  <span class="hero-badge">Das Wichtigste auf einen Blick</span>
+  <h1>Jede Codebase<br><span>verstehen</span> — in Minuten</h1>
+  <p>Der Learning Skill ist ein Claude-Code-Plugin, das beliebige Codebases in interaktive HTML-Kurse und Knowledge Graphs verwandelt. Kein Vorwissen nötig.</p>
+  <span class="hero-sub">+ 4 Vertiefungsseiten verfügbar</span>
+</section>
+
+<!-- MODUL 1 -->
+<section class="module module-odd" id="mod1">
+  <span class="module-number">01</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Was ist der <span class="accent">Learning Skill</span>?</h2>
+    <p class="animate-in">Stellen Sie sich vor, jemand liest Ihren kompletten Code und baut daraus einen verständlichen Kurs — genau das macht der Learning Skill. Es ist ein Plugin für Claude Code, das zwei Superkräfte hat:</p>
+
+    <div class="card-row animate-in">
+      <div class="card" tabindex="0" role="button" aria-expanded="false">
+        <span class="card-icon">&#x1F4DA;</span>
+        <h3>Interaktive Kurse</h3>
+        <p>Mehrstufige HTML-Kurse, die Ihre Codebase Schritt für Schritt erklären — von der Übersicht bis zum Detail.</p>
+      </div>
+      <div class="card" tabindex="0" role="button" aria-expanded="false">
+        <span class="card-icon">&#x1F578;&#xFE0F;</span>
+        <h3>Knowledge Graphs</h3>
+        <p>Interaktive Wissenslandkarten, die Zusammenhänge zwischen Komponenten sichtbar machen.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">Beide Formate werden als selbstständige HTML-Dateien erzeugt — keine Installation, kein Server, einfach im Browser öffnen.</p>
+
+    <a href="l1/was-ist-learning-skill_de.html" class="deep-dive-link animate-in">
+      <div class="deep-dive-content">
+        <span class="deep-dive-label">Mehr erfahren</span>
+        <span class="deep-dive-title">Was der Learning Skill alles kann &#x2192;</span>
+        <span class="deep-dive-desc">Features, Zielgruppen, Einsatzgebiete</span>
+      </div>
+      <span class="deep-dive-level">L1</span>
+    </a>
+  </div>
+</section>
+
+<!-- MODUL 2 -->
+<section class="module module-even" id="mod2">
+  <span class="module-number">02</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Die drei <span class="accent">Modi</span></h2>
+    <p class="animate-in">Je nachdem, was Sie brauchen, wählen Sie einen von drei Modi. Jeder Modus erzeugt andere Ausgabeformate — alle als sofort nutzbare HTML-Dateien.</p>
+
+    <div class="card-row three animate-in">
+      <div class="card" tabindex="0" role="button" aria-expanded="false">
+        <span class="card-icon">&#x1F393;</span>
+        <h3>Kurs-Modus</h3>
+        <p>Erzeugt mehrstufige HTML-Kurse mit Modulen, Animationen und Navigation.</p>
+        <span class="card-toggle">Details &#x25BC;</span>
+        <div class="card-expand">
+          <p>Ideal zum Onboarding neuer Teammitglieder oder zum Dokumentieren komplexer Projekte. Erzeugt bis zu 4 Ebenen: Überblick (L0), Vertiefung (L1), Details (L2) und Referenz (L3).</p>
+        </div>
+      </div>
+      <div class="card" tabindex="0" role="button" aria-expanded="false">
+        <span class="card-icon">&#x1F9E0;</span>
+        <h3>Verstehen-Modus</h3>
+        <p>Erzeugt einen Knowledge Graph mit Dashboard und interaktiver Visualisierung.</p>
+        <span class="card-toggle">Details &#x25BC;</span>
+        <div class="card-expand">
+          <p>Perfekt, um die Architektur einer Codebase auf einen Blick zu erfassen. Enthält Layers, geführte Tours und Filter — alles in einer einzigen HTML-Datei.</p>
+        </div>
+      </div>
+      <div class="card" tabindex="0" role="button" aria-expanded="false">
+        <span class="card-icon">&#x1F504;</span>
+        <h3>Kombiniert</h3>
+        <p>Beides zusammen: Strukturierte Kurse plus Knowledge Graph in einem Durchlauf.</p>
+        <span class="card-toggle">Details &#x25BC;</span>
+        <div class="card-expand">
+          <p>Der umfassendste Modus. Sie erhalten sowohl die linearen Kurse zum Durcharbeiten als auch den Graph zum Erkunden. Empfohlen für größere Projekte.</p>
+        </div>
+      </div>
+    </div>
+
+    <a href="l1/drei-modi_de.html" class="deep-dive-link animate-in">
+      <div class="deep-dive-content">
+        <span class="deep-dive-label">Mehr erfahren</span>
+        <span class="deep-dive-title">Wann welcher Modus? &#x2192;</span>
+        <span class="deep-dive-desc">Vergleich, Beispiele, Entscheidungshilfe</span>
+      </div>
+      <span class="deep-dive-level">L1</span>
+    </a>
+  </div>
+</section>
+
+<!-- MODUL 3 -->
+<section class="module module-odd" id="mod3">
+  <span class="module-number">03</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Einen Kurs <span class="accent">erstellen</span> lassen</h2>
+    <p class="animate-in">In vier einfachen Schritten kommen Sie vom Code zum fertigen Kurs. Der Learning Skill führt Sie durch den Prozess — Sie müssen nur antworten.</p>
+
+    <div class="step-flow">
+      <div class="step animate-in">
+        <div class="step-marker">1</div>
+        <div class="step-content">
+          <h3>Skill aufrufen</h3>
+          <p>Tippen Sie <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">/learning</code> in Claude Code. Der Skill startet und analysiert Ihr Projekt.</p>
+        </div>
+      </div>
+      <div class="step animate-in">
+        <div class="step-marker">2</div>
+        <div class="step-content">
+          <h3>Zielgruppe wählen</h3>
+          <p>Wer soll den Kurs lesen? Anwender, Entwickler oder Stakeholder — der Inhalt wird darauf zugeschnitten.</p>
+        </div>
+      </div>
+      <div class="step animate-in">
+        <div class="step-marker">3</div>
+        <div class="step-content">
+          <h3>Modus wählen</h3>
+          <p>Kurs, Knowledge Graph oder beides? Sie entscheiden, welches Format Sie brauchen.</p>
+        </div>
+      </div>
+      <div class="step animate-in">
+        <div class="step-marker">4</div>
+        <div class="step-content">
+          <h3>Fertige HTML-Dateien erhalten</h3>
+          <p>Der Skill erzeugt alle Dateien automatisch in einem <code style="background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em">/kurs</code>-Ordner. Einfach im Browser öffnen.</p>
+        </div>
+      </div>
+    </div>
+
+    <a href="l1/kurs-erstellen_de.html" class="deep-dive-link animate-in">
+      <div class="deep-dive-content">
+        <span class="deep-dive-label">Mehr erfahren</span>
+        <span class="deep-dive-title">Schritt-für-Schritt-Anleitung &#x2192;</span>
+        <span class="deep-dive-desc">Alle Optionen, Parameter, Beispiel-Sitzung</span>
+      </div>
+      <span class="deep-dive-level">L1</span>
+    </a>
+  </div>
+</section>
+
+<!-- MODUL 4 -->
+<section class="module module-even" id="mod4">
+  <span class="module-number">04</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Den <span class="accent">Knowledge Graph</span> nutzen</h2>
+    <p class="animate-in">Der Knowledge Graph zeigt Ihre Codebase als interaktive Wissenslandkarte. Komponenten werden zu Knoten, Abhängigkeiten zu Verbindungen — alles in einem Dashboard, das Sie erkunden können.</p>
+
+    <div class="mockup-box animate-in">
+      <div class="mockup-content">
+        <div class="mockup-panel">
+          <h4>Graph-Ansicht</h4>
+          <div style="margin:.5rem 0">
+            <span class="mockup-node core">App.tsx</span>
+            <span class="mockup-node core">Router</span>
+            <span class="mockup-node secondary">AuthProvider</span>
+            <span class="mockup-node secondary">API Client</span>
+            <span class="mockup-node secondary">Store</span>
+            <span class="mockup-node core">Dashboard</span>
+          </div>
+          <p>Knoten anklicken, um Details zu sehen. Zoomen und Verschieben wie in einer Karte.</p>
+        </div>
+        <div class="mockup-panel">
+          <h4>Steuerung</h4>
+          <p><strong style="color:var(--impulse-orange)">Layers:</strong> Blendet Gruppen ein/aus — z.B. nur Frontend oder nur API.</p>
+          <p style="margin-top:.5rem"><strong style="color:var(--impulse-orange)">Tours:</strong> Geführte Pfade durch die Architektur, Schritt für Schritt erklärt.</p>
+          <p style="margin-top:.5rem"><strong style="color:var(--impulse-orange)">Suche:</strong> Finden Sie jede Komponente sofort per Texteingabe.</p>
+        </div>
+      </div>
+    </div>
+
+    <a href="l1/knowledge-graph-nutzen_de.html" class="deep-dive-link animate-in">
+      <div class="deep-dive-content">
+        <span class="deep-dive-label">Mehr erfahren</span>
+        <span class="deep-dive-title">Das Dashboard im Detail &#x2192;</span>
+        <span class="deep-dive-desc">Bedienung, Layers, Tours, Tastaturkürzel</span>
+      </div>
+      <span class="deep-dive-level">L1</span>
+    </a>
+  </div>
+</section>
+
+<!-- MODUL 5 -->
+<section class="module module-odd" id="mod5">
+  <span class="module-number">05</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Tipps & <span class="accent">häufige Fragen</span></h2>
+    <p class="animate-in">Die wichtigsten Fragen zum Learning Skill — kurz und verständlich beantwortet.</p>
+
+    <div class="faq-list animate-in">
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Muss ich programmieren können, um den Skill zu nutzen?<span></span></button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Nein. Der Learning Skill richtet sich bewusst auch an Nicht-Entwickler. Sie brauchen lediglich Claude Code installiert und Zugriff auf die Codebase, die erklärt werden soll. Der gesamte Prozess wird dialoggeführt.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Wie groß darf die Codebase sein?<span></span></button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Der Learning Skill funktioniert mit Projekten jeder Größe — von einzelnen Scripts bis zu Monorepos mit hunderten Dateien. Bei sehr großen Projekten werden automatisch die wichtigsten Bereiche priorisiert.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Welche Programmiersprachen werden unterstützt?<span></span></button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Alle, die Claude Code versteht — also praktisch jede gängige Sprache: JavaScript, TypeScript, Python, Java, Go, Rust, C#, Ruby und viele mehr. Auch Konfigurationsdateien und Infrastruktur-Code werden berücksichtigt.</div>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Kann ich die erzeugten Kurse anpassen oder weitergeben?<span></span></button>
+        <div class="faq-answer" role="region">
+          <div class="faq-answer-inner">Ja. Alle Ausgaben sind selbstständige HTML-Dateien ohne externe Abhängigkeiten (außer Google Fonts). Sie können sie bearbeiten, in Ihr Intranet stellen oder als Dokumentation ins Repository legen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // IntersectionObserver for animations
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}
+    });
+  },{threshold:0.15,rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('.animate-in').forEach(el=>obs.observe(el));
+
+  // Scroll progress bar
+  const bar = document.querySelector('.progress-bar');
+  function updateProgress(){
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+    bar.style.width = pct + '%';
+    bar.setAttribute('aria-valuenow', Math.round(pct));
+  }
+  window.addEventListener('scroll', updateProgress, {passive:true});
+
+  // Nav dots
+  const sections = ['hero','mod1','mod2','mod3','mod4','mod5'];
+  const dots = document.querySelectorAll('.nav-dot');
+  dots.forEach(d=>{
+    d.addEventListener('click',()=>{
+      const t = document.getElementById(d.dataset.target);
+      if(t) t.scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  function updateDots(){
+    let current = 0;
+    sections.forEach((id,i)=>{
+      const el = document.getElementById(id);
+      if(el && el.getBoundingClientRect().top <= 160) current = i;
+    });
+    dots.forEach((d,i)=>{d.classList.toggle('active', i===current)});
+  }
+  window.addEventListener('scroll', updateDots, {passive:true});
+
+  // FAQ toggle
+  document.querySelectorAll('.faq-question').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const item = btn.parentElement;
+      const answer = item.querySelector('.faq-answer');
+      const isOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item.open').forEach(fi=>{
+        fi.classList.remove('open');
+        fi.querySelector('.faq-answer').style.maxHeight = '0';
+        fi.querySelector('.faq-question').setAttribute('aria-expanded','false');
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+        btn.setAttribute('aria-expanded','true');
+      }
+    });
+  });
+
+  // Card expand toggle (Modul 2)
+  document.querySelectorAll('.card[role="button"]').forEach(card=>{
+    card.addEventListener('click',()=>{
+      const ex = card.querySelector('.card-expand');
+      if(!ex) return;
+      const isOpen = ex.classList.contains('open');
+      ex.classList.toggle('open');
+      card.setAttribute('aria-expanded', !isOpen);
+      const toggle = card.querySelector('.card-toggle');
+      if(toggle) toggle.textContent = isOpen ? 'Details \u25BC' : 'Schließen \u25B2';
+    });
+    card.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click()}
+    });
+  });
+
+  // Keyboard navigation (Arrow keys between modules)
+  document.addEventListener('keydown',(e)=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowRight'){
+      e.preventDefault();
+      let curr = 0;
+      sections.forEach((id,i)=>{
+        const el = document.getElementById(id);
+        if(el && el.getBoundingClientRect().top <= 160) curr = i;
+      });
+      const next = Math.min(curr+1, sections.length-1);
+      document.getElementById(sections[next]).scrollIntoView({behavior:'smooth'});
+    }
+    if(e.key==='ArrowUp'||e.key==='ArrowLeft'){
+      e.preventDefault();
+      let curr = 0;
+      sections.forEach((id,i)=>{
+        const el = document.getElementById(id);
+        if(el && el.getBoundingClientRect().top <= 160) curr = i;
+      });
+      const prev = Math.max(curr-1, 0);
+      document.getElementById(sections[prev]).scrollIntoView({behavior:'smooth'});
+    }
+  });
+})();
+</script>
+</body>
+</html>

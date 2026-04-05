@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Complete Course Workflow — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep-blue:#000099;
+  --impulse-orange:#FE8F11;
+  --warm-grey:#E4DAD4;
+  --warm-grey-bg:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --text-muted:#6B6778;
+  --radius:16px;
+  --space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
+  --font-heading:'Bricolage Grotesque',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-code:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#fff}
+.nav-deep{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--deep-blue);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.breadcrumb{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.breadcrumb-link{color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;transition:color .2s;white-space:nowrap}
+.breadcrumb-link:hover{color:#fff}
+.breadcrumb-sep{color:rgba(255,255,255,.35);font-size:.85rem}
+.breadcrumb-current{color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb-level{display:inline-block;background:rgba(254,143,17,.2);color:var(--impulse-orange);padding:.1rem .45rem;border-radius:6px;font-size:.7rem;font-weight:700;font-family:var(--font-code);margin-right:.35rem;vertical-align:middle}
+.nav-links{display:flex;align-items:center;gap:.75rem}
+.nav-link{color:rgba(255,255,255,.75);transition:color .2s}
+.nav-link:hover{color:#fff}
+.nav-lang{color:#fff;text-decoration:none;font-size:1.2rem;margin-left:.5rem;transition:transform .2s;display:inline-block}
+.nav-lang:hover{transform:scale(1.15)}
+.level-indicator{display:flex;gap:.4rem;align-items:center;margin-bottom:var(--space-4);justify-content:center}
+.level-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2)}
+.level-dot-done{background:var(--impulse-orange)}
+.level-dot-active{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.back-button{display:inline-block;padding:.4rem 1.2rem;border-radius:30px;font-size:.85rem;text-decoration:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);transition:all .2s}
+.back-button:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35)}
+.module-hero{background:var(--deep-blue);color:#fff;padding:7rem 1.5rem 4rem;min-height:70vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.module-hero::before{content:'L2';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:20rem;font-weight:800;color:rgba(255,255,255,.03);pointer-events:none}
+.module-hero h1{font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:var(--space-3)}
+.module-hero h1 .accent{color:var(--impulse-orange)}
+.module-hero p{font-size:1.1rem;max-width:600px;margin:0 auto}
+.module-content{max-width:820px;width:100%;margin:0 auto}
+.page-overview{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:var(--space-5)}
+.page-overview a{display:inline-block;padding:.35rem 1rem;border-radius:30px;font-size:.8rem;text-decoration:none;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);transition:all .2s}
+.page-overview a:hover{background:rgba(255,255,255,.12);border-color:var(--impulse-orange);color:#fff}
+.module{padding:var(--space-8) 1.5rem;position:relative;overflow:hidden;min-height:100dvh;display:flex;align-items:center}
+.module-inner{max-width:820px;margin:0 auto;width:100%}
+.module-odd{background:var(--warm-grey-bg)}
+.module-even{background:#fff}
+.module-number{font-family:var(--font-heading);font-size:8rem;font-weight:800;color:rgba(0,0,153,.06);position:absolute;top:1rem;right:2rem;line-height:1;pointer-events:none;user-select:none}
+.module h2{font-family:var(--font-heading);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:var(--space-3);color:var(--text)}
+.module h2 .accent{color:var(--impulse-orange)}
+.module p{margin-bottom:1.25rem;color:var(--text)}
+.module p.subtle{color:var(--text-muted);font-size:.95rem}
+.tooltip-term{border-bottom:1px dashed var(--impulse-orange);cursor:help;position:relative;color:var(--text)}
+.tooltip-term .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(.95);background:var(--code-bg);color:#fff;padding:.6rem 1rem;border-radius:10px;font-size:.8rem;line-height:1.5;white-space:normal;width:280px;opacity:0;pointer-events:none;transition:all .2s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.tooltip-term .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--code-bg)}
+.tooltip-term:hover .tooltip-box,.tooltip-term:focus .tooltip-box{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+.step-flow{display:flex;flex-direction:column;gap:0;margin:var(--space-5) 0}
+.step{display:flex;align-items:flex-start;gap:1.25rem;position:relative;padding:1.5rem 0}
+.step-marker{width:48px;height:48px;min-width:48px;border-radius:50%;background:var(--deep-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:700;font-size:1.1rem;position:relative;z-index:2}
+.step:not(:last-child)::after{content:'';position:absolute;left:23px;top:60px;bottom:-12px;width:2px;background:var(--warm-grey);z-index:1}
+.step-content h3{font-family:var(--font-heading);font-size:1.05rem;font-weight:700;margin-bottom:.25rem}
+.step-content p{font-size:.9rem;color:var(--text-muted)}
+.code-block{background:var(--code-bg);border-radius:12px;padding:1.25rem 1.5rem;margin:var(--space-4) 0;font-family:var(--font-code);font-size:.85rem;color:rgba(255,255,255,.9);overflow-x:auto;position:relative;line-height:1.8}
+.code-block .code-comment{color:rgba(255,255,255,.4)}
+.code-block .code-cmd{color:var(--impulse-orange)}
+.code-block .code-flag{color:#4ade80}
+.code-prompt{color:rgba(255,255,255,.5)}
+code{background:rgba(0,0,153,.08);padding:.15rem .4rem;border-radius:4px;font-family:var(--font-code);font-size:.85em}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:var(--space-5) 0}
+.card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:1.5rem;transition:all .3s}
+.module-odd .card{background:#fff}
+.card:hover{border-color:var(--impulse-orange);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.card-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.card h3{font-family:var(--font-heading);font-size:1rem;font-weight:700;margin-bottom:.35rem}
+.card p{font-size:.85rem;color:var(--text-muted);margin-bottom:0}
+.option-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin:var(--space-5) 0}
+.option-card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:1.5rem;text-align:center;transition:all .3s;position:relative}
+.module-odd .option-card{background:#fff}
+.option-card:hover{border-color:var(--impulse-orange);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,153,.08)}
+.option-icon{font-size:2rem;margin-bottom:.5rem;display:block}
+.option-card h4{font-family:var(--font-heading);font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.option-card p{font-size:.8rem;color:var(--text-muted);margin-bottom:0}
+.flow-diagram{background:var(--code-bg);border-radius:12px;padding:2rem 1.5rem;margin:var(--space-5) 0}
+.flow-row{display:flex;align-items:center;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem}
+.flow-row:last-child{margin-bottom:0}
+.flow-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.6rem 1rem;text-align:center;min-width:100px;transition:all .3s;cursor:default}
+.flow-box:hover{background:rgba(254,143,17,.15);border-color:var(--impulse-orange)}
+.flow-box-label{font-family:var(--font-code);font-size:.75rem;color:rgba(255,255,255,.9);font-weight:500}
+.flow-box-sub{font-size:.65rem;color:rgba(255,255,255,.5);margin-top:.15rem}
+.flow-box.active{border-color:var(--impulse-orange);background:rgba(254,143,17,.1)}
+.flow-box.active .flow-box-label{color:var(--impulse-orange)}
+.flow-arrow{color:var(--impulse-orange);font-size:1.2rem}
+.flow-arrow-down{color:rgba(255,255,255,.3);font-size:1.2rem;text-align:center;margin:.5rem 0}
+.checklist{list-style:none;margin:var(--space-4) 0}
+.checklist li{display:flex;align-items:flex-start;gap:.75rem;padding:.6rem 0;font-size:.95rem;border-bottom:1px solid rgba(0,0,153,.06)}
+.checklist li:last-child{border-bottom:none}
+.check-icon{color:var(--impulse-orange);font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+.tree{background:var(--code-bg);border-radius:12px;padding:1.5rem 2rem;margin:var(--space-4) 0;font-family:var(--font-code);font-size:.82rem;color:rgba(255,255,255,.85);line-height:2}
+.tree-dir{color:var(--impulse-orange);font-weight:600}
+.tree-file{color:rgba(255,255,255,.7)}
+.tree-comment{color:rgba(255,255,255,.35);margin-left:1rem}
+.sibling-nav{background:var(--deep-blue);padding:var(--space-6) 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav h3{color:#fff;font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:var(--space-4)}
+.sibling-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.sibling-card{display:block;padding:1.25rem;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);text-decoration:none;transition:all .3s}
+.sibling-card:hover{background:rgba(255,255,255,.1);border-color:var(--impulse-orange);transform:translateY(-2px)}
+.sibling-card.current{border-color:var(--impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-card-title{color:#fff;font-family:var(--font-heading);font-weight:700;font-size:.95rem;display:block;margin-bottom:.25rem}
+.sibling-card-desc{color:rgba(255,255,255,.6);font-size:.8rem;display:block}
+.site-footer{background:var(--code-bg);color:rgba(255,255,255,.6);padding:2.5rem 1.5rem;text-align:center;font-size:.8rem}
+.site-footer a{color:var(--impulse-orange);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in.visible{opacity:1;transform:translateY(0)}
+@media(max-width:768px){
+  .option-row{grid-template-columns:1fr}
+  .card-row{grid-template-columns:1fr}
+  .module-number{font-size:5rem;right:1rem}
+  .module-hero{padding:6rem 1.5rem 3rem}
+  .module{padding:3.5rem 1.5rem;min-height:auto}
+  .sibling-grid{grid-template-columns:1fr}
+  .nav-deep{padding:.5rem 1rem}
+  .flow-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav-deep" role="navigation" aria-label="Breadcrumb Navigation">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index_en.html" class="breadcrumb-link"><span class="breadcrumb-level">L0</span> Overview</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="../l1/create-course_en.html" class="breadcrumb-link"><span class="breadcrumb-level">L1</span> Create Course</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current"><span class="breadcrumb-level">L2</span> Course Workflow</span>
+  </nav>
+  <div class="nav-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" class="nav-link" target="_blank" rel="noopener" aria-label="GitHub Repository">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+  <a href="kurs-workflow_de.html" class="nav-lang" aria-label="Auf Deutsch wechseln">&#x1F1E9;&#x1F1EA;</a>
+</nav>
+
+<!-- Hero -->
+<section class="module module-hero" id="module-0">
+  <div class="module-content" style="text-align:center">
+    <div class="level-indicator">
+      <span class="level-dot level-dot-done"></span>
+      <span class="level-dot level-dot-done"></span>
+      <span class="level-dot level-dot-active"></span>
+    </div>
+    <a href="../l1/create-course_en.html" class="back-button">&#8592; Back to Create Course</a>
+    <h1 style="color:#FFF;margin-top:var(--space-4)">The Complete <span class="accent">Course Workflow</span></h1>
+    <p style="color:rgba(255,255,255,.85)">Every step in detail: From your project directory to the finished HTML course structure with all levels and navigation links.</p>
+    <div class="page-overview">
+      <a href="#module-1">01 Specify Project</a>
+      <a href="#module-2">02 Answer Questions</a>
+      <a href="#module-3">03 Analysis & Generation</a>
+      <a href="#module-4">04 Receive Results</a>
+      <a href="#module-5">05 Tips</a>
+    </div>
+  </div>
+</section>
+
+<!-- Module 01 -->
+<section class="module module-odd" id="module-1">
+  <span class="module-number">01</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Step 1: <span class="accent">Specify Your Project</span></h2>
+    <p class="animate-in">The first step is to tell the Learning Skill which project to analyze and transform into a course. There are three ways to do this:</p>
+
+    <div class="option-row animate-in">
+      <div class="option-card">
+        <span class="option-icon">&#x1F4C1;</span>
+        <h4>Local Folder</h4>
+        <p>Navigate to the project directory in your terminal and start Claude Code there. The skill detects the codebase automatically.</p>
+      </div>
+      <div class="option-card">
+        <span class="option-icon">&#x1F517;</span>
+        <h4>GitHub Link</h4>
+        <p>Provide a GitHub URL. Claude automatically clones the repository into a temporary directory and works with it.</p>
+      </div>
+      <div class="option-card">
+        <span class="option-icon">&#x1F504;</span>
+        <h4>"This Project"</h4>
+        <p>If you're already working in a project, simply say "Create a course about this project".</p>
+      </div>
+    </div>
+
+    <div class="code-block animate-in">
+      <span class="code-comment"># Option A: Local folder</span><br>
+      <span class="code-prompt">$</span> <span class="code-cmd">cd</span> <span class="code-flag">/path/to/my-project</span><br>
+      <span class="code-prompt">$</span> <span class="code-cmd">claude</span><br>
+      <span class="code-prompt">claude&gt;</span> <span class="code-cmd">/learning</span><br><br>
+      <span class="code-comment"># Option B: GitHub link</span><br>
+      <span class="code-prompt">claude&gt;</span> <span class="code-cmd">/learning</span> <span class="code-flag">https://github.com/user/repo</span><br><br>
+      <span class="code-comment"># Option C: Current project</span><br>
+      <span class="code-prompt">claude&gt;</span> Create a <span class="code-cmd">course</span> about <span class="code-flag">this project</span>
+    </div>
+
+    <p class="subtle animate-in">For GitHub links, Claude clones the repository automatically. No manual <code>git clone</code> required. Private repositories work if Claude Code has access to your GitHub account.</p>
+  </div>
+</section>
+
+<!-- Module 02 -->
+<section class="module module-even" id="module-2">
+  <span class="module-number">02</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Step 2: <span class="accent">Answer Questions</span></h2>
+    <p class="animate-in">After specifying the project, the Learning Skill asks two key questions to tailor the course to your needs.</p>
+
+    <h3 style="font-family:var(--font-heading);font-size:1.2rem;font-weight:700;margin:var(--space-5) 0 var(--space-3)" class="animate-in">Question 1: Target Audiences</h3>
+    <p class="animate-in">Who is the course for? You can select <strong>multiple audiences</strong> simultaneously. Each audience gets dedicated pages with adapted language, depth, and focus:</p>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F464;</span>
+        <h3>End Users</h3>
+        <p>No coding knowledge required. Explains features, workflows, and usage. Maximum 3 levels deep (L0-L2). Simple, clear language.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F4BB;</span>
+        <h3>Developers</h3>
+        <p>Technically detailed with code examples, architecture diagrams, and schema references. Up to 4 levels (L0-L3). Technical jargon welcome.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--font-heading);font-size:1.2rem;font-weight:700;margin:var(--space-5) 0 var(--space-3)" class="animate-in">Question 2: Integration Mode</h3>
+    <p class="animate-in">How should the course files be used?</p>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F4E6;</span>
+        <h3>Standalone (Default)</h3>
+        <p>Self-contained HTML files with complete inline CSS and JavaScript. Just open in a browser, no server needed. Perfect for sharing.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F517;</span>
+        <h3>Embedded</h3>
+        <p>Adapted for integration into existing docs or wikis. Simplified styling, additional metadata for CMS systems.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">Selecting multiple audiences multiplies the files: 2 audiences x 2 languages = 4 index files at L0. Each combination gets fully generated.</p>
+  </div>
+</section>
+
+<!-- Module 03 -->
+<section class="module module-odd" id="module-3">
+  <span class="module-number">03</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Step 3: <span class="accent">Analysis & Generation</span></h2>
+    <p class="animate-in">Now the Learning Skill takes over completely. It runs through a multi-stage pipeline that transforms your codebase into a structured course:</p>
+
+    <div class="flow-diagram animate-in" id="pipeline-diagram">
+      <div class="flow-row">
+        <div class="flow-box active" id="p-scan">
+          <div class="flow-box-label">Scan</div>
+          <div class="flow-box-sub">Inventory files</div>
+        </div>
+        <span class="flow-arrow">&#10132;</span>
+        <div class="flow-box" id="p-analyze">
+          <div class="flow-box-label">Analyze</div>
+          <div class="flow-box-sub">Detect structure</div>
+        </div>
+        <span class="flow-arrow">&#10132;</span>
+        <div class="flow-box" id="p-curriculum">
+          <div class="flow-box-label">Curriculum</div>
+          <div class="flow-box-sub">Score topics</div>
+        </div>
+      </div>
+      <div class="flow-arrow-down">&#9660;</div>
+      <div class="flow-row">
+        <div class="flow-box" id="p-foundation">
+          <div class="flow-box-label">Foundation</div>
+          <div class="flow-box-sub">Generate L0</div>
+        </div>
+        <span class="flow-arrow">&#10132;</span>
+        <div class="flow-box" id="p-build">
+          <div class="flow-box-label">Build</div>
+          <div class="flow-box-sub">Generate L1-L3</div>
+        </div>
+        <span class="flow-arrow">&#10132;</span>
+        <div class="flow-box" id="p-polish">
+          <div class="flow-box-label">Polish</div>
+          <div class="flow-box-sub">Links + QA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-flow animate-in">
+      <div class="step">
+        <div class="step-marker">S</div>
+        <div class="step-content">
+          <h3>Scan: Inventory the Codebase</h3>
+          <p>Claude scans all files in the project directory, detecting programming languages, frameworks, and project structure. Irrelevant files (node_modules, .git, binaries) are automatically excluded.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">A</div>
+        <div class="step-content">
+          <h3>Analyze: Understand Structure</h3>
+          <p>The detected files are analyzed for content: What dependencies exist? Which patterns are used? How do components relate? This creates an internal project model.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">C</div>
+        <div class="step-content">
+          <h3>Curriculum: Score Topics</h3>
+          <p>Each identified topic receives a <span class="tooltip-term" tabindex="0">Helpfulness Score<span class="tooltip-box">A value from 1-10 that rates how helpful a topic is for the chosen audience. Topics scoring below 6 are not included in the course.</span></span> (1-10). Only topics scoring 6+ make it into the course. Scores of 8+ trigger a deep-dive to the next level.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">F</div>
+        <div class="step-content">
+          <h3>Foundation: Create Level 0</h3>
+          <p>The overview page (index.html) is created first. It displays all L1 topics as cards with brief descriptions and serves as the launch pad for the entire course.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">B</div>
+        <div class="step-content">
+          <h3>Build: Generate All Levels</h3>
+          <p>Level by level, the HTML files are created: L1 with 5 modules each, L2 with more detailed explanations, L3 with complete code walkthroughs. Navigation and linking are set automatically.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-marker">P</div>
+        <div class="step-content">
+          <h3>Polish: Quality Assurance</h3>
+          <p>In the final step, all links are verified, missing cross-references are added, and a consistency check is performed. A depth map is then generated to visualize all pages and their connections.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="subtle animate-in"><strong>Duration:</strong> Small projects (&lt; 50 files) finish in 3-5 minutes. Medium projects (50-200 files) take 5-10 minutes. Large projects may require up to 15 minutes.</p>
+  </div>
+</section>
+
+<!-- Module 04 -->
+<section class="module module-even" id="module-4">
+  <span class="module-number">04</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Step 4: <span class="accent">Receive Results</span></h2>
+    <p class="animate-in">After generation completes, you'll find a clearly organized folder structure in your project. Here's what it looks like:</p>
+
+    <div class="tree animate-in">
+      <span class="tree-dir">kurs/</span><br>
+      ├── <span class="tree-file">index_de.html</span><span class="tree-comment"># L0 End User German</span><br>
+      ├── <span class="tree-file">index_en.html</span><span class="tree-comment"># L0 End User English</span><br>
+      ├── <span class="tree-file">index_dev_de.html</span><span class="tree-comment"># L0 Developer German</span><br>
+      ├── <span class="tree-file">index_dev_en.html</span><span class="tree-comment"># L0 Developer English</span><br>
+      ├── <span class="tree-dir">l1/</span><span class="tree-comment"># Level 1 — Deep dives</span><br>
+      │   ├── <span class="tree-file">kurs-erstellen_de.html</span><br>
+      │   ├── <span class="tree-file">create-course_en.html</span><br>
+      │   ├── <span class="tree-file">skill-architektur_dev_de.html</span><br>
+      │   └── <span class="tree-file">...</span><br>
+      ├── <span class="tree-dir">l2/</span><span class="tree-comment"># Level 2 — Details</span><br>
+      │   ├── <span class="tree-file">course-workflow_en.html</span><br>
+      │   └── <span class="tree-file">...</span><br>
+      └── <span class="tree-dir">l3/</span><span class="tree-comment"># Level 3 — Deep details (developers only)</span><br>
+          └── <span class="tree-file">...</span>
+    </div>
+
+    <h3 style="font-family:var(--font-heading);font-size:1.2rem;font-weight:700;margin:var(--space-5) 0 var(--space-3)" class="animate-in">File Naming Convention</h3>
+    <p class="animate-in">File names follow a consistent schema so you can immediately tell what a file contains:</p>
+
+    <div class="code-block animate-in">
+      <span class="code-comment"># Schema: [topic]_[audience]_[language].html</span><br><br>
+      <span class="code-cmd">kurs-erstellen</span><span class="code-flag">_de</span>.html<span class="code-comment">        # End user, German (no _dev = end user)</span><br>
+      <span class="code-cmd">skill-architektur</span><span class="code-flag">_dev_de</span>.html<span class="code-comment"> # Developer, German</span><br>
+      <span class="code-cmd">create-course</span><span class="code-flag">_en</span>.html<span class="code-comment">        # End user, English</span><br>
+      <span class="code-cmd">skill-architecture</span><span class="code-flag">_dev_en</span>.html<span class="code-comment"> # Developer, English</span>
+    </div>
+
+    <p class="subtle animate-in">Level 0 (index files) always resides in the root <code>kurs/</code> directory. Deeper levels live in their respective subdirectories <code>l1/</code>, <code>l2/</code>, <code>l3/</code>. All links are relative — the course works anywhere.</p>
+  </div>
+</section>
+
+<!-- Module 05 -->
+<section class="module module-odd" id="module-5">
+  <span class="module-number">05</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Tips for <span class="accent">Best Results</span></h2>
+    <p class="animate-in">The Learning Skill produces the best courses when you keep a few things in mind. Here are the key recommendations:</p>
+
+    <ul class="checklist animate-in">
+      <li>
+        <span class="check-icon">&#x2714;</span>
+        <div><strong>Choose a clear audience</strong> — Think beforehand about who will read the course. "End users" and "developers" need completely different explanations. When in doubt: select both, the skill generates separate versions.</div>
+      </li>
+      <li>
+        <span class="check-icon">&#x2714;</span>
+        <div><strong>Maintain a good README</strong> — The Learning Skill uses README.md as its primary context source. The better your README describes the project, the more precise the course content will be. An empty README leads to more generic results.</div>
+      </li>
+      <li>
+        <span class="check-icon">&#x2714;</span>
+        <div><strong>Manageable project size</strong> — The skill works best with projects between 10 and 500 files. Very large monorepos should be split into sub-projects and analyzed separately.</div>
+      </li>
+      <li>
+        <span class="check-icon">&#x2714;</span>
+        <div><strong>Clean project structure</strong> — Well-organized folders (e.g., <code>src/</code>, <code>tests/</code>, <code>docs/</code>) help the skill understand the architecture better. Chaos in the root directory makes analysis harder.</div>
+      </li>
+      <li>
+        <span class="check-icon">&#x2714;</span>
+        <div><strong>Specify language</strong> — By default, both German and English are generated. If you only need one language, say so. This saves time and files.</div>
+      </li>
+    </ul>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x26A0;</span>
+        <h3>Avoid</h3>
+        <p>Large binary files in the project, missing README, too many nested subdirectories, or mixed projects without clear separation.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x2705;</span>
+        <h3>Ideal</h3>
+        <p>Clear folder structure, descriptive README, consistent naming, a defined tech stack, and fewer than 300 relevant files.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">You've reached the maximum detail level for end users. This page (L2) is the deepest level for non-developers. Developers can dive even deeper into technical details on L3.</p>
+  </div>
+</section>
+
+<!-- Sibling Navigation -->
+<nav class="sibling-nav" aria-label="More L2 pages">
+  <div class="sibling-nav-inner">
+    <h3>L2 Pages for End Users</h3>
+    <div class="sibling-grid">
+      <span class="sibling-card current">
+        <span class="sibling-card-title">The Complete Course Workflow</span>
+        <span class="sibling-card-desc">Every step explained — from project to finished course structure</span>
+      </span>
+    </div>
+  </div>
+</nav>
+
+<footer class="site-footer">
+  <p>&copy; 2026 Mark Zimmermann. All rights reserved.</p>
+  <div class="footer-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener">Imprint</a>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+const pipelineBoxes = document.querySelectorAll('#pipeline-diagram .flow-box');
+let pipelineStep = 0;
+function animatePipeline() {
+  pipelineBoxes.forEach((box, i) => { box.classList.toggle('active', i <= pipelineStep); });
+  pipelineStep++;
+  if (pipelineStep < pipelineBoxes.length) { setTimeout(animatePipeline, 800); }
+  else { setTimeout(() => { pipelineStep = 0; }, 3000); }
+}
+const pipelineObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { animatePipeline(); pipelineObserver.unobserve(e.target); } });
+}, { threshold: 0.3 });
+pipelineObserver.observe(document.getElementById('pipeline-diagram'));
+</script>
+</body>
+</html>

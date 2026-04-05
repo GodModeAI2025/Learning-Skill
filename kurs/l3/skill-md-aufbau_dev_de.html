@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>skill.md Aufbau — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --color-deep-blue:#000099;
+  --color-impulse-orange:#FE8F11;
+  --color-warm-gray:#E4DAD4;
+  --color-warm-gray-bg:#F3EFEB;
+  --color-code-bg:#000066;
+  --color-text:#1A1A2E;
+  --color-text-muted:#5C5A6B;
+  --font-display:'Bricolage Grotesque',Georgia,serif;
+  --font-body:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-breadcrumb{font-family:var(--font-body);font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.nav-breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}
+.nav-breadcrumb a:hover{color:var(--color-impulse-orange)}
+.nav-breadcrumb .sep{color:rgba(255,255,255,.35)}
+.nav-breadcrumb .current{color:rgba(255,255,255,.95);font-weight:600}
+.nav-dots{display:flex;gap:.45rem;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-right a:hover{color:var(--color-impulse-orange)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}
+.github-icon{display:inline-flex;align-items:center}
+.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}
+.github-icon:hover svg{fill:var(--color-impulse-orange)}
+
+/* HERO */
+.hero{background:var(--color-deep-blue);color:#fff;padding:6rem 1.5rem 4rem;text-align:center;min-height:80dvh;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:start}
+.hero-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;transition:color .2s}
+.hero-back:hover{color:var(--color-impulse-orange)}
+.hero-back svg{width:16px;height:16px;fill:currentColor}
+.level-indicator{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.level-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.level-dot.done{background:var(--color-impulse-orange);border-color:var(--color-impulse-orange)}
+.level-dot.active{background:var(--color-impulse-orange);border-color:#fff;box-shadow:0 0 0 3px rgba(254,143,17,.4)}
+.level-dot.empty{background:transparent}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem;color:rgba(255,255,255,.95)}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 1.5rem;line-height:1.5}
+.page-overview{max-width:600px;margin:0 auto;text-align:left}
+.page-overview-title{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.page-overview-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.page-overview-list li{font-size:.85rem;color:rgba(255,255,255,.7);padding-left:1rem;position:relative}
+.page-overview-list li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--color-impulse-orange);border-radius:50%}
+
+/* MODULES */
+.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}
+.module:nth-child(odd){background:#fff}
+.module:nth-child(even){background:var(--color-warm-gray-bg)}
+.module-content{max-width:820px;margin:0 auto}
+.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}
+.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}
+.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem;font-weight:400}
+.module-body{font-size:1rem;line-height:1.7;color:var(--color-text)}
+.module-body p{margin-bottom:1rem;max-width:70ch}
+
+/* CODE BLOCK */
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}
+.code-comment{color:rgba(255,255,255,.4)}
+.code-keyword{color:#7CB7FF}
+.code-string{color:#A8E6A1}
+.code-orange{color:var(--color-impulse-orange)}
+
+/* CODE-KLARTEXT TOGGLE */
+.toggle-block{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}
+.toggle-tabs{display:flex;background:var(--color-deep-blue)}
+.toggle-tab{flex:1;padding:.6rem 1rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;border:none;background:transparent}
+.toggle-tab.active{color:#fff;background:rgba(254,143,17,.2);border-bottom:2px solid var(--color-impulse-orange)}
+.toggle-panel{display:none;padding:1.25rem}
+.toggle-panel.active{display:block}
+.toggle-panel.code-panel{background:var(--color-code-bg)}
+.toggle-panel.text-panel{background:#fff}
+.toggle-panel.text-panel p{margin-bottom:.5rem;font-size:.9rem;color:var(--color-text)}
+
+/* TOOLTIP */
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help;color:inherit}
+.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}
+.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+
+/* VIZ */
+.viz{margin:2rem 0;border-radius:10px;overflow:hidden}
+.viz-title{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+
+/* EXPLANATION LIST */
+.explain-list{margin:1rem 0;padding:0;list-style:none}
+.explain-list li{padding:.5rem 0;border-bottom:1px solid var(--color-warm-gray);font-size:.9rem;line-height:1.5}
+.explain-list li:last-child{border-bottom:none}
+.explain-list code{font-family:var(--font-mono);font-size:.8rem;background:rgba(0,0,153,.08);padding:.1rem .4rem;border-radius:3px;color:var(--color-deep-blue)}
+
+/* EDGE CASE BOX */
+.edge-case{background:rgba(254,143,17,.08);border-left:3px solid var(--color-impulse-orange);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;font-size:.9rem}
+.edge-case strong{color:var(--color-impulse-orange)}
+
+/* SIBLING NAV */
+.sibling-nav{background:var(--color-deep-blue);padding:2.5rem 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav-title{font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:1rem}
+.sibling-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.sibling-nav-link{display:block;padding:.75rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;text-decoration:none;transition:all .2s}
+.sibling-nav-link:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.sibling-nav-link.active{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-nav-link-title{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}
+.sibling-nav-link-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+
+/* TABLE */
+.info-table{width:100%;border-collapse:collapse;font-size:.85rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray);margin:1rem 0}
+.info-table th{background:var(--color-deep-blue);color:rgba(255,255,255,.9);font-family:var(--font-display);font-weight:600;padding:.65rem .75rem;text-align:left}
+.info-table td{padding:.55rem .75rem;border-bottom:1px solid var(--color-warm-gray);vertical-align:top;font-size:.85rem}
+.info-table tr:last-child td{border-bottom:none}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .nav-breadcrumb{font-size:.7rem}
+  .module{padding:4rem 1rem 3rem}
+  .module-header{flex-direction:column;gap:.5rem}
+  .module-number{font-size:3.5rem}
+  .hero h1{font-size:1.8rem}
+  .sibling-nav-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <div class="nav-breadcrumb">
+    <a href="../index_dev_de.html">L0 Uberblick</a>
+    <span class="sep">&#9656;</span>
+    <a href="../l1/skill-architektur_dev_de.html">L1 Skill-Architektur</a>
+    <span class="sep">&#9656;</span>
+    <a href="../l2/phasen-orchestrierung_dev_de.html">L2 Phasen-Orchestrierung</a>
+    <span class="sep">&#9656;</span>
+    <span class="current">L3 skill.md Aufbau</span>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-right">
+    <a href="skill-md-structure_dev_en.html" title="English version">&#127468;&#127463;</a>
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon" title="GitHub">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div>
+    <a href="../l2/phasen-orchestrierung_dev_de.html" class="hero-back">
+      <svg viewBox="0 0 16 16"><path d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg>
+      Zuruck zu Phasen-Orchestrierung
+    </a>
+    <div class="level-indicator">
+      <div class="level-dot done" title="L0 Uberblick"></div>
+      <div class="level-dot done" title="L1 Vertiefung"></div>
+      <div class="level-dot done" title="L2 Detail"></div>
+      <div class="level-dot active" title="L3 Tiefendetail"></div>
+    </div>
+    <span class="hero-badge">Level 3 — Maximale Tiefe</span>
+    <h1>skill.md Aufbau</h1>
+    <p class="hero-sub">Das 3000-Zeilen-Hirn des Learning Skills, Zeile fur Zeile. YAML-Frontmatter, Modus-Erkennung, Helpfulness-Scoring, Design-System, Agent-Dispatch.</p>
+    <div class="page-overview">
+      <div class="page-overview-title">Auf dieser Seite</div>
+      <ul class="page-overview-list">
+        <li>YAML-Frontmatter &amp; Identitatsregel</li>
+        <li>Modus-Erkennung &amp; Weichenstellung</li>
+        <li>Level-System &amp; Helpfulness-Scoring</li>
+        <li>Design-System Definition</li>
+        <li>Agent-Dispatch-Templates</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 01 -->
+<section class="module" id="mod1">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">01</span>
+      <div>
+        <div class="module-title">YAML-Frontmatter &amp; Identitatsregel</div>
+        <div class="module-subtitle">Die ersten 50 Zeilen: name, description, dann die IDENTITATS-REGEL die verhindert dass externe Projektnamen auftauchen</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>skill.md beginnt mit einem <span class="tooltip">YAML-Frontmatter<span class="tooltip-text">Der Block zwischen zwei --- am Dateianfang. Claude liest diesen Block um den Skill-Namen und die Beschreibung zu erkennen. Ohne diesen Block wird die Datei nicht als Skill erkannt.</span></span>-Block. Dieser Block definiert den Skill-Namen und eine kompakte Beschreibung, die Claude beim Laden des Skills als erstes sieht.</p>
+
+      <div class="toggle-block" id="toggle1">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle1','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle1','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Zeile 1-4: YAML-Frontmatter</span>
+<span class="code-keyword">---</span>
+<span class="code-orange">name:</span> <span class="code-string">learning-skill</span>
+<span class="code-orange">description:</span> <span class="code-string">Kombiniert zwei Superkraefte: (1) Verwandelt
+  Codebases in interaktive Multi-Level-HTML-Kurse (L0-L3)
+  mit Zielgruppen-Segmentierung und Energiekonzern-Design,
+  UND (2) erzeugt interaktive Knowledge Graphs mit Dashboard
+  zur Code-Exploration. DREI MODI: "Kurs" fuer HTML-Kurse,
+  "Verstehen" fuer Knowledge Graphs, "Kombiniert" fuer beides.</span>
+<span class="code-keyword">---</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>name:</strong> Der Slug <code>learning-skill</code> wird intern als Identifier verwendet. Er taucht in Ordnernamen und Referenzen auf.</p>
+          <p><strong>description:</strong> Die Beschreibung ist bewusst lang und schluesselwortreich. Claude nutzt sie um zu entscheiden ob dieser Skill zum User-Prompt passt. Jedes Schluesselwort ("HTML-Kurse", "Knowledge Graphs", "Dashboard") erhoht die Match-Wahrscheinlichkeit.</p>
+          <p><strong>Kein model:-Feld:</strong> Anders als bei Agent-Definitionen (die <code>model: inherit</code> haben) hat skill.md kein model-Feld -- der Skill laeuft immer im Kontext des aktuellen Modells.</p>
+        </div>
+      </div>
+
+      <p>Direkt nach dem Frontmatter folgt die <span class="tooltip">Identitatsregel<span class="tooltip-text">Eine Tabelle mit VERBOTENEN Begriffen wie "Understand Anything" oder "Understanding Skill". Diese Regel verhindert, dass der urspruengliche Projektname in irgendeinem Output erscheint.</span></span> -- der wichtigste Compliance-Block des gesamten Skills.</p>
+
+      <div class="toggle-block" id="toggle1b">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle1b','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle1b','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment">## IDENTITAETS-REGEL — KEINE EXTERNEN PROJEKTNAMEN (HARD BLOCK)</span>
+
+<span class="code-keyword">VERBOTEN — in JEGLICHEM generierten Output:</span>
+
+<span class="code-orange">| Verboten                              | Warum                            |</span>
+| "Understand Anything"                 | Externer Projektname             |
+| "Understand-Anything"                 | Externer Projektname             |
+| "Understanding Skill"                 | Falscher Name                    |
+| "Claude Learning &amp; Understanding Skill" | Falscher Name                    |
+| "claude-learning-understanding"       | Falscher Slug                    |
+| ".understand-anything/"               | Falscher Ordnername              |
+
+<span class="code-keyword">KORREKTE Bezeichnungen:</span>
+
+<span class="code-orange">| Kontext                 | Korrekter Name              |</span>
+| Skill-Name              | <span class="code-string">"Learning Skill"</span>             |
+| Skill-Slug              | <span class="code-string">"learning-skill"</span>             |
+| Output-Ordner           | <span class="code-string">".claude-learning/"</span>          |
+| Modus-Bezeichnungen     | <span class="code-string">"Kurs-Modus"</span>, <span class="code-string">"Verstehen-Modus"</span> |</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Warum existiert diese Regel?</strong> Der Learning Skill ist aus einem fruheren Projekt ("Understand Anything") hervorgegangen. Da der alte Name in keinem Output mehr erscheinen darf, prueft der Selbst-Check vor JEDEM Output auf diese verbotenen Strings.</p>
+          <p><strong>Selbst-Check:</strong> 5 Pruefungen werden vor jedem generierten Output durchlaufen. Jede Pruefung ist ein Regex-Match auf den generierten Text. Wenn ein verbotener String gefunden wird, muss er entfernt oder ersetzt werden.</p>
+        </div>
+      </div>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Der Selbst-Check: 5 Pruefungen vor JEDEM Output</span>
+
+<span class="code-keyword">Selbst-Check vor JEDEM Output:</span>
+<span class="code-string">[ ]</span> Enthaelt der Output den String <span class="code-orange">"Understand Anything"</span>?
+    <span class="code-keyword">-></span> ENTFERNEN
+<span class="code-string">[ ]</span> Enthaelt der Output den String <span class="code-orange">"Understanding"</span>?
+    <span class="code-keyword">-></span> Nur OK wenn generisches Wort in Satz
+       (z.B. "for understanding the code")
+       NICHT OK als Namensbestandteil
+<span class="code-string">[ ]</span> Enthaelt der Output <span class="code-orange">".understand-anything/"</span>?
+    <span class="code-keyword">-></span> ERSETZEN durch ".claude-learning/"
+<span class="code-string">[ ]</span> Enthaelt eine Commit-Message einen Hinweis
+    auf externe Projekte?
+    <span class="code-keyword">-></span> ENTFERNEN
+<span class="code-string">[ ]</span> Enthaelt der Output <span class="code-orange">"aus Understand-Anything"</span>?
+    <span class="code-keyword">-></span> ENTFERNEN</code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> Der String "Understanding" darf in generischem Englisch vorkommen ("for understanding the architecture"). Er ist NUR verboten wenn er als Namensbestandteil verwendet wird ("Understanding Skill", "Learning &amp; Understanding"). Die Unterscheidung erfordert semantische Analyse, nicht nur String-Matching.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> In Commit-Messages, Debug-Logs und internen Zwischenergebnissen gilt die Regel ebenfalls. Ein <code>git commit -m "merge from understand-anything"</code> wuerde die Regel verletzen. Dies wird oft uebersehen weil Entwickler Debug-Output nicht als "generierten Output" betrachten.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 02 -->
+<section class="module" id="mod2">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">02</span>
+      <div>
+        <div class="module-title">Modus-Erkennung &amp; Weichenstellung</div>
+        <div class="module-subtitle">Phase 0: Schluesselwort-Matching fuer Kurs/Verstehen/Kombiniert. Die HARD-BLOCK-Rueckfrage vor Phase 1.</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Modus-Erkennung ist der erste Entscheidungspunkt. Sie liest den <span class="tooltip">User-Prompt<span class="tooltip-text">Die erste Nachricht des Users die den Skill aktiviert. Enthaelt typischerweise einen Pfad/URL und Schluesselwoerter wie "Kurs", "verstehen" oder "beides".</span></span> und matcht Schluesselwoerter gegen drei Modus-Tabellen. Falls kein eindeutiger Match: Rueckfrage.</p>
+
+      <div class="toggle-block" id="toggle2">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle2','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle2','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Modus-Erkennung: Schluesselwort-Matching</span>
+
+<span class="code-orange">| Modus           | Schluesselwoerter                      |</span>
+<span class="code-keyword">| Kurs-Modus</span>     | "Kurs", "Tutorial", "Walkthrough",     |
+|                 | "interaktiv", "course", "teach",       |
+|                 | "lernen", "erklaeren", "HTML",         |
+|                 | "Kursseiten"                           |
+<span class="code-keyword">| Verstehen-Modus</span>| "verstehen", "understand",             |
+|                 | "knowledge graph", "dashboard",        |
+|                 | "explore", "graph", "analyse",         |
+|                 | "analyze"                              |
+<span class="code-keyword">| Kombiniert</span>     | "beides", "komplett", "full",          |
+|                 | "alles", "combined", "kurs + graph",   |
+|                 | "everything"                           |
+<span class="code-keyword">| Unklar</span>         | Keines der obigen                      |
+|                 | <span class="code-orange">-> User fragen!</span>                       |</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Kurs-Modus:</strong> Aktiviert die HTML-Kurs-Pipeline (Phasen 0-6). Erzeugt Self-Contained HTML-Dateien mit Level-Hierarchie.</p>
+          <p><strong>Verstehen-Modus:</strong> Aktiviert die Knowledge-Graph-Pipeline (Phasen 0-7). Erzeugt knowledge-graph.json + React-Dashboard.</p>
+          <p><strong>Kombiniert:</strong> Erst KG-Pipeline, dann KG-gestuetztes Kurs-Building. Die KG-Daten verbessern das Helpfulness-Scoring.</p>
+          <p><strong>Unklar:</strong> Die sicherste Option -- lieber einmal zu viel fragen als falsch bauen.</p>
+        </div>
+      </div>
+
+      <p>Nach der Modus-Erkennung kommt der <span class="tooltip">HARD BLOCK<span class="tooltip-text">Eine unumgehbare Sperre: Phase 1 darf NICHT starten bevor der User Zielgruppen UND Integrationsmodus explizit beantwortet hat. Keine Ausnahme -- auch nicht bei "teste den Skill" oder "mach einfach".</span></span>: Zwei Weichen muessen VOM USER beantwortet sein.</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># HARD BLOCK: Selbst-Check vor Phase 1</span>
+<span class="code-comment"># Dieser Check wird NACH der Modus-Erkennung ausgefuehrt</span>
+<span class="code-comment"># und BEVOR irgendein HTML generiert wird.</span>
+
+<span class="code-keyword">Selbst-Check vor Phase 1:</span>
+<span class="code-string">[ ]</span> Hat der User EXPLIZIT gesagt fuer welche
+    <span class="code-orange">Zielgruppen</span>?
+    <span class="code-keyword">-></span> Wenn nein: FRAGEN
+<span class="code-string">[ ]</span> Hat der User EXPLIZIT gesagt ob
+    <span class="code-orange">Standalone oder Eingebettet</span>?
+    <span class="code-keyword">-></span> Wenn nein: FRAGEN
+<span class="code-string">[ ]</span> Wenn Eingebettet: Hat der User
+    <span class="code-orange">GitHub-URL, Impressum, Datenschutz, Copyright</span>
+    angegeben?
+    <span class="code-keyword">-></span> Wenn nein: NACHFRAGEN
+<span class="code-string">[ ]</span> Alle drei Checks bestanden?
+    <span class="code-keyword">-></span> <span class="code-string">Erst jetzt Phase 1 starten</span></code>
+      </div>
+
+      <p>Die Rueckfrage selbst ist ein vordefiniertes Template, das dem User drei Zielgruppen-Optionen mit ihren Standard-Tiefen zeigt:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Rueckfrage-Template (wird an den User gesendet)</span>
+
+<span class="code-keyword">Bevor ich loslege, zwei Fragen:</span>
+
+<span class="code-orange">1. Fuer wen ALLES soll der Kurs sein?</span>
+   <span class="code-string">* Anwender</span>  -- Leute die die App BENUTZEN wollen
+                 <span class="code-comment">(Default: bis L2, Fokus auf Workflows)</span>
+   <span class="code-string">* Entwickler</span> -- Leute die den Code VERSTEHEN wollen
+                 <span class="code-comment">(Default: bis L3, volle Tiefe)</span>
+   <span class="code-string">* Entscheider</span>-- Management, Stakeholder
+                 <span class="code-comment">(Default: bis L1, kompakt + KPIs)</span>
+   <span class="code-string">* Andere</span>     -- eigene Zielgruppe definieren
+                 <span class="code-comment">(Default: bis L2, anpassbar)</span>
+
+<span class="code-orange">2. Wie werden die Kurse genutzt?</span>
+   <span class="code-string">* Standalone</span>  -- Dateien zum Teilen/Offline-Nutzen
+   <span class="code-string">* Eingebettet</span> -- Teil einer Website
+     <span class="code-comment">(dann brauche ich: GitHub-Link?</span>
+     <span class="code-comment"> Impressum-URL? Copyright?)</span></code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> "Verprobe den Skill an sich selbst" ist KEINE ausreichende Antwort. Obwohl implizit "Entwickler" und "dieses Repo" gemeint sein koennten, darf nichts angenommen werden. Die Rueckfrage wird trotzdem gestellt. Dasselbe gilt fuer "mach einfach", "leg los", "ist nur ein Test".
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> "Fuer Entwickler" beantwortet nur Weiche 1, nicht Weiche 2 (Integration). Auch "standalone bitte" beantwortet nur Weiche 2. Beide muessen explizit beantwortet sein. Teilantworten fuehren zu einer reduzierten Rueckfrage die nur die fehlende Weiche abfragt.
+      </div>
+
+      <table class="info-table">
+        <tr><th>User sagt</th><th>Weiche 1 (ZG)</th><th>Weiche 2 (Integration)</th><th>Aktion</th></tr>
+        <tr><td>"Fuer Devs, standalone"</td><td>Klar</td><td>Klar</td><td>Phase 1 starten</td></tr>
+        <tr><td>"Mach einen Kurs"</td><td>Unklar</td><td>Unklar</td><td>Volle Rueckfrage</td></tr>
+        <tr><td>"Fuer Entwickler"</td><td>Klar</td><td>Unklar</td><td>Nur Weiche 2 fragen</td></tr>
+        <tr><td>"Standalone bitte"</td><td>Unklar</td><td>Klar</td><td>Nur Weiche 1 fragen</td></tr>
+        <tr><td>"Teste das mal"</td><td>Unklar</td><td>Unklar</td><td>Volle Rueckfrage</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 03 -->
+<section class="module" id="mod3">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">03</span>
+      <div>
+        <div class="module-title">Level-System &amp; Helpfulness-Scoring</div>
+        <div class="module-subtitle">HS-Formel im Detail: Komplexitaet(0-3) + Relevanz(0-3) + Lernwert(0-2) + Eigenstaendigkeit(0-2). Zielgruppenspezifische Schwellenwerte.</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Nicht jedes Thema verdient 3 weitere Ebenen. Der <span class="tooltip">Helpfulness-Score<span class="tooltip-text">Eine Zahl von 1-10 die bewertet, ob eine tiefere Seite dem Lernenden WIRKLICH hilft. Berechnet aus 4 Dimensionen: Komplexitaet, Relevanz, Lernwert, Eigenstaendigkeit.</span></span> (HS) entscheidet autonom, ob ein Thema eine eigene Unterseite bekommt oder als Absatz auf der Eltern-Seite bleibt.</p>
+
+      <div class="toggle-block" id="toggle3">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle3','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle3','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Helpfulness-Score Formel</span>
+<span class="code-orange">HS = Komplexitaet(0-3) + Relevanz(0-3)
+   + Lernwert(0-2) + Eigenstaendigkeit(0-2)</span>
+
+<span class="code-comment"># Maximal erreichbar: 3+3+2+2 = 10</span>
+
+<span class="code-keyword">| Dimension         | 0           | 1             | 2                   | 3                     |</span>
+| Komplexitaet      | Trivial,    | Braucht       | Braucht mehrere     | Braucht eigene        |
+|                   | 1 Satz      | 1 Absatz      | Abschnitte          | Seite mit Visuals     |
+| Relevanz          | Nischen-    | Nice-to-know  | Wichtig fuer        | Kern-Konzept,         |
+|                   | Detail      |               | Verstaendnis        | ohne das nichts geht  |
+| Lernwert          | Nur Fakten  | Erklaert      | Ermoeglicht         | <span class="code-comment">n/a (max 2)</span>           |
+|                   |             | ein "Warum"   | eigenes Handeln     |                       |
+| Eigenstaendigkeit | Wiederholung| 50% neue      | 80% neue            | <span class="code-comment">n/a (max 2)</span>           |
+|                   | v. Eltern   | Information   | Information         |                       |</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Komplexitaet (0-3):</strong> Wie viel Erklaerungsaufwand braucht das Thema? Ein trivialer Fakt (0) vs. ein Konzept das Visualisierungen braucht (3).</p>
+          <p><strong>Relevanz (0-3):</strong> Wie zentral ist das Thema fuer das Verstaendnis des Gesamtsystems? Ein Nischen-Detail (0) vs. ein unverzichtbares Kern-Konzept (3).</p>
+          <p><strong>Lernwert (0-2):</strong> Was KANN der Lernende nach dem Lesen tun? Nur Fakten kennen (0) vs. selbst handeln koennen (2).</p>
+          <p><strong>Eigenstaendigkeit (0-2):</strong> Wie viel NEUES bringt eine eigene Seite? Wenn 80%+ Wiederholung der Eltern-Seite, lohnt sich keine eigene Seite.</p>
+        </div>
+      </div>
+
+      <p>Entscheidend: Die Schwellenwerte sind <strong>nicht fuer alle Zielgruppen gleich</strong>. Jede Zielgruppe hat ihr eigenes <span class="tooltip">Tiefenprofil<span class="tooltip-text">Definiert Max-Level, HS-Schwelle fuer eigene Seite und HS-Schwelle fuer "noch tiefer" pro Zielgruppe. Entscheider brauchen selten mehr als L1, Entwickler gehen bis L3.</span></span>:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Zielgruppenspezifische Schwellenwerte</span>
+
+<span class="code-keyword">| Zielgruppe  | Max-Level | HS eigene Seite | HS noch tiefer |</span>
+| <span class="code-orange">Anwender</span>    | <span class="code-string">L2</span>        | >= 7 (streng)   | >= 9           |
+| <span class="code-orange">Entwickler</span>  | <span class="code-string">L3</span>        | >= 6 (Standard) | >= 8           |
+| <span class="code-orange">Entscheider</span> | <span class="code-string">L1</span>        | >= 8 (strengst) | >= 10 (nie)    |
+
+<span class="code-comment"># Entscheidungsbaum pro Thema T, Zielgruppe Z, Level L:</span>
+
+  <span class="code-keyword">1.</span> L >= max_level[Z]?           <span class="code-orange">-> STOPP.</span>
+     <span class="code-comment">Kein tieferes Level.</span>
+
+  <span class="code-keyword">2.</span> HS(T,Z) &lt; hs_schwelle[Z]?    <span class="code-orange">-> Kein eigene Seite.</span>
+     <span class="code-comment">Absatz/Aufklapp auf Eltern.</span>
+
+  <span class="code-keyword">3.</span> HS(T,Z) >= hs_schwelle[Z]?   <span class="code-orange">-> Eigene Seite.</span>
+
+  <span class="code-keyword">4.</span> HS(T,Z) >= hs_tiefer[Z]      <span class="code-orange">-> Pruefe L+1.</span>
+     UND L+1 &lt; max_level[Z]?      <span class="code-comment">Wenn ja: L+1 planen.</span></code>
+      </div>
+
+      <p>Derselbe HS kann fuer verschiedene Zielgruppen voellig unterschiedliche Ergebnisse liefern. Hier die Zielgruppen-Gewichtung pro Thema-Typ:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Zielgruppen-Gewichtung: Gleiches Thema, anderer HS</span>
+
+<span class="code-keyword">| Thema-Typ              | Anwender | Entwickler | Entscheider |</span>
+| Implementierungsdetail | <span class="code-comment">1-3</span>      | <span class="code-orange">7-10</span>      | <span class="code-comment">1-3</span>         |
+| UI-Workflow            | <span class="code-orange">7-10</span>     | <span class="code-comment">3-5</span>       | <span class="code-comment">2-4</span>         |
+| Kosten/ROI             | <span class="code-comment">2-4</span>      | <span class="code-comment">1-3</span>       | <span class="code-orange">8-10</span>        |
+| Fehlerbehandlung       | <span class="code-string">6-8</span>      | <span class="code-orange">8-10</span>      | <span class="code-comment">3-5</span>         |
+| Architektur-Entscheid. | <span class="code-comment">1-3</span>      | <span class="code-string">7-9</span>       | <span class="code-string">6-8</span>         |
+| Sicherheit/Compliance  | <span class="code-comment">3-5</span>      | <span class="code-string">7-9</span>       | <span class="code-orange">8-10</span>        |
+
+<span class="code-comment"># Beispiel: Thema "Authentifizierung"</span>
+<span class="code-keyword">Anwender:</span>   HS=7 -> L1 eigene Seite, kein L2 (7 &lt; 9)
+<span class="code-keyword">Entwickler:</span> HS=9 -> L1 + L2 + L3 (9 >= 8, bis Max L3)
+<span class="code-keyword">Entscheider:</span>HS=8 -> L1 nur (Max-Level L1 erreicht)</code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: KG-gestuetztes Scoring.</strong> Im Kombiniert-Modus wird der HS mit Knowledge-Graph-Daten angereichert. Nodes mit <code>complexity: "complex"</code> erhalten +1 Bonus auf Komplexitaet. Nodes mit Fan-in &gt; 5 erhalten +1 auf Relevanz. Core-Layer-Nodes erhalten +1 auf Lernwert. Der finale HS wird auf max(10) gedeckelt: <code>final_HS = min(10, base_HS + kg_bonus)</code>.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Tiefenprofil-Ueberschreibung.</strong> Der User kann bei der Weichenstellung sagen "Fuer Entscheider, aber mit voller Tiefe". Dann wird Max-Level auf L3 hochgesetzt. Die Ueberschreibung wird in der Tiefenkarte dokumentiert, damit nachvollziehbar ist warum ein Entscheider-Kurs ploetzlich L3-Seiten hat.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 04 -->
+<section class="module" id="mod4">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">04</span>
+      <div>
+        <div class="module-title">Design-System Definition</div>
+        <div class="module-subtitle">CSS Custom Properties (:root Block), Farbraum-Definitionen, Kontrast-Regeln (WCAG AA)</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Phase 3 (FOUNDATION) definiert das Design-System als <span class="tooltip">Inline-CSS<span class="tooltip-text">Es gibt KEINE separate CSS-Datei. Alles ist inline in jeder HTML-Datei (Self-Contained-Prinzip). Das CSS wird einmal definiert und in jede Datei kopiert um Konsistenz zu gewaehrleisten.</span></span>. Der <code>:root</code>-Block ist das Herzstuck -- er definiert 60+ Custom Properties die in jeder Seite identisch sind.</p>
+
+      <div class="toggle-block" id="toggle4">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle4','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle4','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-keyword">:root</span> {
+  <span class="code-comment">/* === PRIMAERE BRAND-FARBEN === */</span>
+  <span class="code-orange">--color-deep-blue:</span>      <span class="code-string">#000099</span>;
+  <span class="code-orange">--color-impulse-orange:</span>  <span class="code-string">#FE8F11</span>;
+  <span class="code-orange">--color-warm-gray:</span>       <span class="code-string">#E4DAD4</span>;
+
+  <span class="code-comment">/* === HINTERGRUENDE === */</span>
+  <span class="code-orange">--color-bg:</span>              <span class="code-string">#FFFFFF</span>;
+  <span class="code-orange">--color-bg-warm:</span>         <span class="code-string">#F3EFEB</span>;
+  <span class="code-orange">--color-bg-code:</span>         <span class="code-string">#000066</span>;
+
+  <span class="code-comment">/* === TEXT === */</span>
+  <span class="code-orange">--color-text:</span>            <span class="code-string">#1A1A2E</span>;
+  <span class="code-orange">--color-text-secondary:</span>  <span class="code-string">#5C5A6B</span>;
+  <span class="code-orange">--color-text-muted:</span>      <span class="code-string">#6B6778</span>;
+  <span class="code-comment">/* WCAG AA: 5.1:1 auf Weiss */</span>
+
+  <span class="code-comment">/* === SEMANTISCHE FARBEN === */</span>
+  <span class="code-orange">--color-success:</span>         <span class="code-string">#84C041</span>;
+  <span class="code-orange">--color-error:</span>           <span class="code-string">#CC0000</span>;
+  <span class="code-orange">--color-info:</span>            <span class="code-string">#1195EB</span>;
+  <span class="code-orange">--color-warning:</span>         <span class="code-string">#FDC83A</span>;
+
+  <span class="code-comment">/* === AKTEUR-FARBEN (6 Farben) === */</span>
+  <span class="code-orange">--color-actor-1:</span> <span class="code-string">#000099</span>;  <span class="code-comment">/* Deep Blue */</span>
+  <span class="code-orange">--color-actor-2:</span> <span class="code-string">#FE8F11</span>;  <span class="code-comment">/* Impulse Orange */</span>
+  <span class="code-orange">--color-actor-3:</span> <span class="code-string">#84C041</span>;  <span class="code-comment">/* Success Green */</span>
+  <span class="code-orange">--color-actor-4:</span> <span class="code-string">#1195EB</span>;  <span class="code-comment">/* Info Blue */</span>
+  <span class="code-orange">--color-actor-5:</span> <span class="code-string">#5BE3D6</span>;  <span class="code-comment">/* Teal */</span>
+  <span class="code-orange">--color-actor-6:</span> <span class="code-string">#FDC83A</span>;  <span class="code-comment">/* Warning Yellow */</span>
+
+  <span class="code-comment">/* === FONTS === */</span>
+  <span class="code-orange">--font-display:</span>  <span class="code-string">'Bricolage Grotesque'</span>, Georgia, serif;
+  <span class="code-orange">--font-body:</span>     <span class="code-string">'DM Sans'</span>, -apple-system, sans-serif;
+  <span class="code-orange">--font-mono:</span>     <span class="code-string">'JetBrains Mono'</span>, 'Fira Code', monospace;
+
+  <span class="code-comment">/* === TYPOGRAFIE === */</span>
+  <span class="code-orange">--text-xs:</span>.75rem; <span class="code-orange">--text-sm:</span>.875rem;
+  <span class="code-orange">--text-base:</span>1rem; <span class="code-orange">--text-lg:</span>1.125rem;
+  <span class="code-comment">/* ... bis --text-6xl: 3.75rem */</span>
+
+  <span class="code-comment">/* === LAYOUT === */</span>
+  <span class="code-orange">--content-width:</span>     <span class="code-string">820px</span>;
+  <span class="code-orange">--content-width-wide:</span> <span class="code-string">1000px</span>;
+  <span class="code-orange">--nav-height:</span>         <span class="code-string">50px</span>;
+}</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Primaere Brand-Farben:</strong> Drei Kernfarben bilden die "Energiekonzern-Palette". Deep Blue (#000099) fuer Vertrauen und Expertise, Impulse Orange (#FE8F11) fuer Aufmerksamkeit und CTAs, Warm Gray (#E4DAD4) fuer Borders und dezente Trennungen.</p>
+          <p><strong>Code-Hintergrund:</strong> #000066 (dunkler als Deep Blue) sorgt fuer ausreichend Kontrast zu hellem Code-Text (Ratio >7:1, WCAG AAA).</p>
+          <p><strong>Text-Muted:</strong> #6B6778 hat ein Kontrastverhaltnis von 5.1:1 auf Weiss -- gerade so WCAG AA konform. Fuer laengere Texte sollte --color-text (#1A1A2E, 15.7:1) bevorzugt werden.</p>
+          <p><strong>Akteur-Farben:</strong> 6 distinkte Farben fuer Flow-Diagramme und Architektur-Visualisierungen. Sie sind so gewaehlt, dass sie sich auch bei Farbenblindheit (Deuteranomalie) unterscheiden lassen.</p>
+          <p><strong>Content-Width:</strong> 820px ist der goldene Schnitt fuer Lesbarkeit -- circa 70 Zeichen pro Zeile bei 1rem Schriftgroesse.</p>
+        </div>
+      </div>
+
+      <p>Die WCAG-Kontrast-Regeln sind im Design-System als harte Constraints verankert:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># WCAG AA Kontrast-Matrix (Minimum 4.5:1 fuer Text)</span>
+
+<span class="code-keyword">| Vordergrund              | Hintergrund     | Ratio  | Status   |</span>
+| <span class="code-orange">--color-text (#1A1A2E)</span>    | #FFFFFF         | 15.7:1 | <span class="code-string">AAA</span>     |
+| <span class="code-orange">--color-text (#1A1A2E)</span>    | --bg-warm       | 13.2:1 | <span class="code-string">AAA</span>     |
+| <span class="code-orange">--color-text-muted</span>        | #FFFFFF         | 5.1:1  | <span class="code-string">AA</span>      |
+| <span class="code-orange">rgba(255,255,255,.9)</span>      | --bg-code       | 12.8:1 | <span class="code-string">AAA</span>     |
+| <span class="code-orange">--impulse-orange</span>          | --deep-blue     | 4.7:1  | <span class="code-string">AA</span>      |
+| <span class="code-orange">--impulse-orange</span>          | #FFFFFF         | 2.9:1  | <span class="code-comment">Fail*</span>   |
+
+<span class="code-comment">* Orange auf Weiss failt WCAG AA fuer normalen Text.</span>
+<span class="code-comment">  Deshalb wird Orange nur fuer grosse Headlines (>=18px)</span>
+<span class="code-comment">  und Icons verwendet, NICHT fuer Body-Text.</span></code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case:</strong> Impulse Orange (#FE8F11) auf weissem Hintergrund hat nur ein Kontrastverhaltnis von 2.9:1 -- das failt WCAG AA fuer normalen Text. Deshalb wird Orange ausschliesslich fuer Badges, Icons, Buttons (mit weissem Text drauf) und grosse Ueberschriften verwendet. Fuer Fliesstext auf Weiss wird immer --color-text (#1A1A2E) genutzt.
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Responsive Ueberschreibungen.</strong> Auf mobilen Geraeten werden die Typografie-Variablen per Media Query ueberschrieben:
+        <code>@media (max-width: 768px) { :root { --text-4xl: 1.875rem; --text-5xl: 2.25rem; } }</code>
+        <code>@media (max-width: 480px) { :root { --text-4xl: 1.5rem; --text-5xl: 1.875rem; } }</code>
+        Die Breakpoints sind 768px (Tablet) und 480px (Smartphone).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 05 -->
+<section class="module" id="mod5">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">05</span>
+      <div>
+        <div class="module-title">Agent-Dispatch-Templates</div>
+        <div class="module-subtitle">Wie skill.md Agenten-Prompts zusammenbaut: Pipeline-Agent-Template, Datei-Agent-Template, Context-Injection-Muster</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>skill.md dispatcht zwei Arten von <span class="tooltip">Sub-Agents<span class="tooltip-text">Claude-Instanzen die ueber das Task-Tool gestartet werden. Jeder Agent erhaelt sein eigenes Prompt-Template und arbeitet isoliert. Ergebnisse fliessen zurueck in den Haupt-Kontext.</span></span>: Pipeline-Agents (1 pro Zielgruppe) und Datei-Agents (1 pro HTML-Datei). Beide werden ueber Template-Strings konfiguriert.</p>
+
+      <div class="toggle-block" id="toggle5">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle5','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle5','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Pipeline-Agent-Prompt-Template</span>
+<span class="code-comment"># 1 Pipeline-Agent pro Zielgruppe</span>
+
+<span class="code-keyword">Du bist der Pipeline-Agent fuer die Zielgruppe</span>
+<span class="code-orange">[EMOJI + NAME]</span>.
+
+<span class="code-keyword">Tiefenprofil:</span>
+- Max-Level: <span class="code-orange">[L1/L2/L3]</span>
+- HS-Schwelle eigene Seite: <span class="code-orange">[>=6/>=7/>=8]</span>
+- HS-Schwelle noch tiefer:  <span class="code-orange">[>=8/>=9/>=10]</span>
+
+<span class="code-keyword">Integrationsmodus:</span> <span class="code-orange">[Standalone/Eingebettet]</span>
+<span class="code-keyword">Output-Verzeichnis:</span> <span class="code-orange">[PFAD]</span>
+
+<span class="code-keyword">Curriculum fuer deine Zielgruppe:</span>
+<span class="code-orange">[THEMEN-BAUM MIT HS-SCORES NUR FUER DIESE ZG]</span>
+
+<span class="code-keyword">CSS/JS-Foundation:</span> <span class="code-orange">[REFERENZ AUF PHASE-3-OUTPUT]</span>
+
+<span class="code-keyword">Naming-Konvention:</span>
+- L0: <span class="code-string">index[_SUFFIX]_[de|en].html</span>
+- L1: <span class="code-string">l1/[slug][_SUFFIX]_[de|en].html</span>
+- L2: <span class="code-string">l2/[slug][_SUFFIX]_[de|en].html</span>
+- L3: <span class="code-string">l3/[slug][_SUFFIX]_[de|en].html</span>
+
+<span class="code-keyword">Deine Aufgabe:</span>
+<span class="code-string">1.</span> Baue L0 (DE + EN parallel als Datei-Agents)
+<span class="code-string">2.</span> WARTE bis L0 fertig
+<span class="code-string">3.</span> Baue L1 — NUR Themen mit HS >= <span class="code-orange">[SCHWELLE]</span>
+<span class="code-string">4.</span> WARTE bis L1 fertig
+<span class="code-string">5.</span> [Wenn Max-Level >= L2:] Baue L2
+<span class="code-string">6.</span> WARTE bis L2 fertig
+<span class="code-string">7.</span> [Wenn Max-Level = L3:] Baue L3
+<span class="code-string">8.</span> Gib Pipeline-Zusammenfassung zurueck</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Zeile 1-2:</strong> Der Agent erhaelt seine Zielgruppen-Identitaet -- inkl. Emoji fuer die interne Zuordnung in Logs.</p>
+          <p><strong>Tiefenprofil:</strong> Die drei kritischen Parameter die bestimmen, wie tief die Pipeline geht. Der Agent kann NICHT ueber sein Max-Level hinaus bauen.</p>
+          <p><strong>Curriculum:</strong> Hier wird der gefilterte Themen-Baum injiziert -- NUR die Themen fuer DIESE Zielgruppe. Ein Anwender-Pipeline-Agent sieht keine Entwickler-Themen.</p>
+          <p><strong>Schritte 1-8:</strong> Die streng sequenzielle Abfolge INNERHALB der Pipeline. Zwischen den Levels wird GEWARTET. Innerhalb eines Levels laufen Datei-Agents parallel.</p>
+          <p><strong>Wichtig:</strong> Zielgruppen-Switch-Links auf L0 bleiben LEER -- sie werden erst in Phase 5 (Polish) gesetzt, wenn ALLE Pipelines fertig sind.</p>
+        </div>
+      </div>
+
+      <div class="toggle-block" id="toggle5b">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle5b','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle5b','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Datei-Agent-Prompt-Template</span>
+<span class="code-comment"># 1 Datei-Agent pro HTML-Datei</span>
+
+<span class="code-keyword">Erstelle die HTML-Datei</span> <span class="code-orange">[DATEINAME]</span>
+im Verzeichnis <span class="code-orange">[PFAD]</span>.
+
+<span class="code-keyword">Kontext:</span>
+- Zielgruppe:        <span class="code-orange">[EMOJI + NAME]</span>
+- Sprache:           <span class="code-orange">[DE/EN]</span>
+- Level:             <span class="code-orange">[L0/L1/L2/L3]</span>
+- Thema:             <span class="code-orange">[THEMA]</span>
+- Integrationsmodus: <span class="code-orange">[Standalone/Eingebettet]</span>
+- Helpfulness-Score: <span class="code-orange">[SCORE]</span>
+
+<span class="code-keyword">Inhalt:</span> <span class="code-orange">[INHALTSBESCHREIBUNG AUS CURRICULUM]</span>
+
+<span class="code-keyword">CSS/JS:</span> Verwende exakt das folgende Foundation:
+<span class="code-orange">[FOUNDATION EINFUEGEN ODER REFERENZ]</span>
+
+<span class="code-keyword">Verlinkung:</span>
+- Breadcrumb-Pfad:     <span class="code-orange">[PFAD]</span>
+- Deep-Dive-Links:     <span class="code-orange">[LISTE DER ZIEL-DATEIEN]</span>
+- Sibling-Seiten:      <span class="code-orange">[LISTE INNERHALB DIESER ZG]</span>
+- Sprach-Pendant:      <span class="code-orange">[DATEINAME]</span>
+- Zielgruppen-Switch:  <span class="code-keyword">PLATZHALTER</span>
+  <span class="code-comment">(wird in Phase 5 befuellt)</span>
+
+<span class="code-keyword">Qualitaetsgates:</span> <span class="code-orange">[ALLE RELEVANTEN GATES]</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>DATEINAME + PFAD:</strong> Werden aus der Naming-Konvention berechnet: <code>[thema-slug][_zg-suffix]_[sprache].html</code> im richtigen Level-Ordner.</p>
+          <p><strong>Kontext-Block:</strong> Der Datei-Agent erhaelt ALLES was er braucht um die Seite autark zu bauen -- Zielgruppe, Sprache, Level, Thema, Integration und HS.</p>
+          <p><strong>Foundation:</strong> Entweder wird das komplette CSS/JS inline eingefuegt, oder eine Referenz auf die Phase-3-Ausgabe. In der Praxis wird meistens inline eingefuegt (Self-Contained).</p>
+          <p><strong>Verlinkung:</strong> Alle Links werden explizit vorgegeben -- der Agent muss keine Pfade raten. Das verhindert tote Links.</p>
+          <p><strong>Zielgruppen-Switch = PLATZHALTER:</strong> Der Datei-Agent KANN den Switch nicht befuellen, weil er nicht weiss welche anderen Pipelines existieren. Phase 5 ersetzt den Platzhalter nachtraeglich.</p>
+        </div>
+      </div>
+
+      <p>Das <span class="tooltip">Context-Injection-Muster<span class="tooltip-text">Bei der Verstehen-Pipeline werden Sprach- und Framework-Dateien dynamisch an den Agent-Prompt angehaengt. Fuer jede erkannte Sprache wird die passende .md-Datei aus dem languages/-Ordner geladen.</span></span> funktioniert bei der Verstehen-Pipeline aehnlich -- dort werden Sprach-Addenda und Framework-Addenda injiziert:</p>
+
+      <div class="code-block">
+        <code><span class="code-comment"># Context-Injection fuer Verstehen-Pipeline Agenten</span>
+<span class="code-comment"># Am Beispiel des file-analyzer Agents</span>
+
+<span class="code-keyword">1. Base-Template:</span>
+   <span class="code-string">agents/file-analyzer.md</span> wird geladen
+
+<span class="code-keyword">2. Language Context Injection:</span>
+   <span class="code-orange">FUER JEDE erkannte Sprache</span> (z.B. python, typescript):
+     Lade <span class="code-string">./languages/&lt;language-id&gt;.md</span>
+     Haenge an unter <span class="code-string">## Language Context</span> Header
+     <span class="code-comment">Wenn Datei nicht existiert: skip silently</span>
+
+<span class="code-keyword">3. Framework Addendum Injection:</span>
+   <span class="code-orange">FUER JEDES erkannte Framework</span> (z.B. Django, React):
+     Lade <span class="code-string">./frameworks/&lt;framework-id&gt;.md</span>
+     Haenge an nach Language Context
+     <span class="code-comment">Wenn Datei nicht existiert: skip silently</span>
+
+<span class="code-keyword">4. Batch-spezifischer Kontext:</span>
+   - Project root Pfad
+   - Batch-Index Nummer
+   - Pre-resolved Import-Daten (<span class="code-string">batchImportData</span>)
+   - Liste der zu analysierenden Dateien
+
+<span class="code-keyword">5. Finaler Prompt =</span>
+   Base-Template
+   + Language Context(s)
+   + Framework Addendum(s)
+   + Batch-Kontext</code>
+      </div>
+
+      <div class="edge-case">
+        <strong>Edge-Case: Fehlende Sprach-Datei.</strong> Wenn eine Sprache erkannt wird fuer die keine <code>languages/*.md</code> existiert (z.B. ein obskures Format), wird sie <em>silently skipped</em>. Der Agent arbeitet dann ohne Sprach-spezifische Hints. Dies kann zu generischeren Knoten-Summaries fuehren. Aktuell existieren 23 Sprach-Dateien und 10 Framework-Dateien.
+      </div>
+
+      <div class="edge-case">
+        <strong>Alternative Implementierung:</strong> Statt Context-Injection koennte man einen zentralen "Wissens-Agent" haben, den andere Agents per Tool-Call befragen. Der Learning Skill hat sich bewusst gegen dieses Pattern entschieden: Injection ist deterministisch (gleicher Input = gleicher Prompt), waehrend Tool-Calls nicht-deterministisch sind und zu inkonsistenten Ergebnissen fuehren koennen.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIBLING NAV -->
+<section class="sibling-nav">
+  <div class="sibling-nav-inner">
+    <div class="sibling-nav-title">Weitere Entwickler-L3-Seiten</div>
+    <div class="sibling-nav-grid">
+      <a href="skill-md-aufbau_dev_de.html" class="sibling-nav-link active">
+        <div class="sibling-nav-link-title">skill.md Aufbau</div>
+        <div class="sibling-nav-link-sub">Das 3000-Zeilen-Hirn, Zeile fuer Zeile</div>
+      </a>
+      <a href="subagent-architektur_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Subagent-Architektur</div>
+        <div class="sibling-nav-link-sub">Wie 8 Agenten orchestriert werden</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Toggle Code/Klartext
+function toggleView(blockId, panel) {
+  const block = document.getElementById(blockId);
+  block.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.toggle-panel').forEach(p => p.classList.remove('active'));
+  block.querySelector(`[data-panel="${panel}"]`).classList.add('active');
+  block.querySelectorAll('.toggle-tab').forEach(t => {
+    if ((panel === 'code' && t.textContent === 'Code') || (panel === 'text' && t.textContent === 'Klartext'))
+      t.classList.add('active');
+  });
+}
+
+// Sections & Nav Dots
+const sections = ['hero','mod1','mod2','mod3','mod4','mod5'];
+const navDotsContainer = document.getElementById('navDots');
+sections.forEach((id, i) => {
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot';
+  dot.title = i === 0 ? 'Start' : 'Modul ' + String(i).padStart(2,'0');
+  dot.addEventListener('click', () => document.getElementById(id).scrollIntoView({behavior:'smooth'}));
+  navDotsContainer.appendChild(dot);
+});
+
+// Intersection Observer
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, {threshold: 0.3});
+sections.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+
+// Progress Bar
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (window.scrollY / h * 100) + '%';
+});
+
+// Tooltip positioning
+document.querySelectorAll('.tooltip').forEach(tip => {
+  tip.addEventListener('mouseenter', e => {
+    const tt = tip.querySelector('.tooltip-text');
+    if (!tt) return;
+    const rect = tip.getBoundingClientRect();
+    tt.style.left = rect.left + 'px';
+    tt.style.top = (rect.bottom + 8) + 'px';
+  });
+});
+</script>
+</body>
+</html>

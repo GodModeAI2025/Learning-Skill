@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Was ist der Learning Skill? — Learning Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --deep-blue:#000099;
+  --impulse-orange:#FE8F11;
+  --warm-grey:#E4DAD4;
+  --warm-grey-bg:#F3EFEB;
+  --code-bg:#000066;
+  --text:#1A1A2E;
+  --text-muted:#6B6778;
+  --radius:16px;
+  --space-1:.25rem;--space-2:.5rem;--space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
+  --font-heading:'Bricolage Grotesque',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-code:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#fff}
+
+/* NAV-DEEP */
+.nav-deep{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--deep-blue);padding:.65rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.breadcrumb{display:flex;align-items:center;gap:.5rem;flex:1;min-width:0}
+.breadcrumb-link{color:rgba(255,255,255,.75);text-decoration:none;font-size:.85rem;font-family:var(--font-body);transition:color .2s;white-space:nowrap}
+.breadcrumb-link:hover{color:#fff}
+.breadcrumb-sep{color:rgba(255,255,255,.35);font-size:.85rem}
+.breadcrumb-current{color:#fff;font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.breadcrumb-level{display:inline-block;background:rgba(254,143,17,.2);color:var(--impulse-orange);padding:.1rem .45rem;border-radius:6px;font-size:.7rem;font-weight:700;font-family:var(--font-code);margin-right:.35rem;vertical-align:middle}
+.nav-links{display:flex;align-items:center;gap:.75rem}
+.nav-link{color:rgba(255,255,255,.75);transition:color .2s}
+.nav-link:hover{color:#fff}
+.nav-lang{color:#fff;text-decoration:none;font-size:1.2rem;margin-left:.5rem;transition:transform .2s;display:inline-block}
+.nav-lang:hover{transform:scale(1.15)}
+
+/* LEVEL INDICATOR */
+.level-indicator{display:flex;gap:.4rem;align-items:center;margin-bottom:var(--space-4);justify-content:center}
+.level-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.level-dot-done{background:var(--impulse-orange)}
+.level-dot-active{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+
+/* BACK BUTTON */
+.back-button{display:inline-block;padding:.4rem 1.2rem;border-radius:30px;font-size:.85rem;text-decoration:none;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);background:rgba(255,255,255,.05);transition:all .2s}
+.back-button:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.35)}
+
+/* HERO MODULE */
+.module-hero{background:var(--deep-blue);color:#fff;padding:7rem 1.5rem 4rem;min-height:70vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.module-hero::before{content:'L1';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--font-heading);font-size:20rem;font-weight:800;color:rgba(255,255,255,.03);pointer-events:none}
+.module-hero h1{font-family:var(--font-heading);font-size:clamp(2rem,5vw,3.2rem);font-weight:800;line-height:1.15;margin-bottom:var(--space-3)}
+.module-hero h1 .accent{color:var(--impulse-orange)}
+.module-hero p{font-size:1.1rem;max-width:600px;margin:0 auto}
+.module-content{max-width:820px;width:100%;margin:0 auto}
+
+/* PAGE OVERVIEW */
+.page-overview{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center;margin-top:var(--space-5)}
+.page-overview a{display:inline-block;padding:.35rem 1rem;border-radius:30px;font-size:.8rem;text-decoration:none;color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);transition:all .2s}
+.page-overview a:hover{background:rgba(255,255,255,.12);border-color:var(--impulse-orange);color:#fff}
+
+/* MODULES */
+.module{padding:var(--space-8) 1.5rem;position:relative;overflow:hidden;min-height:100dvh;display:flex;align-items:center}
+.module-inner{max-width:820px;margin:0 auto;width:100%}
+.module-odd{background:var(--warm-grey-bg)}
+.module-even{background:#fff}
+.module-number{font-family:var(--font-heading);font-size:8rem;font-weight:800;color:rgba(0,0,153,.06);position:absolute;top:1rem;right:2rem;line-height:1;pointer-events:none;user-select:none}
+.module h2{font-family:var(--font-heading);font-size:clamp(1.5rem,3vw,2.2rem);font-weight:700;margin-bottom:var(--space-3);color:var(--text)}
+.module h2 .accent{color:var(--impulse-orange)}
+.module p{margin-bottom:1.25rem;color:var(--text)}
+.module p.subtle{color:var(--text-muted);font-size:.95rem}
+
+/* CARDS */
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:var(--space-5) 0}
+.card-row.three{grid-template-columns:repeat(3,1fr)}
+.card{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:2rem 1.5rem;text-align:center;transition:all .3s;position:relative}
+.module-odd .card{background:#fff}
+.card:hover{border-color:var(--impulse-orange);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,153,.1)}
+.card-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+.card h3{font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:.5rem;color:var(--text)}
+.card p{font-size:.9rem;color:var(--text-muted);line-height:1.5}
+
+/* FEATURE LIST */
+.feature-list{list-style:none;margin:var(--space-5) 0}
+.feature-list li{padding:1rem 1.25rem;border-left:3px solid var(--warm-grey);margin-bottom:.75rem;transition:all .3s;border-radius:0 8px 8px 0;background:rgba(255,255,255,.5)}
+.module-even .feature-list li{background:var(--warm-grey-bg)}
+.feature-list li:hover{border-left-color:var(--impulse-orange);background:#fff;transform:translateX(4px)}
+.feature-list li strong{color:var(--text);font-weight:600}
+.feature-list li span{color:var(--text-muted);font-size:.9rem}
+
+/* TOOLTIP */
+.tooltip-term{border-bottom:1px dashed var(--impulse-orange);cursor:help;position:relative;color:var(--text)}
+.tooltip-term .tooltip-box{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) scale(.95);background:var(--code-bg);color:#fff;padding:.6rem 1rem;border-radius:10px;font-size:.8rem;line-height:1.5;white-space:normal;width:260px;opacity:0;pointer-events:none;transition:all .2s;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.tooltip-term .tooltip-box::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:var(--code-bg)}
+.tooltip-term:hover .tooltip-box,.tooltip-term:focus .tooltip-box{opacity:1;transform:translateX(-50%) scale(1);pointer-events:auto}
+
+/* QUIZ */
+.quiz-box{background:#fff;border:2px solid var(--warm-grey);border-radius:var(--radius);padding:2rem;margin:var(--space-5) 0}
+.module-even .quiz-box{background:var(--warm-grey-bg)}
+.quiz-box h3{font-family:var(--font-heading);font-size:1.15rem;font-weight:700;margin-bottom:var(--space-3);color:var(--text)}
+.quiz-option{display:block;width:100%;padding:.85rem 1.25rem;margin-bottom:.6rem;border:2px solid var(--warm-grey);border-radius:10px;background:#fff;cursor:pointer;font-family:var(--font-body);font-size:.95rem;color:var(--text);text-align:left;transition:all .2s}
+.quiz-option:hover{border-color:var(--impulse-orange);background:rgba(254,143,17,.04)}
+.quiz-option.correct{border-color:#22c55e;background:rgba(34,197,94,.08);color:#166534}
+.quiz-option.wrong{border-color:#ef4444;background:rgba(239,68,68,.08);color:#991b1b}
+.quiz-feedback{margin-top:var(--space-3);padding:1rem;border-radius:10px;font-size:.9rem;display:none}
+.quiz-feedback.show{display:block}
+.quiz-feedback.success{background:rgba(34,197,94,.1);color:#166534;border:1px solid rgba(34,197,94,.3)}
+.quiz-feedback.error{background:rgba(239,68,68,.1);color:#991b1b;border:1px solid rgba(239,68,68,.3)}
+
+/* SIBLING NAV */
+.sibling-nav{background:var(--deep-blue);padding:var(--space-6) 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav h3{color:#fff;font-family:var(--font-heading);font-size:1.1rem;font-weight:700;margin-bottom:var(--space-4)}
+.sibling-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.sibling-card{display:block;padding:1.25rem;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);text-decoration:none;transition:all .3s}
+.sibling-card:hover{background:rgba(255,255,255,.1);border-color:var(--impulse-orange);transform:translateY(-2px)}
+.sibling-card.current{border-color:var(--impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-card-title{color:#fff;font-family:var(--font-heading);font-weight:700;font-size:.95rem;display:block;margin-bottom:.25rem}
+.sibling-card-desc{color:rgba(255,255,255,.6);font-size:.8rem;display:block}
+
+/* FOOTER */
+.site-footer{background:var(--code-bg);color:rgba(255,255,255,.6);padding:2.5rem 1.5rem;text-align:center;font-size:.8rem}
+.site-footer a{color:var(--impulse-orange);text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
+
+/* ANIMATE */
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in.visible{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .card-row,.card-row.three{grid-template-columns:1fr}
+  .module-number{font-size:5rem;right:1rem}
+  .module-hero{padding:6rem 1.5rem 3rem}
+  .module{padding:3.5rem 1.5rem;min-height:auto}
+  .sibling-grid{grid-template-columns:1fr}
+  .nav-deep{padding:.5rem 1rem}
+  .breadcrumb{font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav-Deep -->
+<nav class="nav-deep" role="navigation" aria-label="Breadcrumb-Navigation">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="../index_de.html" class="breadcrumb-link"><span class="breadcrumb-level">L0</span> Überblick</a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-current"><span class="breadcrumb-level">L1</span> Was ist der Learning Skill?</span>
+  </nav>
+  <div class="nav-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" class="nav-link" target="_blank" rel="noopener" aria-label="GitHub Repository">
+      <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+  <a href="what-is-learning-skill_en.html" class="nav-lang" aria-label="Switch to English">&#x1F1EC;&#x1F1E7;</a>
+</nav>
+
+<!-- Hero -->
+<section class="module module-hero" id="module-0">
+  <div class="module-content" style="text-align:center">
+    <div class="level-indicator" style="justify-content:center">
+      <span class="level-dot level-dot-done"></span>
+      <span class="level-dot level-dot-active"></span>
+      <span class="level-dot"></span>
+    </div>
+    <a href="../index_de.html" class="back-button" style="color:rgba(255,255,255,.85);border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.05)">&#8592; Zurück zum Überblick</a>
+    <h1 style="color:#FFF;margin-top:var(--space-4)">Was ist der <span class="accent">Learning Skill</span>?</h1>
+    <p style="color:rgba(255,255,255,.85)">Ein Claude-Code-Plugin, das beliebige Codebases in verständliche Lernmaterialien verwandelt. Für alle, die Code verstehen wollen — ohne den Code lesen zu müssen.</p>
+    <div class="page-overview">
+      <a href="#module-1">01 Überblick &amp; Vision</a>
+      <a href="#module-2">02 Für wen?</a>
+      <a href="#module-3">03 Was kommt raus?</a>
+      <a href="#module-4">04 Einsatzgebiete</a>
+    </div>
+  </div>
+</section>
+
+<!-- Modul 01 -->
+<section class="module module-odd" id="module-1">
+  <span class="module-number">01</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Überblick &amp; <span class="accent">Vision</span></h2>
+    <p class="animate-in">Der Learning Skill ist ein Plugin für <span class="tooltip-term" tabindex="0">Claude Code<span class="tooltip-box">Claude Code ist Anthropics offizielle Kommandozeile für KI-gestützte Softwareentwicklung. Der Learning Skill erweitert Claude Code um Lernfunktionen.</span></span>, das eine grundlegende Herausforderung der Softwareentwicklung löst: Codebases sind schwer zu verstehen — besonders für Menschen, die nicht selbst am Code gearbeitet haben.</p>
+
+    <p class="animate-in">Statt Dokumentation manuell zu schreiben, analysiert der Learning Skill den gesamten Quellcode und erzeugt daraus automatisch zwei Arten von Lernmaterial:</p>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F4DA;</span>
+        <h3>Interaktive HTML-Kurse</h3>
+        <p>Strukturierte, mehrstufige Lernpfade — vom groben Überblick bis ins letzte Detail. Komplett im Browser nutzbar, ohne Installation.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F578;&#xFE0F;</span>
+        <h3>Knowledge Graphs</h3>
+        <p>Visuelle Wissenslandkarten, die Zusammenhänge zwischen Komponenten, Modulen und Konzepten als interaktives Netzwerk darstellen.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">Die Vision: Jeder Mensch soll jede Codebase verstehen können — unabhängig von technischem Vorwissen. Der Learning Skill ist der erste Schritt dorthin.</p>
+  </div>
+</section>
+
+<!-- Modul 02 -->
+<section class="module module-even" id="module-2">
+  <span class="module-number">02</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Für <span class="accent">wen</span>?</h2>
+    <p class="animate-in">Der Learning Skill erzeugt Inhalte für drei verschiedene Zielgruppen. Jede bekommt genau die Perspektive, die sie braucht:</p>
+
+    <div class="card-row three animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F464;</span>
+        <h3>Anwender</h3>
+        <p>Nutzen die Software, kennen keinen Code. Bekommen erklärt, was die Software tut und wie sie funktioniert — ohne technischen Jargon.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F4BB;</span>
+        <h3>Entwickler</h3>
+        <p>Arbeiten mit dem Code. Bekommen Architektur, Patterns, Datenflüsse und Implementierungsdetails — technisch fundiert.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F4CA;</span>
+        <h3>Entscheider</h3>
+        <p>Verantworten das Projekt. Bekommen Risiken, Abhängigkeiten, Technologie-Stack und strategische Bewertungen.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">Die Zielgruppen können kombiniert werden. Ein Kurs kann gleichzeitig Anwender- und Entwickler-Perspektiven enthalten — der Learning Skill segmentiert die Inhalte automatisch.</p>
+
+    <!-- Interactive Quiz -->
+    <div class="quiz-box animate-in">
+      <h3>&#x1F9E9; Kurz-Check: Welche Perspektive passt?</h3>
+      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:1rem">Sie sollen einem neuen Teammitglied erklären, wie die API-Endpunkte strukturiert sind. Welche Zielgruppe wählen Sie?</p>
+      <button class="quiz-option" data-correct="false">Anwender — die brauchen es einfach erklärt</button>
+      <button class="quiz-option" data-correct="true">Entwickler — technische Architektur ist gefragt</button>
+      <button class="quiz-option" data-correct="false">Entscheider — sie müssen den Stack kennen</button>
+      <div class="quiz-feedback success">Richtig! API-Endpunkte sind ein technisches Thema. Die Entwickler-Perspektive liefert genau die Details zu Routen, Payloads und Datenflüssen.</div>
+      <div class="quiz-feedback error">Nicht ganz. API-Endpunkte sind ein technisches Detail — hier ist die Entwickler-Perspektive die richtige Wahl.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Modul 03 -->
+<section class="module module-odd" id="module-3">
+  <span class="module-number">03</span>
+  <div class="module-inner">
+    <h2 class="animate-in">Was <span class="accent">kommt raus</span>?</h2>
+    <p class="animate-in">Der Learning Skill erzeugt drei Arten von Ausgabeformaten. Alle sind <span class="tooltip-term" tabindex="0">self-contained HTML<span class="tooltip-box">Jede HTML-Datei enthält alles, was sie braucht: CSS, JavaScript, Inhalte. Kein Server, keine Installation — einfach im Browser öffnen.</span></span>-Dateien, die direkt im Browser funktionieren:</p>
+
+    <ul class="feature-list animate-in">
+      <li>
+        <strong>HTML-Kurse (L0 bis L3)</strong><br>
+        <span>Vier Tiefenebenen: L0 gibt den Überblick, L1 vertieft Themen, L2 erklärt Details, L3 ist technische Referenz. Jede Ebene verlinkt zur nächsten.</span>
+      </li>
+      <li>
+        <strong>Knowledge Graphs mit Dashboard</strong><br>
+        <span>Interaktive Visualisierung aller Komponenten und ihrer Beziehungen. Mit Filtern, Suche, Layern und geführten Tours.</span>
+      </li>
+      <li>
+        <strong>Kombinierte Ausgabe</strong><br>
+        <span>Kurs und Knowledge Graph zusammen. Der Graph liefert dabei ein Helpfulness-Scoring, das die Kursqualität verbessert.</span>
+      </li>
+    </ul>
+
+    <p class="subtle animate-in">Die Dateien können per E-Mail verschickt, auf einem Fileserver abgelegt oder in ein Wiki eingebettet werden. Keine Abhängigkeiten, keine Laufzeit-Anforderungen.</p>
+  </div>
+</section>
+
+<!-- Modul 04 -->
+<section class="module module-even" id="module-4">
+  <span class="module-number">04</span>
+  <div class="module-inner">
+    <h2 class="animate-in"><span class="accent">Einsatzgebiete</span></h2>
+    <p class="animate-in">Der Learning Skill ist überall nützlich, wo Menschen Codebases verstehen müssen. Hier die häufigsten Szenarien:</p>
+
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F91D;</span>
+        <h3>Onboarding</h3>
+        <p>Neue Teammitglieder verstehen das Projekt in Stunden statt Wochen. Kurse erklären Architektur, Konventionen und Zusammenhänge.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F50D;</span>
+        <h3>Code-Reviews</h3>
+        <p>Reviewer bekommen den Kontext, den sie brauchen. Der Knowledge Graph zeigt, welche Teile zusammenhängen und was ein Change beeinflusst.</p>
+      </div>
+    </div>
+    <div class="card-row animate-in">
+      <div class="card">
+        <span class="card-icon">&#x1F4DD;</span>
+        <h3>Dokumentation</h3>
+        <p>Statt manuell Docs zu schreiben, generiert der Skill aktuelle, interaktive Dokumentation direkt aus dem Code.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">&#x1F393;</span>
+        <h3>Lernen &amp; Lehren</h3>
+        <p>Open-Source-Projekte, Tutorials, Uni-Kurse — der Skill macht jeden Code zum Lehrmaterial mit anpassbarer Tiefe.</p>
+      </div>
+    </div>
+
+    <p class="subtle animate-in">Ob kleines Nebenprojekt oder Enterprise-Monolith — der Learning Skill skaliert mit der Komplexität der Codebase.</p>
+  </div>
+</section>
+
+<!-- Sibling Navigation -->
+<nav class="sibling-nav" aria-label="Weitere L1-Seiten">
+  <div class="sibling-nav-inner">
+    <h3>Weitere Themen auf dieser Ebene</h3>
+    <div class="sibling-grid">
+      <span class="sibling-card current">
+        <span class="sibling-card-title">Was ist der Learning Skill?</span>
+        <span class="sibling-card-desc">Features, Zielgruppen, Einsatzgebiete</span>
+      </span>
+      <a href="drei-modi_de.html" class="sibling-card">
+        <span class="sibling-card-title">Die drei Modi</span>
+        <span class="sibling-card-desc">Kurs, Verstehen, Kombiniert</span>
+      </a>
+      <a href="kurs-erstellen_de.html" class="sibling-card">
+        <span class="sibling-card-title">Einen Kurs erstellen</span>
+        <span class="sibling-card-desc">Schritt-für-Schritt-Anleitung</span>
+      </a>
+      <a href="knowledge-graph-nutzen_de.html" class="sibling-card">
+        <span class="sibling-card-title">Knowledge Graph nutzen</span>
+        <span class="sibling-card-desc">Dashboard, Tours, Navigation</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <p>&copy; 2026 Mark Zimmermann. Alle Rechte vorbehalten.</p>
+  <div class="footer-links">
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener">GitHub</a>
+    <a href="../impressum.html">Impressum</a>
+  </div>
+</footer>
+
+<script>
+/* Scroll Animations */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('.animate-in').forEach(el => observer.observe(el));
+
+/* Quiz Logic */
+document.querySelectorAll('.quiz-option').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const box = this.closest('.quiz-box');
+    const isCorrect = this.dataset.correct === 'true';
+    box.querySelectorAll('.quiz-option').forEach(b => { b.disabled = true; b.classList.remove('correct','wrong'); });
+    this.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) box.querySelector('[data-correct="true"]').classList.add('correct');
+    box.querySelectorAll('.quiz-feedback').forEach(f => f.classList.remove('show'));
+    box.querySelector('.quiz-feedback.' + (isCorrect ? 'success' : 'error')).classList.add('show');
+  });
+});
+</script>
+</body>
+</html>

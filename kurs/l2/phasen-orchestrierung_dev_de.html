@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phasen-Orchestrierung — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --color-deep-blue:#000099;
+  --color-impulse-orange:#FE8F11;
+  --color-warm-gray:#E4DAD4;
+  --color-warm-gray-bg:#F3EFEB;
+  --color-code-bg:#000066;
+  --color-text:#1A1A2E;
+  --color-text-muted:#5C5A6B;
+  --font-display:'Bricolage Grotesque',Georgia,serif;
+  --font-body:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-breadcrumb{font-family:var(--font-body);font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.4rem}
+.nav-breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}
+.nav-breadcrumb a:hover{color:var(--color-impulse-orange)}
+.nav-breadcrumb .sep{color:rgba(255,255,255,.35)}
+.nav-breadcrumb .current{color:rgba(255,255,255,.95);font-weight:600}
+.nav-dots{display:flex;gap:.45rem;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-right a:hover{color:var(--color-impulse-orange)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}
+.github-icon{display:inline-flex;align-items:center}
+.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}
+.github-icon:hover svg{fill:var(--color-impulse-orange)}
+.hero{background:var(--color-deep-blue);color:#fff;padding:6rem 1.5rem 4rem;text-align:center;min-height:80dvh;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:start}
+.hero-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;transition:color .2s}
+.hero-back:hover{color:var(--color-impulse-orange)}
+.hero-back svg{width:16px;height:16px;fill:currentColor}
+.level-indicator{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.level-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.level-dot.done{background:var(--color-impulse-orange);border-color:var(--color-impulse-orange)}
+.level-dot.active{background:var(--color-impulse-orange);border-color:#fff;box-shadow:0 0 0 3px rgba(254,143,17,.4)}
+.level-dot.empty{background:transparent}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem;color:rgba(255,255,255,.95)}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 1.5rem;line-height:1.5}
+.page-overview{max-width:600px;margin:0 auto;text-align:left}
+.page-overview-title{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.page-overview-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.page-overview-list li{font-size:.85rem;color:rgba(255,255,255,.7);padding-left:1rem;position:relative}
+.page-overview-list li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--color-impulse-orange);border-radius:50%}
+.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}
+.module:nth-child(odd){background:#fff}
+.module:nth-child(even){background:var(--color-warm-gray-bg)}
+.module-content{max-width:820px;margin:0 auto}
+.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}
+.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}
+.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem;font-weight:400}
+.module-body{font-size:1rem;line-height:1.7;color:var(--color-text)}
+.module-body p{margin-bottom:1rem;max-width:70ch}
+.deep-dive{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;padding:.65rem 1.3rem;background:var(--color-impulse-orange);color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:.9rem;transition:all .2s}
+.deep-dive:hover{background:#e5800e;transform:translateY(-1px);box-shadow:0 4px 12px rgba(254,143,17,.3)}
+.deep-dive svg{width:16px;height:16px;fill:#fff}
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}
+.code-comment{color:rgba(255,255,255,.4)}
+.code-keyword{color:#7CB7FF}
+.code-string{color:#A8E6A1}
+.code-orange{color:var(--color-impulse-orange)}
+.toggle-block{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}
+.toggle-tabs{display:flex;background:var(--color-deep-blue)}
+.toggle-tab{flex:1;padding:.6rem 1rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;border:none;background:transparent}
+.toggle-tab.active{color:#fff;background:rgba(254,143,17,.2);border-bottom:2px solid var(--color-impulse-orange)}
+.toggle-panel{display:none;padding:1.25rem}
+.toggle-panel.active{display:block}
+.toggle-panel.code-panel{background:var(--color-code-bg)}
+.toggle-panel.text-panel{background:#fff}
+.toggle-panel.text-panel p{margin-bottom:.5rem;font-size:.9rem;color:var(--color-text)}
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help;color:inherit}
+.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}
+.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+.pipeline-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:1.5rem;background:var(--color-code-bg);border-radius:10px;-webkit-overflow-scrolling:touch}
+.pipeline-step{display:flex;flex-direction:column;align-items:center;min-width:90px;padding:.75rem .5rem;flex-shrink:0}
+.pipeline-step-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.65rem;color:rgba(255,255,255,.85);font-weight:600;margin-bottom:.5rem;transition:all .3s}
+.pipeline-step:hover .pipeline-step-icon{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.15)}
+.pipeline-step-name{font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
+.pipeline-step-detail{font-size:.6rem;color:rgba(255,255,255,.5);margin-top:.2rem;text-align:center}
+.pipeline-arrow{color:var(--color-impulse-orange);font-size:1.2rem;flex-shrink:0;margin:0 .15rem}
+.phase-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.85rem}
+.phase-table th{background:var(--color-deep-blue);color:#fff;padding:.6rem .8rem;text-align:left;font-family:var(--font-mono);font-size:.75rem;font-weight:600}
+.phase-table td{padding:.6rem .8rem;border-bottom:1px solid var(--color-warm-gray);vertical-align:top}
+.phase-table tr:hover td{background:rgba(254,143,17,.05)}
+.phase-table .phase-num{font-family:var(--font-mono);font-weight:600;color:var(--color-deep-blue);white-space:nowrap}
+.sibling-nav{background:var(--color-deep-blue);padding:2.5rem 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav-title{font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:1rem}
+.sibling-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.sibling-nav-link{display:block;padding:.75rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;text-decoration:none;transition:all .2s}
+.sibling-nav-link:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.sibling-nav-link.active{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-nav-link-title{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}
+.sibling-nav-link-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+@media(max-width:640px){
+  .nav-breadcrumb{font-size:.72rem}
+  .module{padding:4rem 1rem 3rem}
+  .module-header{flex-direction:column;gap:.5rem}
+  .module-number{font-size:3.5rem}
+  .hero h1{font-size:1.8rem}
+  .sibling-nav-grid{grid-template-columns:1fr}
+  .pipeline-flow{flex-wrap:nowrap}
+  .phase-table{font-size:.75rem}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-breadcrumb">
+    <a href="../index_dev_de.html">L0 Überblick</a>
+    <span class="sep">&#9656;</span>
+    <a href="../l1/skill-architektur_dev_de.html">L1 Skill-Architektur</a>
+    <span class="sep">&#9656;</span>
+    <span class="current">L2 Phasen-Orchestrierung</span>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-right">
+    <a href="phase-orchestration_dev_en.html" title="English version">&#127468;&#127463;</a>
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon" title="GitHub">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div>
+    <a href="../l1/skill-architektur_dev_de.html" class="hero-back">
+      <svg viewBox="0 0 16 16"><path d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg>
+      Zurück zur Skill-Architektur
+    </a>
+    <div class="level-indicator">
+      <div class="level-dot done" title="L0 Überblick"></div>
+      <div class="level-dot done" title="L1 Vertiefung"></div>
+      <div class="level-dot active" title="L2 Detail"></div>
+      <div class="level-dot empty" title="L3 Tiefendetail"></div>
+    </div>
+    <span class="hero-badge">Level 2 — Detail</span>
+    <h1>Phasen-Orchestrierung</h1>
+    <p class="hero-sub">Wie skill.md den gesamten Ablauf steuert: Modi-Erkennung, Phasen-Sequenzen für Kurs- und Verstehen-Pipeline, Fehlerbehandlung und Retry-Logik.</p>
+    <div class="page-overview">
+      <div class="page-overview-title">Auf dieser Seite</div>
+      <ul class="page-overview-list">
+        <li>Der Orchestrator — Modi-übergreifende Phasensteuerung</li>
+        <li>Kurs-Pipeline Phasen (0-6)</li>
+        <li>Verstehen-Pipeline Phasen (0-7)</li>
+        <li>Kombiniert-Pipeline — Phase A + Phase B</li>
+        <li>Fehlerbehandlung — Retry-Logik, Partial Results</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 01 -->
+<section class="module" id="mod1">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">01</span>
+      <div>
+        <div class="module-title">Der Orchestrator</div>
+        <div class="module-subtitle">Modi-übergreifende Phasensteuerung und Weichenstellung in skill.md</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Der Orchestrator ist der zentrale Steuerungsmechanismus in <code>skill.md</code>. Er bestimmt, welcher Modus aktiv ist, welche Phasen in welcher Reihenfolge durchlaufen werden und welche <span class="tooltip">Qualitäts-Gates<span class="tooltip-text">Prüfpunkte zwischen Phasen, die sicherstellen, dass alle Voraussetzungen für die nächste Phase erfüllt sind. Beispiel: "Alle Batch-Ergebnisse vorhanden?" vor dem Assemble-Schritt.</span></span> eingehalten werden müssen.</p>
+
+      <div class="toggle-block" id="toggle1">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle1','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle1','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># skill.md — Orchestrator-Logik (vereinfacht)</span>
+
+<span class="code-keyword">orchestrator:</span>
+  <span class="code-keyword">mode_detection:</span>
+    <span class="code-keyword">strategy:</span> <span class="code-string">"keyword_match"</span>
+    <span class="code-keyword">fallback:</span> <span class="code-string">"ask_user"</span>
+    <span class="code-keyword">keywords:</span>
+      <span class="code-keyword">course:</span> <span class="code-string">["Kurs", "Tutorial", "HTML", "course", "lernen"]</span>
+      <span class="code-keyword">understand:</span> <span class="code-string">["verstehen", "graph", "analyze", "KG"]</span>
+      <span class="code-keyword">combined:</span> <span class="code-string">["beides", "kombiniert", "alles", "both"]</span>
+
+  <span class="code-keyword">phase_contract:</span>
+    <span class="code-keyword">each_phase_must:</span>
+      - <span class="code-string">declare inputs (files, context)</span>
+      - <span class="code-string">declare outputs (files, data)</span>
+      - <span class="code-string">pass quality gate before next phase</span>
+      - <span class="code-string">handle errors with retry or partial result</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Wie funktioniert die Modi-Erkennung?</strong> Der Orchestrator analysiert die Benutzereingabe auf Schlüsselwörter. "Erstelle einen Kurs" aktiviert den Kurs-Modus, "Verstehe dieses Projekt" den Verstehen-Modus. Bei Mehrdeutigkeit fragt der Skill nach.</p>
+          <p><strong>Phase-Vertrag:</strong> Jede Phase definiert exakt, welche Inputs sie braucht und welche Outputs sie erzeugt. Erst wenn das Qualitäts-Gate bestanden ist, startet die nächste Phase. Das verhindert Kaskadierfehler.</p>
+        </div>
+      </div>
+
+      <p>Die Weichenstellung erfolgt einmalig am Anfang. Danach läuft die gewählte Pipeline sequenziell durch. Der Orchestrator überwacht den Fortschritt, protokolliert Warnungen und kann bei Bedarf einzelne Phasen wiederholen.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 02 -->
+<section class="module" id="mod2">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">02</span>
+      <div>
+        <div class="module-title">Kurs-Pipeline Phasen (0-6)</div>
+        <div class="module-subtitle">Von Bootstrap bis Tiefenkarte: 7 Phasen für die HTML-Kurs-Generierung</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Kurs-Pipeline transformiert eine Codebase in interaktive HTML-Kurse. Jede Phase baut auf den Ergebnissen der vorherigen auf:</p>
+
+      <div class="pipeline-flow" style="margin:1.5rem 0">
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P0</div>
+          <div class="pipeline-step-name">Bootstrap</div>
+          <div class="pipeline-step-detail">Init + Scan</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P1</div>
+          <div class="pipeline-step-name">Analyse</div>
+          <div class="pipeline-step-detail">Codebase</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P2</div>
+          <div class="pipeline-step-name">Curriculum</div>
+          <div class="pipeline-step-detail">HS-Scoring</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P3</div>
+          <div class="pipeline-step-name">Foundation</div>
+          <div class="pipeline-step-detail">L0 Index</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P4</div>
+          <div class="pipeline-step-name">Build</div>
+          <div class="pipeline-step-detail">L1-L3</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P5</div>
+          <div class="pipeline-step-name">Polish</div>
+          <div class="pipeline-step-detail">QA + Links</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P6</div>
+          <div class="pipeline-step-name">Tiefenkarte</div>
+          <div class="pipeline-step-detail">Sitemap</div>
+        </div>
+      </div>
+
+      <table class="phase-table">
+        <thead>
+          <tr><th>Phase</th><th>Name</th><th>Input</th><th>Output</th><th>Gate</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="phase-num">P0</td><td>Bootstrap</td><td>Projektpfad, User-Antworten</td><td>Datei-Inventar, Dir-Tree, README-Inhalt</td><td>Inventar &ge; 1 Datei</td></tr>
+          <tr><td class="phase-num">P1</td><td>Analyse</td><td>Inventar, Dateien</td><td>Tech-Stack, Patterns, Abhängigkeiten</td><td>Stack erkannt</td></tr>
+          <tr><td class="phase-num">P2</td><td>Curriculum</td><td>Analyse-Ergebnis, Zielgruppen</td><td>Themen-Liste mit HS pro Zielgruppe</td><td>Mind. 3 Themen HS&ge;6</td></tr>
+          <tr><td class="phase-num">P3</td><td>Foundation</td><td>Curriculum, Design-System</td><td>index_*.html (L0-Dateien)</td><td>Alle L0-Dateien valide</td></tr>
+          <tr><td class="phase-num">P4</td><td>Build</td><td>Curriculum, L0-Links</td><td>L1/, L2/, L3/ HTML-Dateien</td><td>Alle Links auflösbar</td></tr>
+          <tr><td class="phase-num">P5</td><td>Polish</td><td>Alle generierten Dateien</td><td>Korrigierte Dateien, Cross-Links</td><td>0 broken Links</td></tr>
+          <tr><td class="phase-num">P6</td><td>Tiefenkarte</td><td>Vollständige Dateiliste</td><td>Visuelle Sitemap mit Verlinkungen</td><td>Alle Seiten erfasst</td></tr>
+        </tbody>
+      </table>
+
+      <div class="toggle-block" id="toggle2">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle2','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle2','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Phase 2: Curriculum — HS-Bewertung pro Thema</span>
+<span class="code-keyword">curriculum:</span>
+  <span class="code-keyword">topics:</span>
+    - <span class="code-keyword">name:</span> <span class="code-string">"Skill-Architektur"</span>
+      <span class="code-keyword">hs_anwender:</span> <span class="code-orange">4</span>  <span class="code-comment"># zu technisch → kein Anwender-L1</span>
+      <span class="code-keyword">hs_entwickler:</span> <span class="code-orange">9</span>  <span class="code-comment"># ≥8 → L1 + Deep-Dive auf L2</span>
+    - <span class="code-keyword">name:</span> <span class="code-string">"Kurs erstellen"</span>
+      <span class="code-keyword">hs_anwender:</span> <span class="code-orange">9</span>  <span class="code-comment"># ≥8 → L1 + Deep-Dive auf L2</span>
+      <span class="code-keyword">hs_entwickler:</span> <span class="code-orange">5</span>  <span class="code-comment"># &lt;6 → nicht im Entwickler-Kurs</span>
+    - <span class="code-keyword">name:</span> <span class="code-string">"Graph Schema"</span>
+      <span class="code-keyword">hs_entwickler:</span> <span class="code-orange">7</span>  <span class="code-comment"># 6-7 → L1 + L2, aber KEIN L3</span>
+
+<span class="code-comment"># Regeln:
+# HS &lt; 6  → Thema nicht aufgenommen
+# HS 6-7  → L1-Seite, L2-Seite, kein Deep-Dive auf L3
+# HS ≥ 8  → L1 + L2 + Deep-Dive-Link auf L3</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Helpfulness-Score (HS):</strong> Jedes Thema wird pro Zielgruppe bewertet. Ein HS von 9 bedeutet "extrem hilfreich", ein HS von 3 bedeutet "kaum relevant". Die Schwellenwerte bestimmen, wie tief ein Thema im Kurs behandelt wird.</p>
+          <p><strong>Beispiel:</strong> "Skill-Architektur" ist für Entwickler hochrelevant (HS=9), für Anwender aber zu technisch (HS=4). Daher erscheint dieses Thema nur im Entwickler-Kurs mit Deep-Dive, nicht im Anwender-Kurs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 03 -->
+<section class="module" id="mod3">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">03</span>
+      <div>
+        <div class="module-title">Verstehen-Pipeline Phasen (0-7)</div>
+        <div class="module-subtitle">8 Phasen: Von Pre-flight bis Save — Knowledge Graph generieren</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Verstehen-Pipeline erzeugt einen <span class="tooltip">Knowledge Graph<span class="tooltip-text">Eine JSON-Struktur mit Nodes (Dateien, Funktionen, Klassen), Edges (imports, calls, contains), Layers (Architektur-Schichten) und einer Guided Tour (Lernpfad).</span></span> anstatt HTML-Kurse. Sie hat eine Phase mehr, weil der Graph-Merge und die Architektur-Erkennung zusätzliche Schritte erfordern:</p>
+
+      <div class="pipeline-flow" style="margin:1.5rem 0">
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P0</div>
+          <div class="pipeline-step-name">Pre-flight</div>
+          <div class="pipeline-step-detail">Checks</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P1</div>
+          <div class="pipeline-step-name">Scan</div>
+          <div class="pipeline-step-detail">Inventar</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P2</div>
+          <div class="pipeline-step-name">Analyze</div>
+          <div class="pipeline-step-detail">Batches</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P3</div>
+          <div class="pipeline-step-name">Assemble</div>
+          <div class="pipeline-step-detail">Merge</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P4</div>
+          <div class="pipeline-step-name">Arch</div>
+          <div class="pipeline-step-detail">Layers</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P5</div>
+          <div class="pipeline-step-name">Tour</div>
+          <div class="pipeline-step-detail">Lernpfad</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P6</div>
+          <div class="pipeline-step-name">Review</div>
+          <div class="pipeline-step-detail">QA</div>
+        </div>
+        <span class="pipeline-arrow">&#10132;</span>
+        <div class="pipeline-step">
+          <div class="pipeline-step-icon">P7</div>
+          <div class="pipeline-step-name">Save</div>
+          <div class="pipeline-step-detail">Output</div>
+        </div>
+      </div>
+
+      <table class="phase-table">
+        <thead>
+          <tr><th>Phase</th><th>Name</th><th>Agenten</th><th>Output</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="phase-num">P0</td><td>Pre-flight</td><td>—</td><td>Projektpfad validiert, .claude-learning/ erstellt</td></tr>
+          <tr><td class="phase-num">P1</td><td>Scan</td><td>project-scanner</td><td>Datei-Inventar, Import-Map, Dir-Tree</td></tr>
+          <tr><td class="phase-num">P2</td><td>Analyze</td><td>file-analyzer (5x parallel)</td><td>Batch-JSONs mit Nodes + Edges</td></tr>
+          <tr><td class="phase-num">P3</td><td>Assemble</td><td>assemble-reviewer</td><td>Merged Graph (deduplizierte Nodes/Edges)</td></tr>
+          <tr><td class="phase-num">P4</td><td>Architecture</td><td>architecture-analyzer</td><td>Layer-Zuordnung (Frontend, Backend, DB...)</td></tr>
+          <tr><td class="phase-num">P5</td><td>Tour</td><td>tour-builder</td><td>Guided Tour mit geordnetem Lernpfad</td></tr>
+          <tr><td class="phase-num">P6</td><td>Review</td><td>review-validator</td><td>Validierter Graph, Fehler-Log</td></tr>
+          <tr><td class="phase-num">P7</td><td>Save</td><td>—</td><td>knowledge-graph.json + dashboard.html</td></tr>
+        </tbody>
+      </table>
+
+      <p>Der kritische Unterschied zur Kurs-Pipeline: Phase 2 (Analyze) läuft <strong>parallel</strong> mit bis zu 5 file-analyzer-Instanzen gleichzeitig. Jede Instanz bearbeitet einen Batch von 20-30 Dateien und erzeugt ein Batch-JSON. In Phase 3 werden alle Batch-Ergebnisse zu einem konsistenten Graph zusammengeführt.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 04 -->
+<section class="module" id="mod4">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">04</span>
+      <div>
+        <div class="module-title">Kombiniert-Pipeline</div>
+        <div class="module-subtitle">Phase A (Verstehen) + Phase B (Kurs mit KG-Daten) — das Beste aus beiden Welten</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Der Kombiniert-Modus führt zuerst die komplette Verstehen-Pipeline aus (Phase A), nutzt dann den erzeugten Knowledge Graph als zusätzlichen Input für die Kurs-Pipeline (Phase B). Das Ergebnis: Kurse, die durch Graph-Daten angereichert sind.</p>
+
+      <div class="toggle-block" id="toggle3">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle3','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle3','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Kombiniert-Pipeline in skill.md</span>
+<span class="code-keyword">combined_pipeline:</span>
+  <span class="code-keyword">phase_a:</span>  <span class="code-comment"># Verstehen-Pipeline komplett</span>
+    <span class="code-keyword">phases:</span> <span class="code-string">[A0, A1, A2, A3, A4, A5, A6, A7]</span>
+    <span class="code-keyword">output:</span> <span class="code-string">.claude-learning/knowledge-graph.json</span>
+    <span class="code-keyword">gate:</span> <span class="code-string">"Graph hat ≥10 Nodes, ≥5 Edges"</span>
+
+  <span class="code-keyword">phase_b:</span>  <span class="code-comment"># Kurs-Pipeline mit KG-Enhancement</span>
+    <span class="code-keyword">phases:</span> <span class="code-string">[B0, B1, B2, B3, B4, B5, B6]</span>
+    <span class="code-keyword">extra_input:</span> <span class="code-string">knowledge-graph.json</span>
+    <span class="code-keyword">enhancements:</span>
+      - <span class="code-string">"HS-Scoring berücksichtigt Graph-Zentralität"</span>
+      - <span class="code-string">"Kurs-Diagramme nutzen echte Edge-Daten"</span>
+      - <span class="code-string">"Tour-Reihenfolge beeinflusst L1-Anordnung"</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Warum kombiniert?</strong> Ohne Knowledge Graph basiert das Curriculum-Scoring auf heuristischer Analyse. Mit Graph-Daten kann der Scoring-Algorithmus die tatsächliche Zentralität von Komponenten berücksichtigen — zentrale Module bekommen höhere Scores.</p>
+          <p><strong>Konkrete Verbesserungen:</strong> Architektur-Diagramme in den Kursseiten zeigen echte Import-Ketten statt geschätzter. Die Reihenfolge der L1-Themen folgt der Tour-Logik des Graphs. Edge-Gewichte beeinflussen, welche Abhängigkeiten erklärt werden.</p>
+        </div>
+      </div>
+
+      <p>Die Phasen werden mit Präfix <code>A</code> bzw. <code>B</code> benannt, um Verwechslungen zu vermeiden. Phase A3 ist der Assemble-Schritt der Verstehen-Pipeline, Phase B2 ist das Curriculum der Kurs-Pipeline. Die Gate zwischen A und B stellt sicher, dass der Graph mindestens 10 Nodes und 5 Edges enthält — andernfalls fällt der Skill zurück auf den reinen Kurs-Modus.</p>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 05 -->
+<section class="module" id="mod5">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">05</span>
+      <div>
+        <div class="module-title">Fehlerbehandlung</div>
+        <div class="module-subtitle">Retry-Logik, Partial Results, Phase Warnings</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Nicht jede Phase läuft fehlerfrei. Der Orchestrator implementiert eine dreistufige Fehlerbehandlung, die Robustheit über Perfektion stellt:</p>
+
+      <div class="toggle-block" id="toggle4">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle4','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle4','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Fehlerbehandlung in skill.md</span>
+<span class="code-keyword">error_handling:</span>
+  <span class="code-keyword">retry:</span>
+    <span class="code-keyword">max_attempts:</span> <span class="code-orange">2</span>
+    <span class="code-keyword">applies_to:</span> <span class="code-string">[P2_analyze, P3_assemble]</span>
+    <span class="code-keyword">strategy:</span> <span class="code-string">"reduce_batch_size"</span>
+
+  <span class="code-keyword">partial_results:</span>
+    <span class="code-keyword">enabled:</span> <span class="code-orange">true</span>
+    <span class="code-keyword">min_coverage:</span> <span class="code-orange">0.6</span>  <span class="code-comment"># 60% der Dateien müssen analysiert sein</span>
+    <span class="code-keyword">warning:</span> <span class="code-string">"⚠ {n} Dateien konnten nicht analysiert werden"</span>
+
+  <span class="code-keyword">phase_warnings:</span>
+    <span class="code-keyword">collect:</span> <span class="code-orange">true</span>
+    <span class="code-keyword">display:</span> <span class="code-string">"end_of_pipeline"</span>
+    <span class="code-keyword">categories:</span>
+      - <span class="code-string">"missing_edges"</span>     <span class="code-comment"># Referenzierte Nodes fehlen</span>
+      - <span class="code-string">"orphan_nodes"</span>      <span class="code-comment"># Nodes ohne Verbindungen</span>
+      - <span class="code-string">"broken_links"</span>      <span class="code-comment"># HTML-Links zeigen ins Leere</span>
+      - <span class="code-string">"low_hs_threshold"</span>  <span class="code-comment"># Wenige Themen über HS 6</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Retry-Logik:</strong> Wenn ein file-analyzer-Batch fehlschlägt (z.B. bei zu großen Dateien), wird der Batch halbiert und erneut versucht. Maximal 2 Versuche pro Phase. Danach greift Partial Results.</p>
+          <p><strong>Partial Results:</strong> Wenn mindestens 60% der Dateien erfolgreich analysiert wurden, fährt die Pipeline fort — mit einer Warnung. Nur bei weniger als 60% bricht die Pipeline ab.</p>
+          <p><strong>Phase Warnings:</strong> Nicht-kritische Probleme werden gesammelt und am Ende der Pipeline angezeigt. Fehlende Edges oder verwaiste Nodes verhindern nicht den Abschluss, werden aber dokumentiert.</p>
+        </div>
+      </div>
+
+      <p>Diese Architektur stellt sicher, dass selbst bei problematischen Codebases (fehlende Importe, zirkuläre Abhängigkeiten, binäre Dateien) ein brauchbares Ergebnis entsteht. Der Benutzer sieht am Ende eine klare Zusammenfassung: Was wurde generiert, was fehlt, und warum.</p>
+
+      <a href="../l3/skill-md-aufbau_dev_de.html" class="deep-dive">
+        skill.md-Aufbau vertiefen <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SIBLING NAV -->
+<section class="sibling-nav">
+  <div class="sibling-nav-inner">
+    <div class="sibling-nav-title">Weitere Entwickler-L2-Seiten</div>
+    <div class="sibling-nav-grid">
+      <a href="phasen-orchestrierung_dev_de.html" class="sibling-nav-link active">
+        <div class="sibling-nav-link-title">Phasen-Orchestrierung</div>
+        <div class="sibling-nav-link-sub">skill.md steuert den Ablauf</div>
+      </a>
+      <a href="agenten-kommunikation_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Agenten-Kommunikation</div>
+        <div class="sibling-nav-link-sub">8 Agenten zusammenarbeiten</div>
+      </a>
+      <a href="graph-schema_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Graph Schema</div>
+        <div class="sibling-nav-link-sub">13 Node-Typen, 26 Edge-Typen</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleView(blockId, panel) {
+  const block = document.getElementById(blockId);
+  block.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.toggle-panel').forEach(p => p.classList.remove('active'));
+  block.querySelector(`[data-panel="${panel}"]`).classList.add('active');
+  block.querySelectorAll('.toggle-tab').forEach(t => {
+    if ((panel === 'code' && t.textContent === 'Code') || (panel === 'text' && t.textContent === 'Klartext'))
+      t.classList.add('active');
+  });
+}
+const sections = ['hero','mod1','mod2','mod3','mod4','mod5'];
+const navDotsContainer = document.getElementById('navDots');
+sections.forEach((id, i) => {
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot';
+  dot.title = i === 0 ? 'Start' : 'Modul ' + String(i).padStart(2,'0');
+  dot.addEventListener('click', () => document.getElementById(id).scrollIntoView({behavior:'smooth'}));
+  navDotsContainer.appendChild(dot);
+});
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, {threshold: 0.3});
+sections.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (window.scrollY / h * 100) + '%';
+});
+document.querySelectorAll('.tooltip').forEach(tip => {
+  tip.addEventListener('mouseenter', e => {
+    const tt = tip.querySelector('.tooltip-text');
+    if (!tt) return;
+    const rect = tip.getBoundingClientRect();
+    tt.style.left = rect.left + 'px';
+    tt.style.top = (rect.bottom + 8) + 'px';
+  });
+});
+</script>
+</body>
+</html>

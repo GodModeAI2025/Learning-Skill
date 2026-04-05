@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Architecture — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --color-deep-blue:#000099;
+  --color-impulse-orange:#FE8F11;
+  --color-warm-gray:#E4DAD4;
+  --color-warm-gray-bg:#F3EFEB;
+  --color-code-bg:#000066;
+  --color-text:#1A1A2E;
+  --color-text-muted:#5C5A6B;
+  --font-display:'Bricolage Grotesque',Georgia,serif;
+  --font-body:'DM Sans',-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
+}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-breadcrumb{font-family:var(--font-body);font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.4rem}
+.nav-breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}
+.nav-breadcrumb a:hover{color:var(--color-impulse-orange)}
+.nav-breadcrumb .sep{color:rgba(255,255,255,.35)}
+.nav-breadcrumb .current{color:rgba(255,255,255,.95);font-weight:600}
+.nav-dots{display:flex;gap:.45rem;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-right a:hover{color:var(--color-impulse-orange)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}
+.github-icon{display:inline-flex;align-items:center}
+.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}
+.github-icon:hover svg{fill:var(--color-impulse-orange)}
+.hero{background:var(--color-deep-blue);color:#fff;padding:6rem 1.5rem 4rem;text-align:center;min-height:80dvh;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:start}
+.hero-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;transition:color .2s}
+.hero-back:hover{color:var(--color-impulse-orange)}
+.hero-back svg{width:16px;height:16px;fill:currentColor}
+.level-indicator{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.level-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.level-dot.done{background:var(--color-impulse-orange);border-color:var(--color-impulse-orange)}
+.level-dot.active{background:var(--color-impulse-orange);border-color:#fff;box-shadow:0 0 0 3px rgba(254,143,17,.4)}
+.level-dot.empty{background:transparent}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem;color:rgba(255,255,255,.95)}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 1.5rem;line-height:1.5}
+.page-overview{max-width:600px;margin:0 auto;text-align:left}
+.page-overview-title{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.page-overview-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.page-overview-list li{font-size:.85rem;color:rgba(255,255,255,.7);padding-left:1rem;position:relative}
+.page-overview-list li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--color-impulse-orange);border-radius:50%}
+.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}
+.module:nth-child(odd){background:#fff}
+.module:nth-child(even){background:var(--color-warm-gray-bg)}
+.module-content{max-width:820px;margin:0 auto}
+.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}
+.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}
+.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem;font-weight:400}
+.module-body{font-size:1rem;line-height:1.7;color:var(--color-text)}
+.module-body p{margin-bottom:1rem;max-width:70ch}
+.deep-dive{display:inline-flex;align-items:center;gap:.5rem;margin-top:1.5rem;padding:.65rem 1.3rem;background:var(--color-impulse-orange);color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:.9rem;transition:all .2s}
+.deep-dive:hover{background:#e5800e;transform:translateY(-1px);box-shadow:0 4px 12px rgba(254,143,17,.3)}
+.deep-dive svg{width:16px;height:16px;fill:#fff}
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}
+.code-comment{color:rgba(255,255,255,.4)}
+.code-keyword{color:#7CB7FF}
+.code-string{color:#A8E6A1}
+.code-orange{color:var(--color-impulse-orange)}
+.toggle-block{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}
+.toggle-tabs{display:flex;background:var(--color-deep-blue)}
+.toggle-tab{flex:1;padding:.6rem 1rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;border:none;background:transparent}
+.toggle-tab.active{color:#fff;background:rgba(254,143,17,.2);border-bottom:2px solid var(--color-impulse-orange)}
+.toggle-panel{display:none;padding:1.25rem}
+.toggle-panel.active{display:block}
+.toggle-panel.code-panel{background:var(--color-code-bg)}
+.toggle-panel.text-panel{background:#fff}
+.toggle-panel.text-panel p{margin-bottom:.5rem;font-size:.9rem;color:var(--color-text)}
+.arch-grid{display:grid;grid-template-columns:1fr;gap:1rem;padding:1.5rem;background:var(--color-code-bg);border-radius:10px}
+.arch-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.arch-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:.75rem 1rem;text-align:center;min-width:120px;flex:1;max-width:200px;transition:all .3s;cursor:default}
+.arch-box:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.arch-box-label{font-family:var(--font-mono);font-size:.75rem;color:rgba(255,255,255,.9);font-weight:500}
+.arch-box-sub{font-size:.65rem;color:rgba(255,255,255,.55);margin-top:.2rem}
+.arch-box.core{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.arch-box.core .arch-box-label{color:var(--color-impulse-orange)}
+.arch-connector{text-align:center;color:rgba(255,255,255,.3);font-size:1.2rem;line-height:1}
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help;color:inherit}
+.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}
+.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+.pipeline-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:1.5rem;background:var(--color-code-bg);border-radius:10px;-webkit-overflow-scrolling:touch}
+.pipeline-step{display:flex;flex-direction:column;align-items:center;min-width:100px;padding:.75rem .5rem;flex-shrink:0}
+.pipeline-step-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);font-weight:600;margin-bottom:.5rem;transition:all .3s}
+.pipeline-step:hover .pipeline-step-icon{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.15)}
+.pipeline-step-name{font-family:var(--font-mono);font-size:.7rem;color:rgba(255,255,255,.85);text-align:center;line-height:1.2}
+.pipeline-step-detail{font-size:.6rem;color:rgba(255,255,255,.5);margin-top:.2rem;text-align:center}
+.pipeline-arrow{color:var(--color-impulse-orange);font-size:1.2rem;flex-shrink:0;margin:0 .15rem}
+.sibling-nav{background:var(--color-deep-blue);padding:2.5rem 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav-title{font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:1rem}
+.sibling-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.sibling-nav-link{display:block;padding:.75rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;text-decoration:none;transition:all .2s}
+.sibling-nav-link:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.sibling-nav-link.active{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-nav-link-title{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}
+.sibling-nav-link-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.viz{margin:2rem 0;border-radius:10px;overflow:hidden}
+.viz-title{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+@media(max-width:640px){
+  .nav-breadcrumb{font-size:.72rem}
+  .module{padding:4rem 1rem 3rem}
+  .module-header{flex-direction:column;gap:.5rem}
+  .module-number{font-size:3.5rem}
+  .arch-row{flex-direction:column;align-items:center}
+  .hero h1{font-size:1.8rem}
+  .sibling-nav-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav" id="mainNav">
+  <div class="nav-breadcrumb">
+    <a href="../index_dev_en.html">L0 Overview</a>
+    <span class="sep">&#9656;</span>
+    <span class="current">L1 Skill Architecture</span>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-right">
+    <a href="skill-architektur_dev_de.html" title="Deutsche Version">&#127465;&#127466;</a>
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon" title="GitHub">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div>
+    <a href="../index_dev_en.html" class="hero-back">
+      <svg viewBox="0 0 16 16"><path d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg>
+      Back to Overview
+    </a>
+    <div class="level-indicator">
+      <div class="level-dot done" title="L0 Overview"></div>
+      <div class="level-dot active" title="L1 Deep Dive"></div>
+      <div class="level-dot empty" title="L2 Detail"></div>
+      <div class="level-dot empty" title="L3 Deep Detail"></div>
+    </div>
+    <span class="hero-badge">Level 1 — Deep Dive</span>
+    <h1>Skill Architecture</h1>
+    <p class="hero-sub">How the Learning Skill is structured: From skill.md as orchestrator through 8 agents to the output structure.</p>
+    <div class="page-overview">
+      <div class="page-overview-title">On this page</div>
+      <ul class="page-overview-list">
+        <li>skill.md — The Heart of the Skill</li>
+        <li>Agent Definitions — 8 Specialized Sub-Agents</li>
+        <li>Languages &amp; Frameworks — 33 Context Files</li>
+        <li>The Interplay — Orchestration in Detail</li>
+        <li>Output Structure — Where Results Go</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="mod1">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">01</span>
+      <div>
+        <div class="module-title">skill.md — The Heart of the Skill</div>
+        <div class="module-subtitle">3000+ lines of YAML + Markdown: rules, templates, phases, quality gates</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p><span class="tooltip"><code>skill.md</code><span class="tooltip-text">The central configuration file of the Learning Skill. Contains YAML frontmatter with metadata and the complete rule catalog for all modes and phases.</span></span> is the single file Claude reads at startup. It contains the entire execution plan: which mode is active, which phases run in which order, which agents are dispatched, and which quality rules apply.</p>
+      <p>The file is organized into logical blocks: YAML frontmatter with metadata, mode detection with keyword lists, phase definitions for both pipelines (KG and Course), template definitions for HTML output, and quality gates as checklists.</p>
+
+      <div class="toggle-block" id="toggle1">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle1','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle1','text')">Plain Text</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># skill.md — Frontmatter excerpt</span>
+<span class="code-keyword">---</span>
+<span class="code-keyword">name:</span> <span class="code-string">Learning Skill</span>
+<span class="code-keyword">version:</span> <span class="code-string">2.0</span>
+<span class="code-keyword">modes:</span>
+  <span class="code-keyword">course:</span>
+    <span class="code-keyword">keywords:</span> <span class="code-string">["Kurs", "Tutorial", "HTML", "course"]</span>
+    <span class="code-keyword">phases:</span> <span class="code-string">[0, 1, 2, 3, 4, 5, 6]</span>
+    <span class="code-keyword">output:</span> <span class="code-string">kurs/</span>
+  <span class="code-keyword">understand:</span>
+    <span class="code-keyword">keywords:</span> <span class="code-string">["verstehen", "graph", "analyze"]</span>
+    <span class="code-keyword">phases:</span> <span class="code-string">[0, 1, 2, 3, 4, 5, 6, 7]</span>
+    <span class="code-keyword">output:</span> <span class="code-string">.claude-learning/</span>
+  <span class="code-keyword">combined:</span>
+    <span class="code-keyword">keywords:</span> <span class="code-string">["beides", "kombiniert", "alles"]</span>
+    <span class="code-keyword">phases:</span> <span class="code-string">[A0-A7, B0-B6]</span>
+<span class="code-keyword">---</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>What happens here?</strong> The YAML frontmatter defines three operating modes. Each mode has keywords for automatic detection, a phase sequence, and an output directory.</p>
+          <p>The <strong>Course Mode</strong> generates HTML files in <code>kurs/</code>, the <strong>Understand Mode</strong> produces a Knowledge Graph in <code>.claude-learning/</code>, and the <strong>Combined Mode</strong> does both sequentially — with KG data improving the course scoring.</p>
+        </div>
+      </div>
+
+      <p>Beyond mode configuration, skill.md contains complete phase definitions with input/output contracts, agent dispatch rules (which agent is called when with which parameters), the full CSS design system as a template reference, and quality gates checked at the end of each phase.</p>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="mod2">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">02</span>
+      <div>
+        <div class="module-title">Agent Definitions</div>
+        <div class="module-subtitle">8 Markdown files in agents/, each agent has a specific task</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>The eight agents are defined as standalone Markdown files in the <code>agents/</code> folder. Each file contains YAML frontmatter with the agent's name, role, and output format, followed by a detailed <span class="tooltip">prompt template<span class="tooltip-text">A structured text that tells Claude what the agent should do, what inputs it receives, and what format it must respond in. Dynamically filled with project data by skill.md.</span></span>.</p>
+
+      <div class="viz">
+        <div class="viz-title">Agent Overview</div>
+        <div class="arch-grid">
+          <div class="arch-row">
+            <div class="arch-box core">
+              <div class="arch-box-label">project-scanner</div>
+              <div class="arch-box-sub">Inventory + Import Map</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">file-analyzer</div>
+              <div class="arch-box-sub">Nodes + Edges (5x)</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">assemble-reviewer</div>
+              <div class="arch-box-sub">Batch Merge</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">architecture-analyzer</div>
+              <div class="arch-box-sub">Layer Detection</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">domain-analyzer</div>
+              <div class="arch-box-sub">Domain Knowledge</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">tour-builder</div>
+              <div class="arch-box-sub">Learning Paths</div>
+            </div>
+          </div>
+          <div class="arch-connector">&#9660;</div>
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="arch-box-label">graph-reviewer</div>
+              <div class="arch-box-sub">Validation</div>
+            </div>
+            <div class="arch-box">
+              <div class="arch-box-label">knowledge-graph-guide</div>
+              <div class="arch-box-sub">Dashboard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p>Each agent follows the same pattern: it receives structured inputs (e.g., a file list or partial graph), processes them according to its rules, and returns structured output (JSON or Markdown). The orchestrator in skill.md ensures agents are called in the correct order with the right data.</p>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="mod3">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">03</span>
+      <div>
+        <div class="module-title">Languages &amp; Frameworks</div>
+        <div class="module-subtitle">23 language files + 10 framework files for contextual analysis</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>The <code>languages/</code> and <code>frameworks/</code> folders provide agents with language-specific knowledge. When the <span class="tooltip">project-scanner<span class="tooltip-text">The first agent in the pipeline. It scans the codebase, detects languages and frameworks, and creates a file inventory with paths, LOC, and import maps.</span></span> detects TypeScript and React, the orchestrator automatically loads <code>languages/typescript.md</code> and <code>frameworks/react.md</code> as additional context for analysis.</p>
+
+      <div class="code-block"><code><span class="code-comment"># languages/typescript.md — excerpt</span>
+<span class="code-keyword">---</span>
+<span class="code-keyword">language:</span> <span class="code-string">TypeScript</span>
+<span class="code-keyword">extensions:</span> <span class="code-string">[".ts", ".tsx", ".mts", ".cts"]</span>
+<span class="code-keyword">---</span>
+
+<span class="code-comment">## Import Patterns</span>
+<span class="code-string">- ES Modules: import { X } from './module'</span>
+<span class="code-string">- Type imports: import type { T } from './types'</span>
+<span class="code-string">- Dynamic: const mod = await import('./lazy')</span>
+
+<span class="code-comment">## Node Types for TypeScript</span>
+<span class="code-string">- interface -> type: "interface"</span>
+<span class="code-string">- type alias -> type: "type"</span>
+<span class="code-string">- enum -> type: "enum"</span>
+<span class="code-string">- React Component -> type: "component"</span></code></div>
+
+      <p>Currently 23 programming languages are supported (from C++ to YAML) and 10 frameworks (from Django to Vue). The files extend agent knowledge without modifying skill.md — a true plugin system.</p>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="mod4">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">04</span>
+      <div>
+        <div class="module-title">The Interplay</div>
+        <div class="module-subtitle">How skill.md orchestrates agents and merges results</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>The orchestrator in skill.md coordinates the entire workflow. It detects the mode, starts the correct pipeline, dispatches agents sequentially or in parallel, and merges their results at the end. The principle: <strong>skill.md thinks, agents work</strong>.</p>
+
+      <div class="viz">
+        <div class="viz-title">Orchestration Flow</div>
+        <div class="pipeline-flow">
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">USR</div>
+            <div class="pipeline-step-name">User<br>Prompt</div>
+            <div class="pipeline-step-detail">Keywords</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon" style="border-color:var(--color-impulse-orange)">ORC</div>
+            <div class="pipeline-step-name">skill.md<br>Orchestrator</div>
+            <div class="pipeline-step-detail">Mode + Phases</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">AGT</div>
+            <div class="pipeline-step-name">Agent<br>Dispatch</div>
+            <div class="pipeline-step-detail">seq / parallel</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">MRG</div>
+            <div class="pipeline-step-name">Result<br>Merge</div>
+            <div class="pipeline-step-detail">JSON / HTML</div>
+          </div>
+          <span class="pipeline-arrow">&#10132;</span>
+          <div class="pipeline-step">
+            <div class="pipeline-step-icon">OUT</div>
+            <div class="pipeline-step-name">Output<br>Save</div>
+            <div class="pipeline-step-detail">.claude-learning/</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Important: Agents run as <span class="tooltip">sub-agents<span class="tooltip-text">Claude can spawn additional Claude instances within a session (Task tool). These sub-agents receive their own prompt template and work in isolation. Their results flow back into the main context.</span></span> in isolated contexts. The file-analyzer, for instance, only receives its batch of 20-30 files and the language addenda — not the entire project state. This saves context tokens and enables parallelization.</p>
+    </div>
+  </div>
+</section>
+
+<section class="module" id="mod5">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">05</span>
+      <div>
+        <div class="module-title">Output Structure</div>
+        <div class="module-subtitle">.claude-learning/ folder, Knowledge Graph JSON, HTML course files</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Depending on the mode, the Learning Skill produces different outputs. In Understand Mode, a <code>.claude-learning/</code> folder is created with the Knowledge Graph as JSON, intermediate files, and an HTML dashboard. In Course Mode, a <code>kurs/</code> folder with the level hierarchy is generated.</p>
+
+      <div class="toggle-block" id="toggle2">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle2','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle2','text')">Plain Text</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Understand Mode Output</span>
+<span class="code-keyword">.claude-learning/</span>
+  <span class="code-string">knowledge-graph.json</span>       <span class="code-comment"># Final graph</span>
+  <span class="code-string">dashboard.html</span>             <span class="code-comment"># Interactive dashboard</span>
+  <span class="code-keyword">intermediate/</span>
+    <span class="code-string">batch-1.json ... batch-N.json</span>
+    <span class="code-string">assembled-graph.json</span>      <span class="code-comment"># After merge</span>
+    <span class="code-string">architecture.json</span>         <span class="code-comment"># Layer mapping</span>
+
+<span class="code-comment"># Course Mode Output</span>
+<span class="code-keyword">kurs/</span>
+  <span class="code-string">index_dev_en.html</span>          <span class="code-comment"># L0 Developer EN</span>
+  <span class="code-keyword">l1/</span>
+    <span class="code-string">skill-architecture_dev_en.html</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Understand Mode:</strong> The Knowledge Graph is saved as a JSON file. During processing, intermediate files (batch results, architecture data, tour) are created and cleaned up after the final save.</p>
+          <p><strong>Course Mode:</strong> HTML files follow a clear naming convention: <code>[topic]_[audience]_[language].html</code>. Level 0 sits in the root directory, deeper levels in subfolders (l1/, l2/, l3/).</p>
+        </div>
+      </div>
+
+      <p>The <span class="tooltip">Knowledge Graph<span class="tooltip-text">A JSON data structure with nodes (files, functions, classes ...), edges (imports, calls, contains ...), layers (Frontend, Backend, DB ...), and a guided-tour (ordered learning path).</span></span> itself contains four main sections: <code>nodes</code> (16 types), <code>edges</code> (29 types), <code>layers</code> (3-10 architecture layers), and <code>guided_tour</code> (ordered learning path through key nodes).</p>
+
+      <a href="../l2/phase-orchestration_dev_en.html" class="deep-dive">
+        Deep Dive: Phase Orchestration <svg viewBox="0 0 16 16"><path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="sibling-nav">
+  <div class="sibling-nav-inner">
+    <div class="sibling-nav-title">More Developer L1 Pages</div>
+    <div class="sibling-nav-grid">
+      <a href="skill-architecture_dev_en.html" class="sibling-nav-link active">
+        <div class="sibling-nav-link-title">Skill Architecture</div>
+        <div class="sibling-nav-link-sub">How the Learning Skill is built</div>
+      </a>
+      <a href="agent-pipeline_dev_en.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Agent Pipeline</div>
+        <div class="sibling-nav-link-sub">8 Agents in Detail</div>
+      </a>
+      <a href="kg-pipeline_dev_en.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">KG Pipeline</div>
+        <div class="sibling-nav-link-sub">Phase 0 through Phase 7</div>
+      </a>
+      <a href="course-pipeline_dev_en.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Course Pipeline</div>
+        <div class="sibling-nav-link-sub">Phase 0 through Phase 6</div>
+      </a>
+      <a href="design-system_dev_en.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Design System</div>
+        <div class="sibling-nav-link-sub">CSS Architecture + Palette</div>
+      </a>
+      <a href="modes-interplay_dev_en.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Modes Interplay</div>
+        <div class="sibling-nav-link-sub">KG + Course Combined</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleView(blockId, panel) {
+  const block = document.getElementById(blockId);
+  block.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.toggle-panel').forEach(p => p.classList.remove('active'));
+  block.querySelector(`[data-panel="${panel}"]`).classList.add('active');
+  block.querySelectorAll('.toggle-tab').forEach(t => {
+    if ((panel === 'code' && t.textContent === 'Code') || (panel === 'text' && t.textContent === 'Plain Text'))
+      t.classList.add('active');
+  });
+}
+const sections = ['hero','mod1','mod2','mod3','mod4','mod5'];
+const navDotsContainer = document.getElementById('navDots');
+sections.forEach((id, i) => {
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot';
+  dot.title = i === 0 ? 'Start' : 'Module ' + String(i).padStart(2,'0');
+  dot.addEventListener('click', () => document.getElementById(id).scrollIntoView({behavior:'smooth'}));
+  navDotsContainer.appendChild(dot);
+});
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, {threshold: 0.3});
+sections.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (window.scrollY / h * 100) + '%';
+});
+document.querySelectorAll('.tooltip').forEach(tip => {
+  tip.addEventListener('mouseenter', e => {
+    const tt = tip.querySelector('.tooltip-text');
+    if (!tt) return;
+    const rect = tip.getBoundingClientRect();
+    tt.style.left = rect.left + 'px';
+    tt.style.top = (rect.bottom + 8) + 'px';
+  });
+});
+</script>
+</body>
+</html>

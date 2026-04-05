@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modes Interplay — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}:root{--color-deep-blue:#000099;--color-impulse-orange:#FE8F11;--color-warm-gray:#E4DAD4;--color-warm-gray-bg:#F3EFEB;--color-code-bg:#000066;--color-text:#1A1A2E;--color-text-muted:#5C5A6B;--font-display:'Bricolage Grotesque',Georgia,serif;--font-body:'DM Sans',-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code','Consolas',monospace}html{scroll-behavior:smooth;scroll-snap-type:y proximity}body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}.nav-breadcrumb{font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.4rem}.nav-breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}.nav-breadcrumb a:hover{color:var(--color-impulse-orange)}.nav-breadcrumb .sep{color:rgba(255,255,255,.35)}.nav-breadcrumb .current{color:rgba(255,255,255,.95);font-weight:600}.nav-dots{display:flex;gap:.45rem}.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}.nav-right{display:flex;align-items:center;gap:1rem}.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}.nav-right a:hover{color:var(--color-impulse-orange)}.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}.github-icon{display:inline-flex}.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}.github-icon:hover svg{fill:var(--color-impulse-orange)}.hero{background:var(--color-deep-blue);color:#fff;padding:6rem 1.5rem 4rem;text-align:center;min-height:80dvh;display:flex;flex-direction:column;justify-content:center}.hero-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;transition:color .2s}.hero-back:hover{color:var(--color-impulse-orange)}.hero-back svg{width:16px;height:16px;fill:currentColor}.level-indicator{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}.level-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}.level-dot.done{background:var(--color-impulse-orange);border-color:var(--color-impulse-orange)}.level-dot.active{background:var(--color-impulse-orange);border-color:#fff;box-shadow:0 0 0 3px rgba(254,143,17,.4)}.level-dot.empty{background:transparent}.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem}.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 1.5rem}.page-overview{max-width:600px;margin:0 auto;text-align:left}.page-overview-title{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}.page-overview-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}.page-overview-list li{font-size:.85rem;color:rgba(255,255,255,.7);padding-left:1rem;position:relative}.page-overview-list li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--color-impulse-orange);border-radius:50%}.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}.module:nth-child(odd){background:#fff}.module:nth-child(even){background:var(--color-warm-gray-bg)}.module-content{max-width:820px;margin:0 auto}.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem}.module-body{font-size:1rem;line-height:1.7}.module-body p{margin-bottom:1rem;max-width:70ch}
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}.code-comment{color:rgba(255,255,255,.4)}.code-keyword{color:#7CB7FF}.code-string{color:#A8E6A1}.code-orange{color:var(--color-impulse-orange)}
+.toggle-block{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}.toggle-tabs{display:flex;background:var(--color-deep-blue)}.toggle-tab{flex:1;padding:.6rem 1rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;border:none;background:transparent;transition:all .2s}.toggle-tab.active{color:#fff;background:rgba(254,143,17,.2);border-bottom:2px solid var(--color-impulse-orange)}.toggle-panel{display:none;padding:1.25rem}.toggle-panel.active{display:block}.toggle-panel.code-panel{background:var(--color-code-bg)}.toggle-panel.text-panel{background:#fff}.toggle-panel.text-panel p{margin-bottom:.5rem;font-size:.9rem}
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help}.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+.modes-table{width:100%;border-collapse:collapse;font-size:.85rem;background:#fff;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}.modes-table th{background:var(--color-deep-blue);color:rgba(255,255,255,.9);font-family:var(--font-display);font-weight:600;padding:.75rem;text-align:left}.modes-table td{padding:.65rem .75rem;border-bottom:1px solid var(--color-warm-gray);vertical-align:top}.modes-table tr:last-child td{border-bottom:none}.modes-table .mode-name{font-weight:600;font-family:var(--font-mono);font-size:.8rem;white-space:nowrap}
+.pipeline-flow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:1.5rem;background:var(--color-code-bg);border-radius:10px}.pipeline-step{display:flex;flex-direction:column;align-items:center;min-width:90px;padding:.75rem .5rem;flex-shrink:0}.pipeline-step-icon{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.65rem;color:rgba(255,255,255,.85);font-weight:600;margin-bottom:.5rem;transition:all .3s}.pipeline-step:hover .pipeline-step-icon{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.15)}.pipeline-step-name{font-family:var(--font-mono);font-size:.65rem;color:rgba(255,255,255,.85);text-align:center}.pipeline-step-detail{font-size:.55rem;color:rgba(255,255,255,.5);margin-top:.2rem;text-align:center}.pipeline-arrow{color:var(--color-impulse-orange);font-size:1.2rem;flex-shrink:0;margin:0 .1rem}
+.sibling-nav{background:var(--color-deep-blue);padding:2.5rem 1.5rem}.sibling-nav-inner{max-width:820px;margin:0 auto}.sibling-nav-title{font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:1rem}.sibling-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}.sibling-nav-link{display:block;padding:.75rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;text-decoration:none;transition:all .2s}.sibling-nav-link:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}.sibling-nav-link.active{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}.sibling-nav-link-title{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}.sibling-nav-link-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.viz{margin:2rem 0}.viz-title{font-family:var(--font-display);font-size:.85rem;font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+@media(max-width:640px){.module{padding:4rem 1rem 3rem}.module-header{flex-direction:column;gap:.5rem}.module-number{font-size:3.5rem}.hero h1{font-size:1.8rem}.sibling-nav-grid{grid-template-columns:1fr}.modes-table{font-size:.75rem}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<nav class="nav"><div class="nav-breadcrumb"><a href="../index_dev_en.html">L0 Overview</a><span class="sep">&#9656;</span><span class="current">L1 Modes Interplay</span></div><div class="nav-dots" id="navDots"></div><div class="nav-right"><a href="modi-zusammenspiel_dev_de.html">&#127465;&#127466;</a><a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></div></nav>
+
+<section class="hero" id="hero"><div>
+  <a href="../index_dev_en.html" class="hero-back"><svg viewBox="0 0 16 16"><path d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg> Back to Overview</a>
+  <div class="level-indicator"><div class="level-dot done"></div><div class="level-dot active"></div><div class="level-dot empty"></div><div class="level-dot empty"></div></div>
+  <span class="hero-badge">Level 1 — Deep Dive</span>
+  <h1>The Interplay of Modes</h1>
+  <p class="hero-sub">How mode detection, data flow, and KG-enhanced scoring work together in the Learning Skill.</p>
+  <div class="page-overview"><div class="page-overview-title">On this page</div><ul class="page-overview-list">
+    <li>Mode Detection — Keywords determine the mode</li>
+    <li>Combined Mode Data Flow — KG data improves courses</li>
+    <li>KG-Enhanced Scoring — Complexity, fan-in, layer data</li>
+    <li>Orchestrator Rules — Sequential vs. parallel</li>
+  </ul></div>
+</div></section>
+
+<section class="module" id="mod1"><div class="module-content"><div class="module-header"><span class="module-number">01</span><div><div class="module-title">Mode Detection</div><div class="module-subtitle">Keywords in the user prompt automatically determine the mode</div></div></div><div class="module-body">
+  <p>When a user invokes the Learning Skill, the orchestrator analyzes the prompt for <span class="tooltip">keywords<span class="tooltip-text">Defined in skill.md under modes.[mode].keywords. Multilingual — both German and English terms are recognized. In case of ambiguity, the more specific mode wins.</span></span>. Three keyword groups determine the mode: course words ("course", "tutorial", "HTML"), understand words ("understand", "graph", "analyze"), and combination words ("both", "combined", "everything").</p>
+  <div class="toggle-block" id="toggle1"><div class="toggle-tabs"><button class="toggle-tab active" onclick="toggleView('toggle1','code')">Code</button><button class="toggle-tab" onclick="toggleView('toggle1','text')">Plain Text</button></div>
+    <div class="toggle-panel code-panel active" data-panel="code"><code style="font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre"><span class="code-comment"># Mode detection in skill.md</span>
+<span class="code-keyword">mode_detection:</span>
+  <span class="code-keyword">course:</span>
+    <span class="code-string">keywords:</span> [<span class="code-string">"course"</span>, <span class="code-string">"tutorial"</span>, <span class="code-string">"HTML"</span>, <span class="code-string">"Kurs"</span>]
+    <span class="code-string">pipeline:</span> <span class="code-orange">Phase 0-6</span>
+  <span class="code-keyword">understand:</span>
+    <span class="code-string">keywords:</span> [<span class="code-string">"understand"</span>, <span class="code-string">"graph"</span>, <span class="code-string">"analyze"</span>]
+    <span class="code-string">pipeline:</span> <span class="code-orange">Phase 0-7</span>
+  <span class="code-keyword">combined:</span>
+    <span class="code-string">keywords:</span> [<span class="code-string">"both"</span>, <span class="code-string">"combined"</span>, <span class="code-string">"everything"</span>]
+    <span class="code-string">pipeline:</span> <span class="code-orange">A0-A7, then B0-B6</span></code></div>
+    <div class="toggle-panel text-panel" data-panel="text"><p>The orchestrator scans the user prompt for keywords. On a match, the corresponding mode is activated and its pipeline starts. In case of ambiguity, the combined mode wins since it produces both outputs.</p></div>
+  </div>
+</div></div></section>
+
+<section class="module" id="mod2"><div class="module-content"><div class="module-header"><span class="module-number">02</span><div><div class="module-title">Combined Mode Data Flow</div><div class="module-subtitle">KG data flows into HS scoring for more objective courses</div></div></div><div class="module-body">
+  <p>In combined mode, the full KG pipeline runs first (Phase A0-A7). Its result — the Knowledge Graph — then serves as input for the course pipeline (Phase B0-B6). The key advantage: <strong>KG data makes helpfulness scoring more objective</strong>.</p>
+  <div class="viz"><div class="viz-title">Combined Mode Data Flow</div>
+    <div class="pipeline-flow">
+      <div class="pipeline-step"><div class="pipeline-step-icon">A0-2</div><div class="pipeline-step-name">Scan +<br>Analyze</div></div><span class="pipeline-arrow">&#10132;</span>
+      <div class="pipeline-step"><div class="pipeline-step-icon">A3-7</div><div class="pipeline-step-name">Assemble<br>to Save</div></div>
+      <span class="pipeline-arrow" style="font-size:1.5rem;color:#fff">&#9655;</span>
+      <div class="pipeline-step"><div class="pipeline-step-icon" style="border-color:var(--color-impulse-orange);background:rgba(254,143,17,.15)">KG</div><div class="pipeline-step-name" style="color:var(--color-impulse-orange)">Knowledge<br>Graph</div></div>
+      <span class="pipeline-arrow" style="font-size:1.5rem;color:#fff">&#9655;</span>
+      <div class="pipeline-step"><div class="pipeline-step-icon">B0-2</div><div class="pipeline-step-name">Bootstrap<br>+ HS</div></div><span class="pipeline-arrow">&#10132;</span>
+      <div class="pipeline-step"><div class="pipeline-step-icon">B3-6</div><div class="pipeline-step-name">Build +<br>Polish</div></div>
+    </div>
+  </div>
+  <p>Without KG data, HS scoring relies purely on heuristics. With KG data, objective metrics are added: How many files import this one? Which architecture layer does it belong to? How complex is its dependency graph?</p>
+</div></div></section>
+
+<section class="module" id="mod3"><div class="module-content"><div class="module-header"><span class="module-number">03</span><div><div class="module-title">KG-Enhanced Scoring</div><div class="module-subtitle">How complexity, fan-in, and layer data improve HS</div></div></div><div class="module-body">
+  <p>In integration mode, helpfulness scoring receives four additional data points from the Knowledge Graph as bonus factors:</p>
+  <div class="viz"><div class="viz-title">KG Bonus Factors</div>
+    <table class="modes-table">
+      <thead><tr><th>KG Metric</th><th>Bonus</th><th>Logic</th></tr></thead>
+      <tbody>
+        <tr><td class="mode-name">Complexity</td><td>+1</td><td>Node has high cyclomatic complexity or many internal dependencies</td></tr>
+        <tr><td class="mode-name">Fan-in</td><td>+1</td><td>Node is imported by many other nodes (high inbound connectivity)</td></tr>
+        <tr><td class="mode-name">Core Layer</td><td>+1</td><td>Node belongs to Core/Domain layer (architectural center)</td></tr>
+        <tr><td class="mode-name">Edge Density</td><td>+1</td><td>Node has above-average inbound + outbound edges</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="code-block"><code><span class="code-comment">// KG-enhanced HS scoring</span>
+<span class="code-keyword">function</span> <span class="code-orange">calculateHS</span>(topic, kgData) {
+  <span class="code-keyword">let</span> hs = complexity(<span class="code-orange">0-3</span>) + relevance(<span class="code-orange">0-3</span>)
+           + learningValue(<span class="code-orange">0-2</span>) + independence(<span class="code-orange">0-2</span>);
+  <span class="code-keyword">if</span> (kgData) {
+    <span class="code-keyword">if</span> (node.complexity > threshold) hs += <span class="code-orange">1</span>;
+    <span class="code-keyword">if</span> (node.fanIn > avgFanIn * <span class="code-orange">1.5</span>) hs += <span class="code-orange">1</span>;
+    <span class="code-keyword">if</span> (node.layer === <span class="code-string">"Core"</span>)        hs += <span class="code-orange">1</span>;
+    <span class="code-keyword">if</span> (node.edgeDensity > avg * <span class="code-orange">2</span>)  hs += <span class="code-orange">1</span>;
+  }
+  <span class="code-keyword">return</span> Math.min(hs, <span class="code-orange">10</span>);
+}</code></div>
+</div></div></section>
+
+<section class="module" id="mod4"><div class="module-content"><div class="module-header"><span class="module-number">04</span><div><div class="module-title">Orchestrator Rules</div><div class="module-subtitle">Sequential vs. parallel, pipeline architecture</div></div></div><div class="module-body">
+  <p>The orchestrator in skill.md controls which phases run sequentially and which run in parallel. Core rule: phases with dependencies run sequentially, independent work units within a phase run in parallel.</p>
+  <div class="viz"><div class="viz-title">Orchestration Rules</div>
+    <table class="modes-table">
+      <thead><tr><th>Rule</th><th>Sequential</th><th>Parallel</th></tr></thead>
+      <tbody>
+        <tr><td class="mode-name">Phases</td><td>Phase N must complete before Phase N+1</td><td>--</td></tr>
+        <tr><td class="mode-name">Agents</td><td>Scanner before analyzer, analyzer before assembler</td><td>5 file-analyzers simultaneously</td></tr>
+        <tr><td class="mode-name">Audiences</td><td>--</td><td>Users, developers, executives simultaneously</td></tr>
+        <tr><td class="mode-name">Languages</td><td>--</td><td>DE and EN simultaneously per audience</td></tr>
+        <tr><td class="mode-name">Modes</td><td>Combined: KG pipeline before course pipeline</td><td>--</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>In combined mode, the KG pipeline must fully complete before the course pipeline starts, since the course pipeline needs KG data as input. Within each pipeline, as many steps as possible are parallelized to minimize total runtime.</p>
+</div></div></section>
+
+<section class="sibling-nav"><div class="sibling-nav-inner"><div class="sibling-nav-title">More Developer L1 Pages</div><div class="sibling-nav-grid">
+  <a href="skill-architecture_dev_en.html" class="sibling-nav-link"><div class="sibling-nav-link-title">Skill Architecture</div><div class="sibling-nav-link-sub">How the Learning Skill is built</div></a>
+  <a href="agent-pipeline_dev_en.html" class="sibling-nav-link"><div class="sibling-nav-link-title">Agent Pipeline</div><div class="sibling-nav-link-sub">8 Agents in Detail</div></a>
+  <a href="kg-pipeline_dev_en.html" class="sibling-nav-link"><div class="sibling-nav-link-title">KG Pipeline</div><div class="sibling-nav-link-sub">Phase 0 through Phase 7</div></a>
+  <a href="course-pipeline_dev_en.html" class="sibling-nav-link"><div class="sibling-nav-link-title">Course Pipeline</div><div class="sibling-nav-link-sub">Phase 0 through Phase 6</div></a>
+  <a href="design-system_dev_en.html" class="sibling-nav-link"><div class="sibling-nav-link-title">Design System</div><div class="sibling-nav-link-sub">CSS Architecture + Palette</div></a>
+  <a href="modes-interplay_dev_en.html" class="sibling-nav-link active"><div class="sibling-nav-link-title">Modes Interplay</div><div class="sibling-nav-link-sub">KG + Course Combined</div></a>
+</div></div></section>
+
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem"><div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B"><span>&copy; 2026 Mark Zimmermann</span><div style="display:flex;gap:1.5rem"><a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a><a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a></div></div></footer>
+
+<script>
+function toggleView(blockId, panel) { const block = document.getElementById(blockId); block.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active')); block.querySelectorAll('.toggle-panel').forEach(p => p.classList.remove('active')); block.querySelector(`[data-panel="${panel}"]`).classList.add('active'); block.querySelectorAll('.toggle-tab').forEach(t => { if ((panel === 'code' && t.textContent === 'Code') || (panel === 'text' && t.textContent === 'Plain Text')) t.classList.add('active'); }); }
+const sections = ['hero','mod1','mod2','mod3','mod4']; const nd = document.getElementById('navDots'); sections.forEach((id, i) => { const d = document.createElement('span'); d.className = 'nav-dot'; d.addEventListener('click', () => document.getElementById(id).scrollIntoView({behavior:'smooth'})); nd.appendChild(d); });
+const obs = new IntersectionObserver(es => { es.forEach(e => { if (e.isIntersecting) { const idx = sections.indexOf(e.target.id); document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx)); }}); }, {threshold: 0.3}); sections.forEach(id => { const el = document.getElementById(id); if(el) obs.observe(el); });
+window.addEventListener('scroll', () => { const h = document.documentElement.scrollHeight - window.innerHeight; document.getElementById('progressBar').style.width = (window.scrollY / h * 100) + '%'; });
+document.querySelectorAll('.tooltip').forEach(tip => { tip.addEventListener('mouseenter', () => { const tt = tip.querySelector('.tooltip-text'); if (!tt) return; const r = tip.getBoundingClientRect(); tt.style.left = r.left + 'px'; tt.style.top = (r.bottom + 8) + 'px'; }); });
+</script>
+</body>
+</html>

@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML-Templates & Modul-Architektur — Learning Skill v2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--color-deep-blue:#000099;--color-impulse-orange:#FE8F11;--color-warm-gray:#E4DAD4;--color-warm-gray-bg:#F3EFEB;--color-code-bg:#000066;--color-text:#1A1A2E;--color-text-muted:#5C5A6B;--font-display:'Bricolage Grotesque',Georgia,serif;--font-body:'DM Sans',-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code','Consolas',monospace}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity}
+body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.nav-breadcrumb{font-family:var(--font-body);font-size:.82rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:.4rem}
+.nav-breadcrumb a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s}
+.nav-breadcrumb a:hover{color:var(--color-impulse-orange)}
+.nav-breadcrumb .sep{color:rgba(255,255,255,.35)}
+.nav-breadcrumb .current{color:rgba(255,255,255,.95);font-weight:600}
+.nav-dots{display:flex;gap:.45rem;align-items:center}
+.nav-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s}
+.nav-dot.active{background:var(--color-impulse-orange);transform:scale(1.3)}
+.nav-right{display:flex;align-items:center;gap:1rem}
+.nav-right a{color:rgba(255,255,255,.9);text-decoration:none;font-size:.85rem;transition:color .2s}
+.nav-right a:hover{color:var(--color-impulse-orange)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--color-impulse-orange);z-index:1001;transition:width .15s;width:0}
+.github-icon{display:inline-flex;align-items:center}
+.github-icon svg{width:18px;height:18px;fill:rgba(255,255,255,.9)}
+.github-icon:hover svg{fill:var(--color-impulse-orange)}
+.hero{background:var(--color-deep-blue);color:#fff;padding:6rem 1.5rem 4rem;text-align:center;min-height:80dvh;display:flex;flex-direction:column;justify-content:center;scroll-snap-align:start}
+.hero-back{display:inline-flex;align-items:center;gap:.4rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.85rem;margin-bottom:1.5rem;transition:color .2s}
+.hero-back:hover{color:var(--color-impulse-orange)}
+.hero-back svg{width:16px;height:16px;fill:currentColor}
+.level-indicator{display:flex;gap:.5rem;justify-content:center;margin-bottom:1.5rem}
+.level-dot{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.4)}
+.level-dot.done{background:var(--color-impulse-orange);border-color:var(--color-impulse-orange)}
+.level-dot.active{background:var(--color-impulse-orange);border-color:#fff;box-shadow:0 0 0 3px rgba(254,143,17,.4)}
+.level-dot.empty{background:transparent}
+.hero-badge{display:inline-block;background:rgba(254,143,17,.15);color:var(--color-impulse-orange);font-size:.8rem;font-weight:600;padding:.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;border:1px solid rgba(254,143,17,.3)}
+.hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);font-weight:800;line-height:1.15;margin-bottom:1rem;color:rgba(255,255,255,.95)}
+.hero-sub{font-size:1.05rem;color:rgba(255,255,255,.8);max-width:640px;margin:0 auto 1.5rem;line-height:1.5}
+.page-overview{max-width:600px;margin:0 auto;text-align:left}
+.page-overview-title{font-size:.8rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem}
+.page-overview-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.page-overview-list li{font-size:.85rem;color:rgba(255,255,255,.7);padding-left:1rem;position:relative}
+.page-overview-list li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;background:var(--color-impulse-orange);border-radius:50%}
+.module{min-height:100dvh;scroll-snap-align:start;padding:5rem 1.5rem 4rem;position:relative}
+.module:nth-child(odd){background:#fff}
+.module:nth-child(even){background:var(--color-warm-gray-bg)}
+.module-content{max-width:820px;margin:0 auto}
+.module-header{display:flex;align-items:flex-start;gap:1.5rem;margin-bottom:2rem}
+.module-number{font-family:var(--font-display);font-size:clamp(4rem,10vw,7rem);font-weight:800;line-height:1;color:var(--color-deep-blue);opacity:.12;flex-shrink:0;user-select:none}
+.module-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;color:var(--color-text);line-height:1.2;padding-top:.5rem}
+.module-subtitle{font-size:.9rem;color:var(--color-text-muted);margin-top:.3rem;font-weight:400}
+.module-body{font-size:1rem;line-height:1.7;color:var(--color-text)}
+.module-body p{margin-bottom:1rem;max-width:70ch}
+.code-block{background:var(--color-code-bg);border-radius:8px;padding:1.25rem;overflow-x:auto;margin:1rem 0}
+.code-block code{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);line-height:1.6;white-space:pre}
+.code-comment{color:rgba(255,255,255,.4)}
+.code-keyword{color:#7CB7FF}
+.code-string{color:#A8E6A1}
+.code-orange{color:var(--color-impulse-orange)}
+.toggle-block{margin:1.5rem 0;border-radius:10px;overflow:hidden;border:1px solid var(--color-warm-gray)}
+.toggle-tabs{display:flex;background:var(--color-deep-blue)}
+.toggle-tab{flex:1;padding:.6rem 1rem;text-align:center;font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.6);cursor:pointer;transition:all .2s;border:none;background:transparent}
+.toggle-tab.active{color:#fff;background:rgba(254,143,17,.2);border-bottom:2px solid var(--color-impulse-orange)}
+.toggle-panel{display:none;padding:1.25rem}
+.toggle-panel.active{display:block}
+.toggle-panel.code-panel{background:var(--color-code-bg)}
+.toggle-panel.text-panel{background:#fff}
+.toggle-panel.text-panel p{margin-bottom:.5rem;font-size:.9rem;color:var(--color-text)}
+.tooltip{position:relative;border-bottom:1px dashed var(--color-impulse-orange);cursor:help;color:inherit}
+.tooltip .tooltip-text{visibility:hidden;opacity:0;position:fixed;z-index:2000;background:var(--color-text);color:#fff;font-size:.78rem;padding:.5rem .75rem;border-radius:6px;max-width:280px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .2s;pointer-events:none}
+.tooltip:hover .tooltip-text{visibility:visible;opacity:1}
+.component-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin:1.5rem 0}
+.component-card{background:var(--color-code-bg);color:rgba(255,255,255,.9);padding:.8rem 1rem;border-radius:8px;font-size:.82rem;border:1px solid rgba(255,255,255,.1);transition:all .2s;cursor:default}
+.component-card:hover{border-color:var(--color-impulse-orange);transform:translateY(-2px)}
+.component-card strong{display:block;font-family:var(--font-mono);font-size:.75rem;color:var(--color-impulse-orange);margin-bottom:.3rem}
+.component-card span{font-size:.72rem;color:rgba(255,255,255,.5);display:block;margin-top:.2rem}
+.class-table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.85rem}
+.class-table th{background:var(--color-deep-blue);color:#fff;padding:.6rem .8rem;text-align:left;font-family:var(--font-mono);font-size:.75rem;font-weight:600}
+.class-table td{padding:.5rem .8rem;border-bottom:1px solid var(--color-warm-gray);vertical-align:top}
+.class-table tr:hover td{background:rgba(254,143,17,.05)}
+.class-table .cls{font-family:var(--font-mono);font-weight:600;color:var(--color-deep-blue);white-space:nowrap;font-size:.8rem}
+.sibling-nav{background:var(--color-deep-blue);padding:2.5rem 1.5rem}
+.sibling-nav-inner{max-width:820px;margin:0 auto}
+.sibling-nav-title{font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.6);margin-bottom:1rem}
+.sibling-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem}
+.sibling-nav-link{display:block;padding:.75rem 1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;text-decoration:none;transition:all .2s}
+.sibling-nav-link:hover{background:rgba(254,143,17,.15);border-color:var(--color-impulse-orange)}
+.sibling-nav-link.active{border-color:var(--color-impulse-orange);background:rgba(254,143,17,.1)}
+.sibling-nav-link-title{font-family:var(--font-mono);font-size:.8rem;color:rgba(255,255,255,.9);font-weight:500}
+.sibling-nav-link-sub{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem}
+.no-deep-dive{margin-top:2rem;padding:1rem 1.5rem;border-radius:8px;background:rgba(0,0,153,.04);border:1px solid var(--color-warm-gray);font-size:.85rem;color:var(--color-text-muted)}
+.breakpoint-bar{display:flex;align-items:center;gap:.5rem;margin:.75rem 0;font-size:.82rem}
+.breakpoint-bar .bp-label{font-family:var(--font-mono);font-weight:600;color:var(--color-deep-blue);min-width:60px;font-size:.75rem}
+.breakpoint-bar .bp-track{flex:1;height:10px;background:var(--color-warm-gray);border-radius:5px;position:relative;overflow:hidden}
+.breakpoint-bar .bp-fill{height:100%;border-radius:5px;background:var(--color-impulse-orange)}
+@media(max-width:640px){.nav-breadcrumb{font-size:.72rem}.module{padding:4rem 1rem 3rem}.module-header{flex-direction:column;gap:.5rem}.module-number{font-size:3.5rem}.hero h1{font-size:1.8rem}.sibling-nav-grid{grid-template-columns:1fr}.component-grid{grid-template-columns:1fr}.class-table{font-size:.75rem}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-breadcrumb">
+    <a href="../index_dev_de.html">L0 Überblick</a>
+    <span class="sep">&#9656;</span>
+    <a href="../l1/kurs-pipeline_dev_de.html">L1 Kurs-Pipeline</a>
+    <span class="sep">&#9656;</span>
+    <span class="current">L2 HTML-Templates</span>
+  </div>
+  <div class="nav-dots" id="navDots"></div>
+  <div class="nav-right">
+    <a href="html-templates_dev_en.html" title="English version">&#127468;&#127463;</a>
+    <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" class="github-icon" title="GitHub">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+  </div>
+</nav>
+
+<section class="hero" id="hero">
+  <div>
+    <a href="../l1/kurs-pipeline_dev_de.html" class="hero-back">
+      <svg viewBox="0 0 16 16"><path d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"/></svg>
+      Zurück zur Kurs-Pipeline
+    </a>
+    <div class="level-indicator">
+      <div class="level-dot done"></div><div class="level-dot done"></div><div class="level-dot active"></div><div class="level-dot empty"></div>
+    </div>
+    <span class="hero-badge">Level 2 — Detail</span>
+    <h1>HTML-Templates & Modul-Architektur</h1>
+    <p class="hero-sub">Wie die Kurs-Seiten des Learning Skill aufgebaut sind: Modul-Struktur, Hero-Varianten, Navigation, interaktive Elemente und Responsive-Design.</p>
+    <div class="page-overview">
+      <div class="page-overview-title">Auf dieser Seite</div>
+      <ul class="page-overview-list">
+        <li>Modul-Struktur — .module, .module-content, .module-header und die grossen Nummern</li>
+        <li>Hero-Templates — L0-Hero vs. L1-L3-Hero</li>
+        <li>Navigation-Komponenten — Breadcrumbs, Sibling-Nav, Level-Indicator & mehr</li>
+        <li>Interaktive Elemente — Code/Klartext-Toggle, Tooltips, Quiz, FAQ</li>
+        <li>Responsive & Integrationsmodus — Breakpoints und Standalone vs. Eingebettet</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 01: Modul-Struktur -->
+<section class="module" id="mod1">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">01</span>
+      <div>
+        <div class="module-title">Modul-Struktur</div>
+        <div class="module-subtitle">Das Grundgerüst jeder Inhaltssektion</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Jede Kursseite besteht aus einer Abfolge von <span class="tooltip"><code>.module</code><span class="tooltip-text">Eine fullscreen-Sektion mit scroll-snap-align: start, die den gesamten Viewport einnimmt.</span></span>-Sektionen. Jedes Modul ist ein eigenständiger Inhaltsblock mit einer großen, gefadeten Nummer (01, 02, ...), einem Titel und einem Body-Bereich.</p>
+
+      <p>Die CSS-Klassen-Hierarchie folgt einem festen Muster:</p>
+
+      <table class="class-table">
+        <thead><tr><th>Klasse</th><th>Rolle</th><th>Besonderheit</th></tr></thead>
+        <tbody>
+          <tr><td class="cls">.module</td><td>Äußerer Container</td><td><code>min-height: 100dvh</code>, scroll-snap, alternierender Hintergrund</td></tr>
+          <tr><td class="cls">.module-content</td><td>Zentrierter Inhaltsbereich</td><td><code>max-width: 820px</code>, horizontal zentriert</td></tr>
+          <tr><td class="cls">.module-header</td><td>Nummer + Titel</td><td>Flexbox, <code>align-items: flex-start</code></td></tr>
+          <tr><td class="cls">.module-number</td><td>Grosse gefadete Nummer</td><td><code>opacity: .12</code>, <code>font-size: clamp(4rem,10vw,7rem)</code></td></tr>
+          <tr><td class="cls">.module-body</td><td>Fliesstext + Code</td><td><code>max-width: 70ch</code> auf Absätzen</td></tr>
+          <tr><td class="cls">.screen</td><td>Optionaler Vollbild-Container</td><td>Wird für einzelne "Screens" innerhalb eines Moduls genutzt</td></tr>
+        </tbody>
+      </table>
+
+      <div class="toggle-block" id="toggle1">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle1','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle1','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code><span class="code-comment">&lt;!-- Das HTML-Template eines Moduls --&gt;</span>
+<span class="code-keyword">&lt;section</span> <span class="code-orange">class</span>=<span class="code-string">"module"</span> <span class="code-orange">id</span>=<span class="code-string">"mod1"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"module-content"</span><span class="code-keyword">&gt;</span>
+
+    <span class="code-comment">&lt;!-- Header: Grosse Nummer + Titel --&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"module-header"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;span</span> <span class="code-orange">class</span>=<span class="code-string">"module-number"</span><span class="code-keyword">&gt;</span><span class="code-orange">01</span><span class="code-keyword">&lt;/span&gt;</span>
+      <span class="code-keyword">&lt;div&gt;</span>
+        <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"module-title"</span><span class="code-keyword">&gt;</span>Titel hier<span class="code-keyword">&lt;/div&gt;</span>
+        <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"module-subtitle"</span><span class="code-keyword">&gt;</span>Untertitel<span class="code-keyword">&lt;/div&gt;</span>
+      <span class="code-keyword">&lt;/div&gt;</span>
+    <span class="code-keyword">&lt;/div&gt;</span>
+
+    <span class="code-comment">&lt;!-- Body: Fliesstext, Code-Blöcke, Toggles --&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"module-body"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;p&gt;</span>Inhalt des Moduls...<span class="code-keyword">&lt;/p&gt;</span>
+
+      <span class="code-comment">&lt;!-- Code-Block --&gt;</span>
+      <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"code-block"</span><span class="code-keyword">&gt;</span>
+        <span class="code-keyword">&lt;code&gt;</span>...<span class="code-keyword">&lt;/code&gt;</span>
+      <span class="code-keyword">&lt;/div&gt;</span>
+    <span class="code-keyword">&lt;/div&gt;</span>
+
+  <span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/section&gt;</span>
+
+<span class="code-comment">&lt;!-- CSS: Alternierender Hintergrund --&gt;</span>
+<span class="code-keyword">.module:nth-child(odd)</span>  { <span class="code-orange">background</span>: <span class="code-string">#fff</span> }
+<span class="code-keyword">.module:nth-child(even)</span> { <span class="code-orange">background</span>: <span class="code-string">var(--color-warm-gray-bg)</span> }</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>section.module</strong> ist der äussere Container. Er nimmt mindestens die volle Viewport-Höhe ein (<code>min-height: 100dvh</code>) und nutzt <code>scroll-snap-align: start</code>, damit der Browser beim Scrollen sanft an Modul-Grenzen einrastet.</p>
+          <p><strong>.module-content</strong> begrenzt die Inhaltsbreite auf 820px und zentriert den Block horizontal. Das sorgt für optimale Lesbarkeit.</p>
+          <p><strong>.module-number</strong> zeigt eine dekorative Nummer (01, 02, ...) in sehr grosser Schriftgrösse mit nur 12% Deckkraft. Sie dient der visuellen Orientierung, nicht der Navigation.</p>
+          <p><strong>Alternierende Hintergründe:</strong> Ungerade Module bekommen weiss, gerade Module den warmen Grauton <code>#F3EFEB</code>. Das erzeugt einen subtilen Rhythmus beim Scrollen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 02: Hero-Templates -->
+<section class="module" id="mod2">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">02</span>
+      <div>
+        <div class="module-title">Hero-Templates</div>
+        <div class="module-subtitle">Zwei Varianten: L0-Hero und L1-L3-Hero</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Der Learning Skill verwendet zwei unterschiedliche Hero-Varianten. Der <strong>L0-Hero</strong> (Überblicksseite) zeigt den Skill-Titel, ein Zielgruppen-Badge und die Anzahl der Module. Der <strong>L1-L3-Hero</strong> (Detail-Seiten) zeigt stattdessen einen Back-Button, den Level-Indicator, eine Page-Overview-Liste und den Seitentitel.</p>
+
+      <div class="toggle-block" id="toggle2a">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle2a','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle2a','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code><span class="code-comment">&lt;!-- ========== L0 HERO (Überblicksseite) ========== --&gt;</span>
+<span class="code-keyword">&lt;section</span> <span class="code-orange">class</span>=<span class="code-string">"hero"</span> <span class="code-orange">id</span>=<span class="code-string">"hero"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div&gt;</span>
+    <span class="code-comment">&lt;!-- Badge: Zielgruppe --&gt;</span>
+    <span class="code-keyword">&lt;span</span> <span class="code-orange">class</span>=<span class="code-string">"hero-badge"</span><span class="code-keyword">&gt;</span>
+      Entwickler-Perspektive
+    <span class="code-keyword">&lt;/span&gt;</span>
+
+    <span class="code-comment">&lt;!-- Titel --&gt;</span>
+    <span class="code-keyword">&lt;h1&gt;</span>Learning Skill v2.0<span class="code-keyword">&lt;/h1&gt;</span>
+
+    <span class="code-comment">&lt;!-- Untertitel --&gt;</span>
+    <span class="code-keyword">&lt;p</span> <span class="code-orange">class</span>=<span class="code-string">"hero-sub"</span><span class="code-keyword">&gt;</span>
+      Wie der Skill Codebases versteht und
+      in interaktive Kurse verwandelt.
+    <span class="code-keyword">&lt;/p&gt;</span>
+
+    <span class="code-comment">&lt;!-- Modul-Counter --&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"hero-count"</span><span class="code-keyword">&gt;</span>
+      5 Module &middot; 15 Min. Lesezeit
+    <span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/section&gt;</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>L0-Hero</strong> ist die Einstiegsseite. Sie zeigt ein <code>.hero-badge</code> mit der Zielgruppe (Anwender/Entwickler), den grossen Titel des Skills, einen Untertitel und optional einen Modul-Counter.</p>
+          <p><strong>Kein Back-Button, kein Level-Indicator:</strong> L0 ist die oberste Ebene. Der User kommt hierher, nicht von hier zurück.</p>
+          <p><strong>Hintergrund:</strong> Immer <code>var(--color-deep-blue)</code> (#000099) mit weisser Schrift.</p>
+        </div>
+      </div>
+
+      <div class="toggle-block" id="toggle2b">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle2b','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle2b','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code><span class="code-comment">&lt;!-- ========== L1-L3 HERO (Detail-Seiten) ========== --&gt;</span>
+<span class="code-keyword">&lt;section</span> <span class="code-orange">class</span>=<span class="code-string">"hero"</span> <span class="code-orange">id</span>=<span class="code-string">"hero"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div&gt;</span>
+    <span class="code-comment">&lt;!-- Back-Button: Link zur übergeordneten Seite --&gt;</span>
+    <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"../l1/kurs-pipeline_dev_de.html"</span>
+       <span class="code-orange">class</span>=<span class="code-string">"hero-back"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;svg</span> <span class="code-orange">viewBox</span>=<span class="code-string">"0 0 16 16"</span><span class="code-keyword">&gt;</span>
+        <span class="code-keyword">&lt;path</span> <span class="code-orange">d</span>=<span class="code-string">"M9.78 12.78a.75.75..."</span><span class="code-keyword">/&gt;</span>
+      <span class="code-keyword">&lt;/svg&gt;</span>
+      Zurück zur Kurs-Pipeline
+    <span class="code-keyword">&lt;/a&gt;</span>
+
+    <span class="code-comment">&lt;!-- Level-Indicator: 4 Dots --&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"level-indicator"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"level-dot done"</span><span class="code-keyword">&gt;&lt;/div&gt;</span>  <span class="code-comment">&lt;!-- L0 --&gt;</span>
+      <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"level-dot done"</span><span class="code-keyword">&gt;&lt;/div&gt;</span>  <span class="code-comment">&lt;!-- L1 --&gt;</span>
+      <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"level-dot active"</span><span class="code-keyword">&gt;&lt;/div&gt;</span> <span class="code-comment">&lt;!-- L2 = aktuell --&gt;</span>
+      <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"level-dot empty"</span><span class="code-keyword">&gt;&lt;/div&gt;</span>  <span class="code-comment">&lt;!-- L3 --&gt;</span>
+    <span class="code-keyword">&lt;/div&gt;</span>
+
+    <span class="code-comment">&lt;!-- Badge + Titel --&gt;</span>
+    <span class="code-keyword">&lt;span</span> <span class="code-orange">class</span>=<span class="code-string">"hero-badge"</span><span class="code-keyword">&gt;</span>Level 2 — Detail<span class="code-keyword">&lt;/span&gt;</span>
+    <span class="code-keyword">&lt;h1&gt;</span>HTML-Templates & Modul-Architektur<span class="code-keyword">&lt;/h1&gt;</span>
+    <span class="code-keyword">&lt;p</span> <span class="code-orange">class</span>=<span class="code-string">"hero-sub"</span><span class="code-keyword">&gt;</span>Beschreibungstext...<span class="code-keyword">&lt;/p&gt;</span>
+
+    <span class="code-comment">&lt;!-- Page-Overview --&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"page-overview"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"page-overview-title"</span><span class="code-keyword">&gt;</span>
+        Auf dieser Seite
+      <span class="code-keyword">&lt;/div&gt;</span>
+      <span class="code-keyword">&lt;ul</span> <span class="code-orange">class</span>=<span class="code-string">"page-overview-list"</span><span class="code-keyword">&gt;</span>
+        <span class="code-keyword">&lt;li&gt;</span>Modul-Struktur — ...<span class="code-keyword">&lt;/li&gt;</span>
+        <span class="code-keyword">&lt;li&gt;</span>Hero-Templates — ...<span class="code-keyword">&lt;/li&gt;</span>
+        <span class="code-keyword">&lt;li&gt;</span>Navigation — ...<span class="code-keyword">&lt;/li&gt;</span>
+      <span class="code-keyword">&lt;/ul&gt;</span>
+    <span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/section&gt;</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>L1-L3-Hero</strong> enthält immer einen Back-Button (<code>.hero-back</code>), der zur übergeordneten Seite verlinkt. Der SVG-Pfeil zeigt nach links.</p>
+          <p><strong>Level-Indicator:</strong> 4 Punkte, die den aktuellen Level visuell anzeigen. <code>.done</code> = orange gefüllt, <code>.active</code> = orange mit weissem Rand + Glow, <code>.empty</code> = transparent.</p>
+          <p><strong>Page-Overview:</strong> Eine kompakte Inhaltsübersicht mit orangenen Bullet-Points. Hilft dem Leser, schnell zu entscheiden, ob die Seite relevant ist.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 03: Navigation-Komponenten -->
+<section class="module" id="mod3">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">03</span>
+      <div>
+        <div class="module-title">Navigation-Komponenten</div>
+        <div class="module-subtitle">Breadcrumbs, Deep-Dive-Links, Sibling-Nav und mehr</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Navigation des Learning Skill besteht aus mehreren unabhängigen Komponenten, die je nach Seitentyp kombiniert werden. Alle leben in der fixierten <code>.nav</code>-Bar am oberen Bildschirmrand.</p>
+
+      <div class="component-grid">
+        <div class="component-card">
+          <strong>.nav-breadcrumb</strong>
+          Pfad-Anzeige: L0 > L1 > L2
+          <span>Nur auf L1-L3 Seiten</span>
+        </div>
+        <div class="component-card">
+          <strong>.nav-dots</strong>
+          Modul-Punkte zum Springen
+          <span>Per JS generiert</span>
+        </div>
+        <div class="component-card">
+          <strong>.level-indicator</strong>
+          4 Dots im Hero-Bereich
+          <span>done / active / empty</span>
+        </div>
+        <div class="component-card">
+          <strong>.sibling-nav</strong>
+          Links zu Geschwister-Seiten
+          <span>Vor dem Footer, blauer BG</span>
+        </div>
+        <div class="component-card">
+          <strong>.hero-back</strong>
+          Zurück-Link im Hero
+          <span>SVG-Pfeil + Text</span>
+        </div>
+        <div class="component-card">
+          <strong>.nav-right</strong>
+          Sprache + GitHub-Icon
+          <span>Flagge + SVG-Icon</span>
+        </div>
+      </div>
+
+      <div class="toggle-block" id="toggle3">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle3','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle3','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code><span class="code-comment">&lt;!-- ===== BREADCRUMB (L1-L3 Nav-Bar) ===== --&gt;</span>
+<span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"nav-breadcrumb"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"../index_dev_de.html"</span><span class="code-keyword">&gt;</span>L0 Überblick<span class="code-keyword">&lt;/a&gt;</span>
+  <span class="code-keyword">&lt;span</span> <span class="code-orange">class</span>=<span class="code-string">"sep"</span><span class="code-keyword">&gt;</span>&amp;#9656;<span class="code-keyword">&lt;/span&gt;</span>
+  <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"../l1/kurs-pipeline_dev_de.html"</span><span class="code-keyword">&gt;</span>L1 Kurs-Pipeline<span class="code-keyword">&lt;/a&gt;</span>
+  <span class="code-keyword">&lt;span</span> <span class="code-orange">class</span>=<span class="code-string">"sep"</span><span class="code-keyword">&gt;</span>&amp;#9656;<span class="code-keyword">&lt;/span&gt;</span>
+  <span class="code-keyword">&lt;span</span> <span class="code-orange">class</span>=<span class="code-string">"current"</span><span class="code-keyword">&gt;</span>L2 HTML-Templates<span class="code-keyword">&lt;/span&gt;</span>
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- ===== DEEP-DIVE LINK (in Modul-Body) ===== --&gt;</span>
+<span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"../l3/detail-seite.html"</span>
+   <span class="code-orange">class</span>=<span class="code-string">"deep-dive-link"</span><span class="code-keyword">&gt;</span>
+  Deep-Dive: Detail-Seite &rarr;
+<span class="code-keyword">&lt;/a&gt;</span>
+
+<span class="code-comment">&lt;!-- ===== SIBLING-NAV (vor Footer) ===== --&gt;</span>
+<span class="code-keyword">&lt;section</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-inner"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-title"</span><span class="code-keyword">&gt;</span>
+      Weitere Entwickler-L2-Seiten
+    <span class="code-keyword">&lt;/div&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-grid"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"seite.html"</span>
+         <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-link"</span><span class="code-keyword">&gt;</span>
+        <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-link-title"</span><span class="code-keyword">&gt;</span>
+          Seitenname
+        <span class="code-keyword">&lt;/div&gt;</span>
+        <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-link-sub"</span><span class="code-keyword">&gt;</span>
+          Kurzbeschreibung
+        <span class="code-keyword">&lt;/div&gt;</span>
+      <span class="code-keyword">&lt;/a&gt;</span>
+      <span class="code-comment">&lt;!-- .active auf der aktuellen Seite --&gt;</span>
+      <span class="code-keyword">&lt;a</span> <span class="code-orange">class</span>=<span class="code-string">"sibling-nav-link active"</span><span class="code-keyword">&gt;</span>...<span class="code-keyword">&lt;/a&gt;</span>
+    <span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/section&gt;</span>
+
+<span class="code-comment">&lt;!-- ===== NAV-BAR: L0 vs. L1-L3 ===== --&gt;</span>
+<span class="code-comment">&lt;!-- L0: Nur Logo/Titel + Sprach-Switch --&gt;</span>
+<span class="code-keyword">&lt;nav</span> <span class="code-orange">class</span>=<span class="code-string">"nav"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"nav-title"</span><span class="code-keyword">&gt;</span>Learning Skill<span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"nav-right"</span><span class="code-keyword">&gt;</span>...<span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/nav&gt;</span>
+
+<span class="code-comment">&lt;!-- L1-L3: Breadcrumb + Dots + Sprach-Switch --&gt;</span>
+<span class="code-keyword">&lt;nav</span> <span class="code-orange">class</span>=<span class="code-string">"nav"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"nav-breadcrumb"</span><span class="code-keyword">&gt;</span>...<span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"nav-dots"</span><span class="code-keyword">&gt;</span><span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"nav-right"</span><span class="code-keyword">&gt;</span>...<span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/nav&gt;</span>
+
+<span class="code-comment">&lt;!-- ===== ZIELGRUPPEN-SWITCH (L0 only) ===== --&gt;</span>
+<span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"audience-switch"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"index_de.html"</span>
+     <span class="code-orange">class</span>=<span class="code-string">"audience-btn"</span><span class="code-keyword">&gt;</span>Anwender<span class="code-keyword">&lt;/a&gt;</span>
+  <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"index_dev_de.html"</span>
+     <span class="code-orange">class</span>=<span class="code-string">"audience-btn active"</span><span class="code-keyword">&gt;</span>Entwickler<span class="code-keyword">&lt;/a&gt;</span>
+<span class="code-keyword">&lt;/div&gt;</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Breadcrumb:</strong> Zeigt den hierarchischen Pfad. Jede Ebene ist ein Link, die aktuelle Seite wird fett dargestellt (<code>.current</code>). Die Trennzeichen (<code>.sep</code>) nutzen das Unicode-Dreieck &#9656;.</p>
+          <p><strong>Deep-Dive-Link:</strong> Erscheint am Ende eines Moduls, wenn ein L3-Deep-Dive existiert. Pfeil-Icon (&rarr;) deutet auf tiefere Ebene hin.</p>
+          <p><strong>Sibling-Nav:</strong> Grid-Layout mit allen Geschwister-Seiten derselben Ebene. Die aktuelle Seite bekommt <code>.active</code> (orangener Rand).</p>
+          <p><strong>Nav-Bar-Unterschiede:</strong> L0 zeigt nur einen Titel + Sprach-Switch. L1-L3 ersetzen den Titel durch Breadcrumbs und fügen die Modul-Dots hinzu.</p>
+          <p><strong>Zielgruppen-Switch:</strong> Nur auf L0-Seiten. Zwei Buttons: Anwender und Entwickler. Die aktive Perspektive ist hervorgehoben.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 04: Interaktive Elemente -->
+<section class="module" id="mod4">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">04</span>
+      <div>
+        <div class="module-title">Interaktive Elemente</div>
+        <div class="module-subtitle">Toggle, Tooltips, Quiz, FAQ-Akkordeon und Flow-Diagramme</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Der Learning Skill nutzt mehrere interaktive Komponenten, um komplexe Inhalte zugänglich zu machen. Das zentrale Element ist der <strong>Code/Klartext-Toggle</strong> — jeder Code-Block hat eine Klartext-Erklärung als Alternative.</p>
+
+      <div class="component-grid">
+        <div class="component-card">
+          <strong>.toggle-block</strong>
+          Code &harr; Klartext umschalten
+          <span>Tabs + Panels + JS</span>
+        </div>
+        <div class="component-card">
+          <strong>.tooltip</strong>
+          Hover-Erklärungen
+          <span>Dashed underline + Popup</span>
+        </div>
+        <div class="component-card">
+          <strong>.quiz-block</strong>
+          Multiple-Choice-Fragen
+          <span>Antwort-Buttons + Feedback</span>
+        </div>
+        <div class="component-card">
+          <strong>.faq-item</strong>
+          Aufklappbare Fragen
+          <span>Click-to-expand Akkordeon</span>
+        </div>
+        <div class="component-card">
+          <strong>.flow-diagram</strong>
+          Prozess-Visualisierung
+          <span>CSS-Grid + Pfeile</span>
+        </div>
+      </div>
+
+      <div class="toggle-block" id="toggle4">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle4','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle4','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code><span class="code-comment">&lt;!-- ===== CODE/KLARTEXT TOGGLE ===== --&gt;</span>
+<span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"toggle-block"</span> <span class="code-orange">id</span>=<span class="code-string">"toggle1"</span><span class="code-keyword">&gt;</span>
+
+  <span class="code-comment">&lt;!-- Tab-Leiste --&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"toggle-tabs"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;button</span> <span class="code-orange">class</span>=<span class="code-string">"toggle-tab active"</span>
+      <span class="code-orange">onclick</span>=<span class="code-string">"toggleView('toggle1','code')"</span><span class="code-keyword">&gt;</span>
+      Code
+    <span class="code-keyword">&lt;/button&gt;</span>
+    <span class="code-keyword">&lt;button</span> <span class="code-orange">class</span>=<span class="code-string">"toggle-tab"</span>
+      <span class="code-orange">onclick</span>=<span class="code-string">"toggleView('toggle1','text')"</span><span class="code-keyword">&gt;</span>
+      Klartext
+    <span class="code-keyword">&lt;/button&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Code-Panel --&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"toggle-panel code-panel active"</span>
+       <span class="code-orange">data-panel</span>=<span class="code-string">"code"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;code&gt;</span>...formatierter Code...<span class="code-keyword">&lt;/code&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Klartext-Panel --&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">class</span>=<span class="code-string">"toggle-panel text-panel"</span>
+       <span class="code-orange">data-panel</span>=<span class="code-string">"text"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;p&gt;</span>Verständliche Erklärung...<span class="code-keyword">&lt;/p&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-keyword">&lt;/div&gt;</span>
+
+<span class="code-comment">/* ===== JavaScript: toggleView() ===== */</span>
+<span class="code-keyword">function</span> <span class="code-orange">toggleView</span>(blockId, panel) {
+  <span class="code-keyword">const</span> block = document.<span class="code-orange">getElementById</span>(blockId);
+
+  <span class="code-comment">// Alle Tabs deaktivieren</span>
+  block.<span class="code-orange">querySelectorAll</span>(<span class="code-string">'.toggle-tab'</span>)
+    .forEach(t =&gt; t.classList.<span class="code-orange">remove</span>(<span class="code-string">'active'</span>));
+
+  <span class="code-comment">// Alle Panels verstecken</span>
+  block.<span class="code-orange">querySelectorAll</span>(<span class="code-string">'.toggle-panel'</span>)
+    .forEach(p =&gt; p.classList.<span class="code-orange">remove</span>(<span class="code-string">'active'</span>));
+
+  <span class="code-comment">// Gewähltes Panel aktivieren</span>
+  block.<span class="code-orange">querySelector</span>(
+    <span class="code-string">`[data-panel="${panel}"]`</span>
+  ).classList.<span class="code-orange">add</span>(<span class="code-string">'active'</span>);
+
+  <span class="code-comment">// Passenden Tab aktivieren</span>
+  block.<span class="code-orange">querySelectorAll</span>(<span class="code-string">'.toggle-tab'</span>)
+    .forEach(t =&gt; {
+      <span class="code-keyword">if</span> (
+        (panel === <span class="code-string">'code'</span> &amp;&amp;
+         t.textContent === <span class="code-string">'Code'</span>) ||
+        (panel === <span class="code-string">'text'</span> &amp;&amp;
+         t.textContent === <span class="code-string">'Klartext'</span>)
+      ) t.classList.<span class="code-orange">add</span>(<span class="code-string">'active'</span>);
+    });
+}
+
+<span class="code-comment">/* ===== TOOLTIP: CSS + Positionierung ===== */</span>
+<span class="code-keyword">.tooltip</span> {
+  <span class="code-orange">position</span>: <span class="code-string">relative</span>;
+  <span class="code-orange">border-bottom</span>: <span class="code-string">1px dashed var(--color-impulse-orange)</span>;
+  <span class="code-orange">cursor</span>: <span class="code-string">help</span>;
+}
+
+<span class="code-keyword">.tooltip .tooltip-text</span> {
+  <span class="code-orange">visibility</span>: <span class="code-string">hidden</span>;
+  <span class="code-orange">opacity</span>: <span class="code-string">0</span>;
+  <span class="code-orange">position</span>: <span class="code-string">fixed</span>;  <span class="code-comment">/* fixed statt absolute! */</span>
+  <span class="code-orange">z-index</span>: <span class="code-string">2000</span>;
+  <span class="code-orange">max-width</span>: <span class="code-string">280px</span>;
+  <span class="code-orange">transition</span>: <span class="code-string">opacity .2s</span>;
+}
+
+<span class="code-comment">/* JS positioniert den Tooltip per mouseenter */</span>
+document.<span class="code-orange">querySelectorAll</span>(<span class="code-string">'.tooltip'</span>).forEach(tip =&gt; {
+  tip.<span class="code-orange">addEventListener</span>(<span class="code-string">'mouseenter'</span>, e =&gt; {
+    <span class="code-keyword">const</span> tt = tip.<span class="code-orange">querySelector</span>(<span class="code-string">'.tooltip-text'</span>);
+    <span class="code-keyword">const</span> rect = tip.<span class="code-orange">getBoundingClientRect</span>();
+    tt.style.<span class="code-orange">left</span> = rect.left + <span class="code-string">'px'</span>;
+    tt.style.<span class="code-orange">top</span> = (rect.bottom + <span class="code-orange">8</span>) + <span class="code-string">'px'</span>;
+  });
+});</code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>Toggle-Mechanik:</strong> Jeder Toggle-Block hat eine eindeutige ID. Die <code>toggleView()</code>-Funktion schaltet zwischen Code- und Klartext-Panel um, indem sie die <code>.active</code>-Klasse verschiebt.</p>
+          <p><strong>Code-Panel:</strong> Dunkler Hintergrund (<code>#000066</code>), monospace Schrift, syntax-highlighted mit Span-Klassen (<code>.code-keyword</code>, <code>.code-string</code>, <code>.code-orange</code>, <code>.code-comment</code>).</p>
+          <p><strong>Klartext-Panel:</strong> Weisser Hintergrund, normaler Body-Font. Erklärt den Code in verständlicher Sprache, ohne technische Vorkenntnisse vorauszusetzen.</p>
+          <p><strong>Tooltip:</strong> Nutzt <code>position: fixed</code> statt <code>absolute</code>, damit der Tooltip nicht von overflow-hidden-Containern abgeschnitten wird. JavaScript berechnet die Position dynamisch per <code>getBoundingClientRect()</code>.</p>
+          <p><strong>Quiz/FAQ:</strong> Folgen dem gleichen Pattern: ein Container mit Klick-Handler, der <code>.active</code>-Klassen toggled. Quiz-Antworten bekommen <code>.correct</code> oder <code>.wrong</code> nach dem Klick.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULE 05: Responsive & Integrationsmodus -->
+<section class="module" id="mod5">
+  <div class="module-content">
+    <div class="module-header">
+      <span class="module-number">05</span>
+      <div>
+        <div class="module-title">Responsive & Integrationsmodus</div>
+        <div class="module-subtitle">Breakpoints, Standalone vs. Eingebettet</div>
+      </div>
+    </div>
+    <div class="module-body">
+      <p>Die Kursseiten sind für zwei Breakpoints optimiert und unterstützen sowohl den Standalone-Betrieb (eigene URL) als auch die Einbettung in eine übergeordnete Anwendung.</p>
+
+      <p><strong>Breakpoints:</strong></p>
+      <div class="breakpoint-bar">
+        <span class="bp-label">Desktop</span>
+        <div class="bp-track"><div class="bp-fill" style="width:100%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--color-text-muted)"> > 768px</span>
+      </div>
+      <div class="breakpoint-bar">
+        <span class="bp-label">Tablet</span>
+        <div class="bp-track"><div class="bp-fill" style="width:60%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--color-text-muted)">481 - 768px</span>
+      </div>
+      <div class="breakpoint-bar">
+        <span class="bp-label">Mobile</span>
+        <div class="bp-track"><div class="bp-fill" style="width:37%"></div></div>
+        <span style="font-family:var(--font-mono);font-size:.75rem;color:var(--color-text-muted)"> &le; 480px</span>
+      </div>
+
+      <div class="toggle-block" id="toggle5">
+        <div class="toggle-tabs">
+          <button class="toggle-tab active" onclick="toggleView('toggle5','code')">Code</button>
+          <button class="toggle-tab" onclick="toggleView('toggle5','text')">Klartext</button>
+        </div>
+        <div class="toggle-panel code-panel active" data-panel="code">
+          <code><span class="code-comment">/* ===== MEDIA QUERIES ===== */</span>
+
+<span class="code-comment">/* Tablet: Kompaktere Module */</span>
+<span class="code-keyword">@media</span> (<span class="code-orange">max-width</span>: <span class="code-string">768px</span>) {
+  <span class="code-keyword">.module</span> {
+    <span class="code-orange">padding</span>: <span class="code-string">4rem 1.2rem 3rem</span>;
+    <span class="code-orange">min-height</span>: <span class="code-string">auto</span>;  <span class="code-comment">/* Kein Fullscreen */</span>
+  }
+  <span class="code-keyword">.module-header</span> {
+    <span class="code-orange">flex-direction</span>: <span class="code-string">column</span>;
+    <span class="code-orange">gap</span>: <span class="code-string">.5rem</span>;
+  }
+  <span class="code-keyword">.module-number</span> {
+    <span class="code-orange">font-size</span>: <span class="code-string">3.5rem</span>;
+  }
+  <span class="code-keyword">.hero h1</span> {
+    <span class="code-orange">font-size</span>: <span class="code-string">1.8rem</span>;
+  }
+  <span class="code-keyword">.nav-breadcrumb</span> {
+    <span class="code-orange">font-size</span>: <span class="code-string">.72rem</span>;
+  }
+  <span class="code-keyword">.sibling-nav-grid</span> {
+    <span class="code-orange">grid-template-columns</span>: <span class="code-string">1fr</span>;
+  }
+}
+
+<span class="code-comment">/* Mobile: Einspaltiges Layout */</span>
+<span class="code-keyword">@media</span> (<span class="code-orange">max-width</span>: <span class="code-string">480px</span>) {
+  <span class="code-keyword">.nav</span> {
+    <span class="code-orange">padding</span>: <span class="code-string">.5rem .8rem</span>;
+  }
+  <span class="code-keyword">.nav-dots</span> {
+    <span class="code-orange">display</span>: <span class="code-string">none</span>;  <span class="code-comment">/* Dots ausblenden */</span>
+  }
+  <span class="code-keyword">.hero</span> {
+    <span class="code-orange">padding</span>: <span class="code-string">4.5rem 1rem 2.5rem</span>;
+    <span class="code-orange">min-height</span>: <span class="code-string">60dvh</span>;
+  }
+  <span class="code-keyword">.code-block code</span> {
+    <span class="code-orange">font-size</span>: <span class="code-string">.7rem</span>;
+  }
+  <span class="code-keyword">.toggle-tabs</span> {
+    <span class="code-orange">flex-direction</span>: <span class="code-string">column</span>;
+  }
+}
+
+<span class="code-comment">&lt;!-- ===== FOOTER: STANDALONE ===== --&gt;</span>
+<span class="code-keyword">&lt;footer</span> <span class="code-orange">style</span>=<span class="code-string">"background:#F3EFEB;
+  border-top:2px solid #E4DAD4;
+  padding:2rem"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;div</span> <span class="code-orange">style</span>=<span class="code-string">"max-width:820px; margin:0 auto;
+    display:flex; justify-content:space-between;
+    align-items:center; flex-wrap:wrap;
+    gap:1rem; font-size:.85rem;
+    color:#5C5A6B"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;span&gt;</span>&amp;copy; 2026 Mark Zimmermann<span class="code-keyword">&lt;/span&gt;</span>
+    <span class="code-keyword">&lt;div</span> <span class="code-orange">style</span>=<span class="code-string">"display:flex; gap:1.5rem"</span><span class="code-keyword">&gt;</span>
+      <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"...impressum..."</span><span class="code-keyword">&gt;</span>Impressum<span class="code-keyword">&lt;/a&gt;</span>
+      <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"...github..."</span><span class="code-keyword">&gt;</span>GitHub<span class="code-keyword">&lt;/a&gt;</span>
+    <span class="code-keyword">&lt;/div&gt;</span>
+  <span class="code-keyword">&lt;/div&gt;</span>
+<span class="code-keyword">&lt;/footer&gt;</span>
+
+<span class="code-comment">&lt;!-- ===== FOOTER: EINGEBETTET (iframe) ===== --&gt;</span>
+<span class="code-comment">&lt;!-- Kein eigener Footer — die Host-App
+     liefert Header und Footer.
+     Die Nav-Bar und der Footer werden
+     per CSS ausgeblendet: --&gt;</span>
+<span class="code-keyword">&lt;style&gt;</span>
+  <span class="code-comment">/* Wenn ?embedded=true in der URL */</span>
+  <span class="code-keyword">.embedded .nav</span> { <span class="code-orange">display</span>: <span class="code-string">none</span>; }
+  <span class="code-keyword">.embedded footer</span> { <span class="code-orange">display</span>: <span class="code-string">none</span>; }
+  <span class="code-keyword">.embedded .hero</span> {
+    <span class="code-orange">padding-top</span>: <span class="code-string">2rem</span>;  <span class="code-comment">/* Kein Nav-Offset */</span>
+  }
+<span class="code-keyword">&lt;/style&gt;</span></code>
+        </div>
+        <div class="toggle-panel text-panel" data-panel="text">
+          <p><strong>768px-Breakpoint:</strong> Module verlieren <code>min-height: 100dvh</code> und werden so hoch wie ihr Inhalt. Der Header wechselt von horizontal (Nummer neben Titel) zu vertikal (Nummer über Titel). Breadcrumbs werden kleiner.</p>
+          <p><strong>480px-Breakpoint:</strong> Die Modul-Dots in der Nav-Bar werden ausgeblendet (zu wenig Platz). Toggle-Tabs stapeln sich vertikal. Code-Blöcke bekommen eine noch kleinere Schrift für bessere Lesbarkeit auf schmalen Screens.</p>
+          <p><strong>Standalone-Footer:</strong> Zeigt Copyright, Impressum-Link und GitHub-Link. Warmer Grau-Hintergrund (<code>#F3EFEB</code>) mit dunklerem Rand oben (<code>#E4DAD4</code>).</p>
+          <p><strong>Integrationsmodus:</strong> Wenn die Seite per iframe eingebettet wird, können Nav und Footer per CSS ausgeblendet werden. Die Host-Anwendung übernimmt dann die äussere Navigation. Der Hero-Padding wird reduziert, da kein fixierter Nav-Balken mehr Platz benötigt.</p>
+        </div>
+      </div>
+
+      <div class="no-deep-dive">
+        <strong>Kein Deep-Dive auf L3:</strong> Dieses Thema hat keinen L3-Deep-Dive. Die hier gezeigten Templates und Patterns decken die gesamte HTML-Architektur des Learning Skill ab. Für CSS-Variablen und Design-Tokens siehe die <a href="../l1/design-system_dev_de.html" style="color:var(--color-deep-blue)">Design-System-Seite</a>.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sibling-nav">
+  <div class="sibling-nav-inner">
+    <div class="sibling-nav-title">Weitere Entwickler-L2-Seiten</div>
+    <div class="sibling-nav-grid">
+      <a href="phasen-orchestrierung_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Phasen-Orchestrierung</div>
+        <div class="sibling-nav-link-sub">skill.md steuert den Ablauf</div>
+      </a>
+      <a href="agenten-kommunikation_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Agenten-Kommunikation</div>
+        <div class="sibling-nav-link-sub">8 Agenten zusammenarbeiten</div>
+      </a>
+      <a href="graph-schema_dev_de.html" class="sibling-nav-link">
+        <div class="sibling-nav-link-title">Graph Schema</div>
+        <div class="sibling-nav-link-sub">13 Node-Typen, 26 Edge-Typen</div>
+      </a>
+      <a href="html-templates_dev_de.html" class="sibling-nav-link active">
+        <div class="sibling-nav-link-title">HTML-Templates</div>
+        <div class="sibling-nav-link-sub">Modul-Architektur & Komponenten</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+    <span>&copy; 2026 Mark Zimmermann</span>
+    <div style="display:flex;gap:1.5rem">
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleView(blockId, panel) {
+  const block = document.getElementById(blockId);
+  block.querySelectorAll('.toggle-tab').forEach(t => t.classList.remove('active'));
+  block.querySelectorAll('.toggle-panel').forEach(p => p.classList.remove('active'));
+  block.querySelector(`[data-panel="${panel}"]`).classList.add('active');
+  block.querySelectorAll('.toggle-tab').forEach(t => {
+    if ((panel === 'code' && t.textContent === 'Code') || (panel === 'text' && t.textContent === 'Klartext'))
+      t.classList.add('active');
+  });
+}
+const sections = ['hero','mod1','mod2','mod3','mod4','mod5'];
+const navDotsContainer = document.getElementById('navDots');
+sections.forEach((id, i) => {
+  const dot = document.createElement('span');
+  dot.className = 'nav-dot';
+  dot.title = i === 0 ? 'Start' : 'Modul ' + String(i).padStart(2,'0');
+  dot.addEventListener('click', () => document.getElementById(id).scrollIntoView({behavior:'smooth'}));
+  navDotsContainer.appendChild(dot);
+});
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = sections.indexOf(entry.target.id);
+      document.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+  });
+}, {threshold: 0.3});
+sections.forEach(id => { const el = document.getElementById(id); if(el) observer.observe(el); });
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width = (window.scrollY / h * 100) + '%';
+});
+document.querySelectorAll('.tooltip').forEach(tip => {
+  tip.addEventListener('mouseenter', e => {
+    const tt = tip.querySelector('.tooltip-text');
+    if (!tt) return;
+    const rect = tip.getBoundingClientRect();
+    tt.style.left = rect.left + 'px';
+    tt.style.top = (rect.bottom + 8) + 'px';
+  });
+});
+</script>
+</body>
+</html>
