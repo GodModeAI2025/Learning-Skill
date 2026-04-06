@@ -1,6 +1,7 @@
 ---
 name: learning-skill
-description: Kombiniert zwei Superkraefte: (1) Verwandelt Codebases in interaktive Multi-Level-HTML-Kurse (L0-L3) mit Zielgruppen-Segmentierung und Energiekonzern-Design, UND (2) erzeugt interaktive Knowledge Graphs mit Dashboard zur Code-Exploration. DREI MODI: "Kurs" für HTML-Kurse, "Verstehen" für Knowledge Graphs, "Kombiniert" für beides. Optimiert für Claude.
+description: >-
+  Kombiniert zwei Superkraefte: (1) Verwandelt Codebases in interaktive Multi-Level-HTML-Kurse (L0-L3) mit Zielgruppen-Segmentierung und Energiekonzern-Design, UND (2) erzeugt interaktive Knowledge Graphs mit Dashboard zur Code-Exploration. DREI MODI: "Kurs" für HTML-Kurse, "Verstehen" für Knowledge Graphs, "Kombiniert" für beides. Optimiert für Claude.
 ---
 
 # Learning Skill v2.0
