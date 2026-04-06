@@ -16,7 +16,7 @@
   --warm-grey-bg:#F3EFEB;
   --code-bg:#000066;
   --text:#1A1A2E;
-  --text-muted:#6B6778;
+  --text-muted:#7A7570;
   --radius:16px;
   --space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
   --font-heading:'Bricolage Grotesque',sans-serif;
@@ -130,7 +130,7 @@ body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#
 .site-footer a{color:var(--impulse-orange);text-decoration:none}
 .site-footer a:hover{text-decoration:underline}
 .footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
-.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s cubic-bezier(0.25,1,0.5,1),transform .6s cubic-bezier(0.25,1,0.5,1)}
 .animate-in.visible{opacity:1;transform:translateY(0)}
 @media(max-width:768px){
   .card-row{grid-template-columns:1fr}
@@ -144,6 +144,16 @@ body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#
   .nav-deep{padding:.5rem 1rem}
   .mini-graph{transform:scale(.85);transform-origin:top left}
 }
+
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{outline:2px solid var(--impulse-orange,#FE8F11);outline-offset:2px;border-radius:4px}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>

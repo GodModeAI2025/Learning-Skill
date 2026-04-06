@@ -1559,8 +1559,8 @@ L0: Überblick (5 Module)
 
   /* === TEXT === */
   --color-text:            #1A1A2E;
-  --color-text-secondary:  #5C5A6B;
-  --color-text-muted:      #6B6778;  /* WCAG AA: 5.1:1 auf Weiss */
+  --color-text-secondary:  #6B6560;  /* warm getönt statt kalt-violett #5C5A6B */
+  --color-text-muted:      #7A7570;  /* warm getönt statt kalt-violett #6B6778, WCAG AA: 4.6:1 auf Weiss */
 
   /* === BORDERS & SURFACES === */
   --color-border:          #E4DAD4;
@@ -1627,9 +1627,16 @@ L0: Überblick (5 Module)
   --shadow-xl:  0 16px 48px rgba(0,0,60,.12);
 
   /* === ANIMATIONEN === */
-  --ease-out:cubic-bezier(.16,1,.3,1); --ease-in-out:cubic-bezier(.65,0,.35,1);
+  --ease-out:cubic-bezier(.16,1,.3,1); --ease-out-quart:cubic-bezier(.25,1,.5,1); --ease-in-out:cubic-bezier(.65,0,.35,1);
   --duration-fast:150ms; --duration-normal:300ms; --duration-slow:500ms; --stagger-delay:120ms;
 }
+
+/* === TRANSITIONS: ease-out-quart als Standard (NICHT generisches 'ease') === */
+/* Verwende in allen transition-Deklarationen:
+   transition: property Xms var(--ease-out-quart);
+   NIEMALS: transition: property Xms ease;
+   Das generische 'ease' ist ein Kompromiss der selten optimal ist.
+   ease-out-quart (cubic-bezier(.25,1,.5,1)) erzeugt natuerliche Verzoegerung. */
 ```
 
 #### Syntax-Highlighting (auf #000066)
@@ -1659,6 +1666,39 @@ L0: Überblick (5 Module)
 | **Typografie** | Bricolage Grotesque Headings. DM Sans Body. JetBrains Mono Code |
 | **Kein Logo** | Keine Logos, keine Firmennamen |
 | **Kein Purple** | KEINE Purple-Gradienten |
+| **Kein Glassmorphism** | KEIN backdrop-filter:blur() -- ist ein AI-Slop-Tell. Solides rgba() verwenden |
+| **Easing** | KEIN generisches `ease` in Transitions. IMMER `var(--ease-out-quart)` oder `cubic-bezier(.25,1,.5,1)` |
+| **Transitions** | NUR transform und opacity animieren. NIEMALS width, height, padding, margin |
+
+#### BARRIEREFREIHEIT -- PFLICHT-BLOECKE (in JEDE HTML-Datei)
+
+**Diese beiden CSS-Blöcke MUESSEN in JEDER erzeugten HTML-Datei enthalten sein, direkt vor `</style>`:**
+
+```css
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+    scroll-behavior:auto !important;
+  }
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{
+  outline:2px solid var(--color-impulse-orange,#FE8F11);
+  outline-offset:2px;
+  border-radius:4px;
+}
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible){outline:none}
+```
+
+**Warum:**
+- **Reduced Motion**: ~35% der Erwachsenen ueber 40 haben vestibulaere Stoerungen. Scroll-Snap, Entrance-Animationen und Canvas-Animationen muessen deaktivierbar sein. WCAG-Verstoß ohne diesen Block.
+- **Focus Visible**: Keyboard-User muessen sehen wo sie sind. Impuls-Orange als Fokusring ist CI/CD-konform und gut sichtbar. `:focus:not(:focus-visible)` verhindert den Ring bei Mausklick.
 
 #### KONTRAST-REGELN (KRITISCH -- WCAG AA PFLICHT)
 
@@ -1672,15 +1712,16 @@ L0: Überblick (5 Module)
 | Weiss (#FFF) auf Hellgrau (#E4DAD4) | Kontrast 1.3:1 -- unlesbar | #1A1A2E auf Hellgrau |
 | `rgba(255,255,255,.5)` auf Tiefenblau | Kontrast ~3:1 -- zu schwach | `rgba(255,255,255,.85)` oder #FFFFFF |
 | `rgba(255,255,255,.4)` auf Tiefenblau | Kontrast ~2.5:1 -- unlesbar | `rgba(255,255,255,.75)` minimum |
-| `#9995A0` (text-muted) auf Weiss | Kontrast 3.2:1 -- grenzwertig | `#6B6778` (Kontrast 5.1:1) |
-| `#9995A0` (text-muted) auf Warmgrau (#F3EFEB) | Kontrast 2.6:1 -- unlesbar | `#5C5A6B` (text-secondary) |
+| `#9995A0` (text-muted) auf Weiss | Kontrast 3.2:1 -- grenzwertig | `#7A7570` (warm getönt, Kontrast 4.6:1) |
+| `#9995A0` (text-muted) auf Warmgrau (#F3EFEB) | Kontrast 2.6:1 -- unlesbar | `#6B6560` (warm getönt, text-secondary) |
 | Helle Schrift auf hellen Buttons/Badges | Generell unlesbar | Dunkle Schrift oder dunkler Hintergrund |
 
 **Korrigierte CSS-Werte:**
 
 ```css
-/* ALT (zu schwach) -> NEU (kontrastreich) */
---color-text-muted:      #6B6778;  /* war #9995A0 -- jetzt 5.1:1 auf Weiss */
+/* ALT (zu schwach) -> NEU (kontrastreich, warm getönt) */
+--color-text-muted:      #7A7570;  /* war #9995A0 -> #6B6778 -> jetzt warm getönt */
+--color-text-secondary:  #6B6560;  /* war #5C5A6B -> jetzt warm getönt, harmoniert mit Warmgrau */
 
 /* Auf dunklem Hintergrund (#000099 / #000066): */
 /* MINIMUM opacity für weissen Text: .85 */
@@ -1692,10 +1733,14 @@ L0: Überblick (5 Module)
 ```
 [ ] Kein weisser/heller Text auf Warmgrau (#F3EFEB) oder Hellgrau (#E4DAD4)?
 [ ] Kein rgba(255,255,255,.5) oder niedriger auf dunklem BG?
-[ ] Kein #9995A0 (muted) auf hellem Hintergrund?
+[ ] Kein #9995A0 oder #6B6778 oder #5C5A6B (kalt getönt) auf hellem Hintergrund? -> Stattdessen #7A7570 / #6B6560 (warm)
 [ ] Hero-Subtitle lesbar? (mindestens rgba(255,255,255,.85) auf #000099)
 [ ] Badge-Text lesbar? (dunkle Schrift auf hellem Badge ODER helle auf dunklem)
-[ ] Footer-Text lesbar? (mind. #5C5A6B auf hellem BG)
+[ ] Footer-Text lesbar? (mind. #6B6560 auf hellem BG)
+[ ] Kein generisches 'ease' in Transitions? -> Stattdessen var(--ease-out-quart) oder cubic-bezier(.25,1,.5,1)
+[ ] prefers-reduced-motion Block vorhanden?
+[ ] :focus-visible Block vorhanden?
+[ ] Kein backdrop-filter:blur() in der Navigation? -> Stattdessen solides rgba(0,0,153,.97)
 ```
 
 #### UEBERSCHRIFTEN-REGELN (KRITISCH -- KEINE TECHNISCHEN LEVEL-BEZEICHNUNGEN)
@@ -2105,7 +2150,8 @@ Wenn mehrere Zielgruppen generiert werden, enthält jede L0-Seite einen **Zielgr
 
 ```css
 /* L0: Standard-Nav mit Dots */
-.nav { background: rgba(0,0,153,.95); backdrop-filter: blur(12px); border-bottom: 2px solid var(--color-impulse-orange); }
+.nav { background: rgba(0,0,153,.97); border-bottom: 2px solid var(--color-impulse-orange); }
+/* KEIN backdrop-filter:blur() — ist Glassmorphism und ein AI-Slop-Tell. Solides rgba genuegt. */
 .nav-title { color: #FFFFFF; }
 .progress-bar { background: var(--color-impulse-orange); }
 .nav-dot { border-color: rgba(255,255,255,.6); }
@@ -2114,8 +2160,8 @@ Wenn mehrere Zielgruppen generiert werden, enthält jede L0-Seite einen **Zielgr
 
 /* L1-L3: Kompakte Nav mit Breadcrumb */
 .nav-deep {
-  background: rgba(0,0,153,.95);
-  backdrop-filter: blur(12px);
+  background: rgba(0,0,153,.97);
+  /* KEIN backdrop-filter:blur() */
   border-bottom: 2px solid var(--color-impulse-orange);
   position: fixed;
   top: 0;

@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--color-deep-blue:#000099;--color-impulse-orange:#FE8F11;--color-warm-gray:#E4DAD4;--color-warm-gray-bg:#F3EFEB;--color-code-bg:#000066;--color-text:#1A1A2E;--color-text-muted:#5C5A6B;--font-display:'Bricolage Grotesque',Georgia,serif;--font-body:'DM Sans',-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code','Consolas',monospace}
+:root{--color-deep-blue:#000099;--color-impulse-orange:#FE8F11;--color-warm-gray:#E4DAD4;--color-warm-gray-bg:#F3EFEB;--color-code-bg:#000066;--color-text:#1A1A2E;--color-text-muted:#6B6560;--font-display:'Bricolage Grotesque',Georgia,serif;--font-body:'DM Sans',-apple-system,sans-serif;--font-mono:'JetBrains Mono','Fira Code','Consolas',monospace}
 html{scroll-behavior:smooth;scroll-snap-type:y proximity}
 body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overflow-x:hidden}
 .nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--color-deep-blue);padding:.6rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
@@ -98,6 +98,16 @@ body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overfl
 .breakpoint-bar .bp-track{flex:1;height:10px;background:var(--color-warm-gray);border-radius:5px;position:relative;overflow:hidden}
 .breakpoint-bar .bp-fill{height:100%;border-radius:5px;background:var(--color-impulse-orange)}
 @media(max-width:640px){.nav-breadcrumb{font-size:.72rem}.module{padding:4rem 1rem 3rem}.module-header{flex-direction:column;gap:.5rem}.module-number{font-size:3.5rem}.hero h1{font-size:1.8rem}.sibling-nav-grid{grid-template-columns:1fr}.component-grid{grid-template-columns:1fr}.class-table{font-size:.75rem}}
+
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{outline:2px solid var(--impulse-orange,#FE8F11);outline-offset:2px;border-radius:4px}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>
@@ -681,7 +691,7 @@ document.<span class="code-orange">querySelectorAll</span>(<span class="code-str
     display:flex; justify-content:space-between;
     align-items:center; flex-wrap:wrap;
     gap:1rem; font-size:.85rem;
-    color:#5C5A6B"</span><span class="code-keyword">&gt;</span>
+    color:#6B6560"</span><span class="code-keyword">&gt;</span>
     <span class="code-keyword">&lt;span&gt;</span>&amp;copy; 2026 Mark Zimmermann<span class="code-keyword">&lt;/span&gt;</span>
     <span class="code-keyword">&lt;div</span> <span class="code-orange">style</span>=<span class="code-string">"display:flex; gap:1.5rem"</span><span class="code-keyword">&gt;</span>
       <span class="code-keyword">&lt;a</span> <span class="code-orange">href</span>=<span class="code-string">"...impressum..."</span><span class="code-keyword">&gt;</span>Impressum<span class="code-keyword">&lt;/a&gt;</span>
@@ -744,11 +754,11 @@ document.<span class="code-orange">querySelectorAll</span>(<span class="code-str
 </section>
 
 <footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
-  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#6B6560">
     <span>&copy; 2026 Mark Zimmermann</span>
     <div style="display:flex;gap:1.5rem">
-      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
-      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#6B6560;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#6B6560;text-decoration:none">GitHub</a>
     </div>
   </div>
 </footer>

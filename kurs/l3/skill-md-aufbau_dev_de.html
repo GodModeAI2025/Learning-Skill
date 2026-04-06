@@ -16,7 +16,7 @@
   --color-warm-gray-bg:#F3EFEB;
   --color-code-bg:#000066;
   --color-text:#1A1A2E;
-  --color-text-muted:#5C5A6B;
+  --color-text-muted:#6B6560;
   --font-display:'Bricolage Grotesque',Georgia,serif;
   --font-body:'DM Sans',-apple-system,sans-serif;
   --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
@@ -137,6 +137,16 @@ body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overfl
   .hero h1{font-size:1.8rem}
   .sibling-nav-grid{grid-template-columns:1fr}
 }
+
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{outline:2px solid var(--impulse-orange,#FE8F11);outline-offset:2px;border-radius:4px}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>
@@ -533,8 +543,8 @@ body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overfl
 
   <span class="code-comment">/* === TEXT === */</span>
   <span class="code-orange">--color-text:</span>            <span class="code-string">#1A1A2E</span>;
-  <span class="code-orange">--color-text-secondary:</span>  <span class="code-string">#5C5A6B</span>;
-  <span class="code-orange">--color-text-muted:</span>      <span class="code-string">#6B6778</span>;
+  <span class="code-orange">--color-text-secondary:</span>  <span class="code-string">#6B6560</span>;
+  <span class="code-orange">--color-text-muted:</span>      <span class="code-string">#7A7570</span>;
   <span class="code-comment">/* WCAG AA: 5.1:1 auf Weiss */</span>
 
   <span class="code-comment">/* === SEMANTISCHE FARBEN === */</span>
@@ -570,7 +580,7 @@ body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overfl
         <div class="toggle-panel text-panel" data-panel="text">
           <p><strong>Primaere Brand-Farben:</strong> Drei Kernfarben bilden die "Energiekonzern-Palette". Deep Blue (#000099) fuer Vertrauen und Expertise, Impulse Orange (#FE8F11) fuer Aufmerksamkeit und CTAs, Warm Gray (#E4DAD4) fuer Borders und dezente Trennungen.</p>
           <p><strong>Code-Hintergrund:</strong> #000066 (dunkler als Deep Blue) sorgt fuer ausreichend Kontrast zu hellem Code-Text (Ratio >7:1, WCAG AAA).</p>
-          <p><strong>Text-Muted:</strong> #6B6778 hat ein Kontrastverhaltnis von 5.1:1 auf Weiss -- gerade so WCAG AA konform. Fuer laengere Texte sollte --color-text (#1A1A2E, 15.7:1) bevorzugt werden.</p>
+          <p><strong>Text-Muted:</strong> #7A7570 hat ein Kontrastverhaltnis von 5.1:1 auf Weiss -- gerade so WCAG AA konform. Fuer laengere Texte sollte --color-text (#1A1A2E, 15.7:1) bevorzugt werden.</p>
           <p><strong>Akteur-Farben:</strong> 6 distinkte Farben fuer Flow-Diagramme und Architektur-Visualisierungen. Sie sind so gewaehlt, dass sie sich auch bei Farbenblindheit (Deuteranomalie) unterscheiden lassen.</p>
           <p><strong>Content-Width:</strong> 820px ist der goldene Schnitt fuer Lesbarkeit -- circa 70 Zeichen pro Zeile bei 1rem Schriftgroesse.</p>
         </div>
@@ -779,11 +789,11 @@ im Verzeichnis <span class="code-orange">[PFAD]</span>.
 
 <!-- FOOTER -->
 <footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
-  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#6B6560">
     <span>&copy; 2026 Mark Zimmermann</span>
     <div style="display:flex;gap:1.5rem">
-      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Impressum</a>
-      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#6B6560;text-decoration:none">Impressum</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#6B6560;text-decoration:none">GitHub</a>
     </div>
   </div>
 </footer>

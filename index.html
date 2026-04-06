@@ -33,7 +33,7 @@ a:hover{text-decoration:underline}
 img{max-width:100%;display:block}
 
 /* ===== NAV BAR ===== */
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(0,0,153,.95);backdrop-filter:blur(8px);border-bottom:3px solid var(--impuls-orange);height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#fff}
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(0,0,153,.97);border-bottom:3px solid var(--impuls-orange);height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 24px;color:#fff}
 .nav-title{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.1rem}
 .nav-subtitle{font-size:.75rem;opacity:.7;font-family:'JetBrains Mono',monospace}
 .nav-right{display:flex;align-items:center;gap:16px}
@@ -60,7 +60,7 @@ section.bg-dark .module-num{color:#fff;opacity:.08}
 section.bg-alt .module-num{color:var(--tiefenblau);opacity:.05}
 
 /* ===== ANIMATE IN ===== */
-.anim{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.anim{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(0.25,1,0.5,1),transform .7s cubic-bezier(0.25,1,0.5,1)}
 .anim.visible{opacity:1;transform:translateY(0)}
 .anim-delay-1{transition-delay:.1s}
 .anim-delay-2{transition-delay:.2s}
@@ -93,7 +93,7 @@ section.bg-dark .mod-header h2{color:#fff}
 .card h3{font-size:1.15rem;margin-bottom:12px;font-weight:700}
 .card ul{list-style:none;padding:0}
 .card ul li{padding:4px 0;font-size:.9rem;position:relative;padding-left:20px}
-.card ul li::before{content:'›';position:absolute;left:0;color:var(--impuls-orange);font-weight:700;font-size:1.1rem}
+.card ul li::before{content:'–';position:absolute;left:0;color:var(--impuls-orange);font-weight:700;font-size:1.1rem}
 .card.border-orange{border-top-color:var(--impuls-orange)}
 .card.border-green{border-top-color:var(--lang-green)}
 .card.border-blue{border-top-color:var(--fw-blue)}
@@ -105,7 +105,7 @@ section.bg-alt .card{background:#fff}
 .pipe-step:hover,.pipe-step.active{background:var(--tiefenblau);color:#fff;transform:scale(1.05)}
 .pipe-arrow{color:var(--impuls-orange);font-size:1.5rem;font-weight:700;margin:0 4px;flex-shrink:0}
 .pipe-detail{background:#fff;border:1px solid #ddd;border-radius:10px;padding:20px 24px;margin-top:16px;display:none;font-size:.9rem;box-shadow:0 4px 16px rgba(0,0,0,.08)}
-.pipe-detail.show{display:block;animation:fadeIn .3s ease}
+.pipe-detail.show{display:block;animation:fadeIn .3s cubic-bezier(0.25,1,0.5,1)}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 
 /* ===== LAYER BARS ===== */
@@ -115,7 +115,7 @@ section.bg-alt .card{background:#fff}
 .layer-bar .bar-label{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:1.1rem;display:flex;justify-content:space-between;align-items:center}
 .layer-bar .bar-count{font-family:'JetBrains Mono',monospace;font-size:.85rem;opacity:.8}
 .layer-bar .bar-files{display:none;margin-top:12px;font-size:.85rem;font-family:'JetBrains Mono',monospace;line-height:1.8}
-.layer-bar.expanded .bar-files{display:block;animation:fadeIn .3s ease}
+.layer-bar.expanded .bar-files{display:block;animation:fadeIn .3s cubic-bezier(0.25,1,0.5,1)}
 .layer-bar .bar-chevron{transition:transform .3s}
 .layer-bar.expanded .bar-chevron{transform:rotate(180deg)}
 
@@ -125,11 +125,11 @@ section.bg-alt .card{background:#fff}
 .lang-pills{display:flex;flex-wrap:wrap;gap:8px}
 .lang-pill{padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;font-family:'JetBrains Mono',monospace;color:#fff;transition:transform .2s}
 .lang-pill:hover{transform:scale(1.08)}
-.lang-pill.systems{background:#E53E3E}
+.lang-pill.systems{background:#D32F2F}
 .lang-pill.web{background:var(--impuls-orange)}
 .lang-pill.backend{background:var(--lang-green)}
 .lang-pill.data{background:var(--fw-blue)}
-.lang-pill.config{background:#8B5CF6}
+.lang-pill.config{background:#5BE3D6}
 
 /* ===== FRAMEWORK GRID ===== */
 .fw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
@@ -162,7 +162,7 @@ section.bg-alt .card{background:#fff}
 .score-card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .score-card h4{font-size:.95rem;margin-bottom:8px}
 .score-bar-wrap{height:24px;background:#eee;border-radius:12px;overflow:hidden;margin-top:8px;position:relative}
-.score-bar-fill{height:100%;border-radius:12px;transition:width 1s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.7rem;font-weight:700;color:#fff}
+.score-bar-fill{height:100%;border-radius:12px;transition:width 1s cubic-bezier(0.25,1,0.5,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.7rem;font-weight:700;color:#fff}
 
 /* ===== KNOWLEDGE GRAPH (Module 8) ===== */
 .graph-section{padding-left:0;padding-right:0}
@@ -178,8 +178,8 @@ section.bg-alt .card{background:#fff}
 .graph-btn[data-layer="languages"].active{background:var(--lang-green)}
 .graph-btn[data-layer="frameworks"]{border-color:var(--fw-blue);color:var(--fw-blue)}
 .graph-btn[data-layer="frameworks"].active{background:var(--fw-blue)}
-.graph-btn[data-layer="meta"]{border-color:#999;color:#999}
-.graph-btn[data-layer="meta"].active{background:#999}
+.graph-btn[data-layer="meta"]{border-color:#9E9790;color:#9E9790}
+.graph-btn[data-layer="meta"].active{background:#9E9790}
 .graph-canvas-wrap{position:relative;width:100%;height:70vh;min-height:500px;background:#fafafa;border-top:1px solid #eee;border-bottom:1px solid #eee}
 #graphCanvas{width:100%;height:100%;cursor:grab;display:block}
 #graphCanvas:active{cursor:grabbing}
@@ -212,6 +212,16 @@ section.bg-alt .card{background:#fff}
   .pyramid-level{width:100%!important}
   .hero-links{grid-template-columns:1fr}
 }
+
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{outline:2px solid var(--impuls-orange,#FE8F11);outline-offset:2px;border-radius:4px}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>
@@ -421,7 +431,7 @@ section.bg-alt .card{background:#fff}
       <div class="legend-item"><div class="legend-dot" style="background:var(--impuls-orange)"></div>Agents</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--lang-green)"></div>Languages</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--fw-blue)"></div>Frameworks</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#999"></div>Meta</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#9E9790"></div>Meta</div>
     </div>
   </div>
 </section>
@@ -548,7 +558,7 @@ const LAYERS = [
   {name:'Agents',count:8,color:'var(--impuls-orange)',width:'85%',files:['project-scanner.md','file-analyzer.md','assemble-reviewer.md','architecture-analyzer.md','domain-analyzer.md','tour-builder.md','graph-reviewer.md','knowledge-graph-guide.md']},
   {name:'Language Support',count:23,color:'var(--lang-green)',width:'70%',files:['rust.md','go.md','cpp.md','csharp.md','javascript.md','typescript.md','html.md','css.md','python.md','java.md','ruby.md','php.md','kotlin.md','swift.md','sql.md','graphql.md','protobuf.md','json.md','yaml.md','terraform.md','dockerfile.md','shell.md','markdown.md']},
   {name:'Framework Support',count:10,color:'var(--fw-blue)',width:'55%',files:['react.md','vue.md','nextjs.md','express.md','fastapi.md','flask.md','django.md','spring.md','rails.md','gin.md']},
-  {name:'Meta',count:1,color:'#999',width:'30%',files:['LICENSE']}
+  {name:'Meta',count:1,color:'#9E9790',width:'30%',files:['LICENSE']}
 ];
 
 /* =====================================================================
@@ -615,7 +625,7 @@ function buildLayerBars(){
     const bar = document.createElement('div');
     bar.className = 'layer-bar';
     bar.style.cssText = `background:${layer.color};width:${layer.width}`;
-    if(layer.color === '#999' || layer.color === 'var(--impuls-orange)') bar.style.color = '#fff';
+    if(layer.color === '#9E9790' || layer.color === 'var(--impuls-orange)') bar.style.color = '#fff';
     bar.innerHTML = `
       <div class="bar-label">
         <span>${layer.name}</span>
@@ -831,7 +841,7 @@ function initGraph(){
     agents:'#FE8F11',
     languages:'#84C041',
     frameworks:'#1195EB',
-    meta:'#999999'
+    meta:'#9E9790'
   };
   const COMPLEXITY_RADIUS = {simple:8, moderate:13, complex:20};
 

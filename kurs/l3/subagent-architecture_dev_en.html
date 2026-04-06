@@ -16,7 +16,7 @@
   --color-warm-gray-bg:#F3EFEB;
   --color-code-bg:#000066;
   --color-text:#1A1A2E;
-  --color-text-muted:#5C5A6B;
+  --color-text-muted:#6B6560;
   --font-display:'Bricolage Grotesque',Georgia,serif;
   --font-body:'DM Sans',-apple-system,sans-serif;
   --font-mono:'JetBrains Mono','Fira Code','Consolas',monospace;
@@ -113,6 +113,16 @@ body{font-family:var(--font-body);color:var(--color-text);line-height:1.6;overfl
   .sibling-nav-grid{grid-template-columns:1fr}
   .pipeline-flow{flex-wrap:nowrap}
 }
+
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{outline:2px solid var(--impulse-orange,#FE8F11);outline-offset:2px;border-radius:4px}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>
@@ -725,11 +735,11 @@ must actually exist on disk.</code>
 </section>
 
 <footer style="background:#F3EFEB;border-top:2px solid #E4DAD4;padding:2rem">
-  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#5C5A6B">
+  <div style="max-width:820px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.85rem;color:#6B6560">
     <span>&copy; 2026 Mark Zimmermann</span>
     <div style="display:flex;gap:1.5rem">
-      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">Imprint</a>
-      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#5C5A6B;text-decoration:none">GitHub</a>
+      <a href="https://godmodeai2025.github.io/MarkZimmermann/" target="_blank" rel="noopener" style="color:#6B6560;text-decoration:none">Imprint</a>
+      <a href="https://github.com/GodModeAI2025/Learning-Skill" target="_blank" rel="noopener" style="color:#6B6560;text-decoration:none">GitHub</a>
     </div>
   </div>
 </footer>

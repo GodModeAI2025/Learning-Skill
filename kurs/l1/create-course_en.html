@@ -16,7 +16,7 @@
   --warm-grey-bg:#F3EFEB;
   --code-bg:#000066;
   --text:#1A1A2E;
-  --text-muted:#6B6778;
+  --text-muted:#7A7570;
   --radius:16px;
   --space-3:1rem;--space-4:1.5rem;--space-5:2rem;--space-6:3rem;--space-8:5rem;
   --font-heading:'Bricolage Grotesque',sans-serif;
@@ -94,7 +94,7 @@ body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#
 .card p{font-size:.85rem;color:var(--text-muted);margin-bottom:0}
 .timeline{margin:var(--space-5) 0;position:relative}
 .timeline-bar{height:6px;background:var(--warm-grey);border-radius:3px;position:relative;margin-bottom:var(--space-5)}
-.timeline-fill{height:100%;background:var(--impulse-orange);border-radius:3px;width:0;transition:width 1.5s ease}
+.timeline-fill{height:100%;background:var(--impulse-orange);border-radius:3px;width:0;transition:width 1.5s cubic-bezier(0.25,1,0.5,1)}
 .timeline-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 .timeline-step{text-align:center;opacity:.4;transition:opacity .5s}
 .timeline-step.active{opacity:1}
@@ -125,7 +125,7 @@ body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#
 .site-footer a{color:var(--impulse-orange);text-decoration:none}
 .site-footer a:hover{text-decoration:underline}
 .footer-links{display:flex;justify-content:center;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
-.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.animate-in{opacity:0;transform:translateY(30px);transition:opacity .6s cubic-bezier(0.25,1,0.5,1),transform .6s cubic-bezier(0.25,1,0.5,1)}
 .animate-in.visible{opacity:1;transform:translateY(0)}
 @media(max-width:768px){
   .option-row{grid-template-columns:1fr}
@@ -137,6 +137,16 @@ body{font-family:var(--font-body);color:var(--text);line-height:1.7;background:#
   .sibling-grid{grid-template-columns:1fr}
   .nav-deep{padding:.5rem 1rem}
 }
+
+/* === A11Y: Reduced Motion === */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
+  html{scroll-snap-type:none !important;scroll-behavior:auto !important}
+}
+
+/* === A11Y: Focus Visible === */
+*:focus-visible{outline:2px solid var(--impulse-orange,#FE8F11);outline-offset:2px;border-radius:4px}
+button:focus:not(:focus-visible),a:focus:not(:focus-visible){outline:none}
 </style>
 </head>
 <body>
