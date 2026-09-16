@@ -144,6 +144,7 @@ Classify each directory name against known architectural patterns:
 
 Also check file-level patterns:
 - Files matching `*.test.*` or `*.spec.*` or `test_*.py` or `*_test.go` or `*Test.java` or `*_spec.rb` or `*Test.php` or `*Tests.cs` -> `test`
+- Also -> `test`: `*Tests.swift`, `*Test.swift`, `*Spec.swift` or `.swift` files under `Tests/`; `*_test.rs` or `.rs` files under a crate-level `tests/`; `*_test.rb`, `test_*.rb`; `.php` files under `tests/`; `*Test.kt`, `*Tests.kt`, `*Test.cs` (suffixes are case-sensitive: `Contest.swift` is not a test)
 - Files matching `*.d.ts` -> `types` (TypeScript declaration files only)
 - Files named `index.ts`, `index.js`, or `__init__.py` at a package/directory root -> `entry`
 - Files named `manage.py` at the project root -> `entry` (Django management entry point)

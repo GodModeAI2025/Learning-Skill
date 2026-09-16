@@ -167,6 +167,7 @@ The script must write this exact JSON structure to the output file:
   "scriptCompleted": true,
   "filesAnalyzed": 5,
   "filesSkipped": ["path/to/binary.wasm"],
+  "filesUnreadable": [],
   "results": [
     {
       "path": "src/index.ts",
@@ -245,7 +246,13 @@ The script must write this exact JSON structure to the output file:
 
 - `scriptCompleted` (boolean) -- always `true` when the script finishes normally
 - `filesAnalyzed` (integer) -- count of files successfully processed
-- `filesSkipped` (string[]) -- files that could not be read (binary, permission error, etc.)
+- `filesSkipped` (string[]) -- every batch file that produced no result (binary, no extraction logic for the language, read failure)
+- `filesUnreadable` (object[]) -- the subset of skipped files that could not be read from disk at all, as `{"path": "...", "code": "ENOENT"}` (use the error code from the runtime, e.g. `ENOENT`, `EACCES`, or the Python exception name)
+
+**Unreadable is not unsupported.** A file without extraction logic is a property of the code; a file that cannot be opened is a configuration problem — almost always a wrong `projectRoot` or a stale path in the batch list. Keep the two apart:
+- The script prints a note to stderr whenever `filesUnreadable` is non-empty.
+- If *every* file in the batch is unreadable, the script exits 1. Treat that as a failed batch and report it. Rewriting the script does not fix wrong paths, so this case does not use the retry attempts.
+- Never create a stub node for an unreadable file as if it were an unsupported language. List it as unreadable in your summary so it ends up in the phase warnings.
 - `results` (array) -- one entry per successfully analyzed file
 
 ### Preparing the Script Input
@@ -346,6 +353,8 @@ For non-code files:
 Indicators from script data:
 - Many re-exports + few functions = `barrel`
 - Filename contains `.test.` or `.spec.` or `test_*.py` or `*_test.go` or `*Test.java` or `*_spec.rb` or `*Test.php` or `*Tests.cs` = `test`
+- Also `test`: `*Tests.swift`, `*Test.swift`, `*Spec.swift` or any `.swift` file under a top-level `Tests/` directory; `*_test.rs` or any `.rs` file under a crate-level `tests/` directory; `*_test.rb` and `test_*.rb`; any `.php` file under `tests/`; `*Test.kt`, `*Tests.kt`, `*Test.cs`
+- Match these suffixes case-sensitively at the end of the base name: `Contest.swift`, `latest.rb` or `contest.rs` are production files, not tests
 - Exports a class with `Handler` or `Controller` in the name = `api-handler`
 - Only type/interface exports = `type-definition`
 - Named `index.ts` or `index.js` at a directory root with re-exports = `entry-point` (JavaScript/TypeScript barrel)
@@ -398,7 +407,7 @@ Using the script's structural data and file categories, create edges:
 | `implements` | A class implements an interface in the project | `0.9` | `forward` |
 | `exports` | File exports a function or class node you created (only for exported items — use IN ADDITION to `contains`, not instead of it) | `0.8` | `forward` |
 | `depends_on` | File has runtime dependency on another project file (broader than imports -- includes dynamic requires, lazy loads) | `0.6` | `forward` |
-| `tested_by` | Source file is tested by a test file (infer from test file imports and naming conventions) | `0.5` | `forward` |
+| `tested_by` | Source file is tested by a test file (infer from test file imports and naming conventions). `source` is always the production file, `target` the test file | `0.5` | `forward` |
 
 #### Edges for non-code files:
 
@@ -593,7 +602,7 @@ Use these hints for common edge patterns:
 
 - NEVER invent file paths. Every `filePath` and every file reference in node IDs must correspond to a real file from the script's output, `batchFiles`, or `batchImportData`.
 - NEVER create edges to nodes that do not exist. Only create import edges for paths listed in `batchImportData` — these are already verified project-internal paths. For non-code edges (configures, documents, deploys, etc.), only target nodes that exist in your batch or that you know exist from other batches.
-- ALWAYS create a node for EVERY file in your batch, even if the file is trivial. Use the appropriate node type based on fileCategory.
+- ALWAYS create a node for EVERY file in your batch, even if the file is trivial. Use the appropriate node type based on fileCategory. The only exception are files listed in `filesUnreadable`: report them instead of creating a node.
 - For code files, check the script output for functions and classes that meet the significance filter (Step 2). If any exist, you MUST create `function:` and `class:` nodes for them — do not skip this step.
 - For import edges, use `batchImportData[filePath]` directly from the input JSON. Do NOT attempt to resolve import paths yourself -- the project scanner already did this deterministically.
 - NEVER produce duplicate node IDs within your batch.
@@ -606,6 +615,6 @@ After producing the JSON:
 
 1. Write the JSON to: `<project-root>/.claude-learning/intermediate/batch-<batchIndex>.json`
 2. The project root and batch index will be provided in your prompt.
-3. Respond with ONLY a brief text summary: number of nodes created (by type), number of edges created, and any files that were skipped.
+3. Respond with ONLY a brief text summary: number of nodes created (by type), number of edges created, any files that were skipped, and — separately — any files that were unreadable.
 
 Do NOT include the full JSON in your text response.

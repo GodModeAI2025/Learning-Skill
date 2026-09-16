@@ -31,7 +31,7 @@ Dieses Skill-Paket erweitert Claude Code um drei leistungsstarke Analyse-Modi. *
 ## Projektstruktur
 
 ```
-├── skill.md              <- Haupt-Skill (3.008 Zeilen)
+├── skill.md              <- Haupt-Skill
 ├── agents/               <- 8 KI-Agenten
 │   ├── project-scanner.md
 │   ├── file-analyzer.md
