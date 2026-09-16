@@ -811,7 +811,7 @@ Determine whether to run a full analysis or incremental update.
    python <SKILL_DIR>/merge-subdomain-graphs.py $PROJECT_ROOT
    ```
    The script discovers subdomain graphs, loads the existing `knowledge-graph.json` as a base (if present), and merges everything into `knowledge-graph.json` (deduplicating nodes and edges). Report the merge summary to the user, then continue with the merged graph.
-   If `<SKILL_DIR>/merge-subdomain-graphs.py` does not exist, write an equivalent Python 3 standard-library script to `$PROJECT_ROOT/.claude-learning/tmp/merge-subdomain-graphs.py` (behavior as described in this step: nodes deduplicated by `id`, edges by `(source, target, type)`) and run that instead.
+   If `<SKILL_DIR>/merge-subdomain-graphs.py` does not exist, write an equivalent Python 3 standard-library script to `$PROJECT_ROOT/.claude-learning/tmp/merge-subdomain-graphs.py` (behavior as described in this step: nodes deduplicated by `id`, edges by `(source, target, type)`) and run that instead with `python3` (on macOS and many Linux systems there is no `python` binary).
 
 5. Check if `$PROJECT_ROOT/.claude-learning/knowledge-graph.json` exists. If it does, read it.
 6. Check if `$PROJECT_ROOT/.claude-learning/meta.json` exists. If it does, read it to get `gitCommitHash`.
@@ -951,7 +951,7 @@ This script reads all `batch-*.json` files from `$PROJECT_ROOT/.claude-learning/
 
 Output: `$PROJECT_ROOT/.claude-learning/intermediate/assembled-graph.json`
 
-**If `<SKILL_DIR>/merge-batch-graphs.py` does not exist** (the script is not shipped in every copy of this skill): do NOT hand-merge the batch JSON in context. Write the script yourself to `$PROJECT_ROOT/.claude-learning/tmp/merge-batch-graphs.py` implementing exactly the steps listed above (Python 3 standard library only, same input directory, same output path, corrections logged to stderr) and run it from there. Use the same substitute path in the incremental update path below. Mention in the final report that the merge script was generated at runtime.
+**If `<SKILL_DIR>/merge-batch-graphs.py` does not exist** (this repository currently does not ship the merge scripts): do NOT hand-merge the batch JSON in context. Write the script yourself to `$PROJECT_ROOT/.claude-learning/tmp/merge-batch-graphs.py` implementing exactly the steps listed above (Python 3 standard library only, same input directory, same output path, corrections logged to stderr) and run it from there with `python3`. Write it once per analysis run and reuse it for every merge in that run, so all batches go through the same logic. Use the same substitute path in the incremental update path below. Mention in the final report that the merge script was generated at runtime.
 
 Include the script's warnings in `$PHASE_WARNINGS` for the reviewer.
 

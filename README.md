@@ -115,6 +115,8 @@ Scanner ─→ Analyzer ─→ Architect ─→ Tour Builder ─→ Reviewer
 
 Die Agenten arbeiten parallel, wo möglich. Der **Reviewer** bewertet jeden Abschnitt mit einem Helpfulness-Score und triggert bei Bedarf eine Nachbesserung.
 
+**Hinweis Merge-Scripts:** Der Verstehen-Modus ruft `merge-batch-graphs.py` und `merge-subdomain-graphs.py` auf. Beide liegen derzeit nicht im Repository. Fehlen sie, erzeugt der Skill sie zur Laufzeit nach der Spezifikation in `skill.md` unter `.claude-learning/tmp/` (Python 3, nur Standardbibliothek). Die Ergebnisse können deshalb zwischen Läufen leicht abweichen. Für reproduzierbare Graphen die Scripts neben `skill.md` ablegen.
+
 ## Zusätzliche Befehle
 
 | Befehl | Beschreibung |
