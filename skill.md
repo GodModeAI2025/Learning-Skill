@@ -811,6 +811,7 @@ Determine whether to run a full analysis or incremental update.
    python <SKILL_DIR>/merge-subdomain-graphs.py $PROJECT_ROOT
    ```
    The script discovers subdomain graphs, loads the existing `knowledge-graph.json` as a base (if present), and merges everything into `knowledge-graph.json` (deduplicating nodes and edges). Report the merge summary to the user, then continue with the merged graph.
+   If `<SKILL_DIR>/merge-subdomain-graphs.py` does not exist, write an equivalent Python 3 standard-library script to `$PROJECT_ROOT/.claude-learning/tmp/merge-subdomain-graphs.py` (behavior as described in this step: nodes deduplicated by `id`, edges by `(source, target, type)`) and run that instead with `python3` (on macOS and many Linux systems there is no `python` binary).
 
 5. Check if `$PROJECT_ROOT/.claude-learning/knowledge-graph.json` exists. If it does, read it.
 6. Check if `$PROJECT_ROOT/.claude-learning/meta.json` exists. If it does, read it to get `gitCommitHash`.
@@ -945,9 +946,12 @@ This script reads all `batch-*.json` files from `$PROJECT_ROOT/.claude-learning/
 - Rewrites edge references to match corrected node IDs
 - Deduplicates nodes by ID (keeps last occurrence) and edges by `(source, target, type)`
 - Drops dangling edges referencing missing nodes
+- Normalizes `tested_by` edges to point from the production file to the test file (swap reversed edges, keep canonical ones — test detection per the patterns in `agents/file-analyzer.md`)
 - Logs all corrections and dropped items to stderr
 
 Output: `$PROJECT_ROOT/.claude-learning/intermediate/assembled-graph.json`
+
+**If `<SKILL_DIR>/merge-batch-graphs.py` does not exist** (this repository currently does not ship the merge scripts): do NOT hand-merge the batch JSON in context. Write the script yourself to `$PROJECT_ROOT/.claude-learning/tmp/merge-batch-graphs.py` implementing exactly the steps listed above (Python 3 standard library only, same input directory, same output path, corrections logged to stderr) and run it from there with `python3`. Write it once per analysis run and reuse it for every merge in that run, so all batches go through the same logic. Use the same substitute path in the incremental update path below. Mention in the final report that the merge script was generated at runtime.
 
 Include the script's warnings in `$PHASE_WARNINGS` for the reviewer.
 
@@ -1270,7 +1274,7 @@ Dispatch a subagent using the `graph-reviewer` agent definition (at `agents/grap
 > ```
 >
 > Phase warnings/errors accumulated during analysis:
-> - [list any batch failures, skipped files, or warnings from Phases 2-5]
+> - [list any batch failures, skipped files, unreadable files, or warnings from Phases 2-5]
 >
 > Cross-validate: every file in the scan inventory should have a corresponding node in the graph (node types may vary: `file:`, `config:`, `document:`, `service:`, `pipeline:`, `table:`, `schema:`, `resource:`, `endpoint:`). Flag any missing files. Also flag any graph nodes whose `filePath` doesn't appear in the scan inventory.
 
