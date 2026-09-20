@@ -459,6 +459,8 @@ Phase B3-B6: Identisch mit Kurs-Modus
    - [ ] Keine Textwaende (max 3 Sätze am Stueck)
    - [ ] Keine recycelten Metaphern
    - [ ] Code unveraendert aus der echten Codebase
+   - [ ] **Code-Herkunft** -- Jeder Code-Block nennt `pfad/datei.ext:zeilen`; illustrativer Code ist als solcher gekennzeichnet
+   - [ ] **Nichts erfunden** -- Themen ohne Entsprechung im Projekt sind als fehlend benannt, nicht allgemein beschrieben
    - [ ] Quiz testet Anwendung, nicht Auswendiglernen
    - [ ] scroll-snap-type: y proximity (NICHT mandatory)
    - [ ] Jede Seite hat interaktive Elemente
@@ -2515,6 +2517,7 @@ Maximale Tiefe. Kein Deep-Dive-Link mehr (L3 ist das Maximum). Dies ist der LETZ
 ```css
 .translation-code { background: var(--color-bg-code); color: #D0D0E8; }
 .translation-english { background: var(--color-surface-warm); border-left: 3px solid var(--color-impulse-orange); }
+.code-source { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); margin-bottom: .5rem; }
 ```
 
 **Level-Anpassung:**
@@ -2720,6 +2723,19 @@ KG Tour Step 3: "Core Components" (src/components/)
 | **Metaphern** | Je 1 pro Modul, einzigartig | Darf L0-Metapher vertiefen | Kann technischer werden | Keine noetig, Klartext |
 | **1 Konzept/Screen** | Ja | Ja | Ja, aber breiter | Ja, aber tiefer |
 | **Quiz** | Anwendung | Verständnis | Analyse | Synthese/Debugging |
+
+### Code-Herkunft -- Jedes Snippet zeigt, woher es stammt
+
+Ein Kurs über eine Codebase ist nur so viel wert wie die Rückbindung an diese Codebase. Wer ein Snippet liest und die Stelle im Projekt nicht findet, kann nichts nachschlagen und nichts nachprüfen.
+
+**Regeln:**
+
+1. **Jeder Code-Block trägt seine Quelle** als `pfad/zur/datei.ext:120-138` -- Pfad relativ zur Projektwurzel, Zeilenbereich der Originaldatei. Markup: `<div class="code-source">pfad/zur/datei.ext:120-138</div>` direkt über dem Code-Block.
+2. **Wörtlich übernehmen.** Einrücken, Bezeichner und Kommentare bleiben wie im Original. Wird ein Block gekürzt, steht an der Schnittstelle eine eigene Zeile `// ...` (bzw. das Kommentarzeichen der Sprache), und der Zeilenbereich nennt weiterhin Anfang und Ende des gezeigten Ausschnitts.
+3. **Kein Snippet ohne Datei.** Illustrativer Code, der so nicht im Projekt steht (vereinfachte Beispiele, Gegenbeispiele, "so könnte man es auch machen"), wird als `<div class="code-source">Beispiel -- nicht aus dem Projekt</div>` gekennzeichnet. Ohne diese Kennzeichnung gehört er nicht auf die Seite.
+4. **Fehlendes wird benannt, nicht erfunden.** Hat ein geplantes Thema keine Entsprechung im Projekt (kein Test-Setup, keine Deployment-Konfiguration, keine Fehlerbehandlung), schreibt das Modul genau das hin. Ein Abschnitt, der beschreibt, wie es üblicherweise gemacht wird, während das Projekt es gar nicht macht, bringt den Lesenden in die Irre.
+
+Die Herkunftszeile ist klein und zurückhaltend gesetzt (Monospace, --text-xs, Warmgrau), sie konkurriert nicht mit dem Code.
 
 ### Zielgruppen-spezifische Regeln (gelten auf ALLEN Levels)
 
