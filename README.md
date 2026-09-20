@@ -25,6 +25,7 @@ Dieses Skill-Paket erweitert Claude Code um drei leistungsstarke Analyse-Modi. *
 - **Multi-Agent Knowledge Graph Pipeline** (8 spezialisierte Agenten)
 - **23 Programmiersprachen + 10 Frameworks** unterstützt
 - **Interaktives Dashboard** mit Force-Directed Graph
+- **Code mit Herkunftsnachweis** — jedes Snippet nennt `datei.ext:zeilen`, illustrativer Code ist gekennzeichnet
 - **Domain-Analyse, Diff-Impact, Onboarding-Guides**
 - **Parallelisierung** über Claude's Agent-Tool
 
