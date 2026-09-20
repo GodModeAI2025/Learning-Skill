@@ -1,15 +1,15 @@
 NOTICE
 ======
 
-Dieses Repository enthaelt Material aus einem Drittprojekt. Der folgende
-Hinweis erfuellt die Weitergabebedingung der MIT-Lizenz dieses Projekts
+Dieses Repository enthält Material aus einem Drittprojekt. Der folgende
+Hinweis erfüllt die Weitergabebedingung der MIT-Lizenz dieses Projekts
 ("The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software"). Er dokumentiert
 die Herkunft und ist keine Rechtsberatung.
 
 Die eigenen Teile dieses Repositorys stehen unter der MIT-Lizenz in LICENSE
 (Copyright (c) 2026 Mark Zimmermann). Dieser Hinweis tritt nicht an deren
-Stelle, sondern ergaenzt sie.
+Stelle, sondern ergänzt sie.
 
 
 -------------------------------------------------------------------------
@@ -24,10 +24,10 @@ Lizenz:     MIT
 Copyright (c) 2026 Yuxiang Lin
 Copyright (c) 2026 Infinite Universe, Inc.
 
-Uebernommen bzw. abgeleitet (Stand des oben genannten Commits):
+Übernommen bzw. abgeleitet (Stand des oben genannten Commits):
 
   * languages/*.md (23 Dateien) und frameworks/*.md (10 Dateien)
-    Unveraendert uebernommen. Alle 33 Dateien sind byte-identisch mit
+    Unverändert übernommen. Alle 33 Dateien sind byte-identisch mit
     understand-anything-plugin/skills/understand/{languages,frameworks}/.
 
   * agents/*.md (8 Dateien)
@@ -66,11 +66,18 @@ Volltext der Lizenz, unter der dieses Material bezogen wurde:
 
 
 -------------------------------------------------------------------------
-Verhaeltnis zur Identitaets-Regel in skill.md
+Offener Punkt: Verhältnis zur Identitäts-Regel in skill.md
 -------------------------------------------------------------------------
 
-Die Identitaets-Regel verbietet fremde Projektnamen im *generierten Output*
-des Skills (HTML-Kurse, Knowledge Graph, Logs, Commit-Messages). Diese Datei
-ist kein generierter Output, sondern ein Lizenzhinweis des Repositorys, und
-faellt deshalb nicht unter die Regel. Sie darf von keinem Selbst-Check des
-Skills veraendert oder entfernt werden.
+skill.md enthält eine Identitäts-Regel, die fremde Projektnamen im
+generierten Output des Skills verbietet und dabei ausdrücklich auch
+"jeder Verweis auf die Herkunft der Verstehen-Pipeline" aufführt. Die
+MIT-Lizenz der oben genannten Quelle verlangt umgekehrt, dass
+Copyright-Hinweis und Lizenztext bei der Weitergabe wesentlicher Teile
+mitgeliefert werden.
+
+Diese Datei ist von Hand geschrieben und kein vom Skill erzeugter Output.
+Wie die beiden Anforderungen zueinander stehen, und ob die
+Identitäts-Regel eine ausdrückliche Ausnahme für Lizenzdokumentation
+bekommen soll, entscheidet der Eigentümer des Repositorys. skill.md wurde
+dafür bewusst nicht verändert.
