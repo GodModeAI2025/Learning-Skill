@@ -132,3 +132,5 @@ Die Agenten arbeiten parallel, wo möglich. Der **Reviewer** bewertet jeden Absc
 ## Lizenz
 
 MIT License. Siehe [LICENSE](LICENSE) für Details.
+
+Teile dieses Repositorys — die Sprach- und Framework-Guides, die Agenten-Definitionen und der Verstehen-Modus — stammen aus einem MIT-lizenzierten Drittprojekt. Die vollständige Attribution mit Quelle, Abrufdatum, Copyright-Zeilen und Lizenztext steht in [NOTICE](NOTICE).

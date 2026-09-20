@@ -45,6 +45,8 @@ description: >-
 
 **Diese Regel gilt IMMER — auch bei Tests, Selbstanwendung, Debug-Output, Logs und internen Zwischenergebnissen.**
 
+**Geltungsbereich:** Die Regel betrifft den **generierten Output**. Die Repository-Dateien `LICENSE` und `NOTICE` sind kein generierter Output, sondern die Lizenzdokumentation des Repositorys. Der Selbst-Check lässt sie unverändert.
+
 ---
 
 Dieser Skill vereint zwei leistungsstarke Analyse-Pipelines in einem einzigen, Claude-optimierten Werkzeug:

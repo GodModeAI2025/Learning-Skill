@@ -1,0 +1,76 @@
+NOTICE
+======
+
+Dieses Repository enthaelt Material aus einem Drittprojekt. Der folgende
+Hinweis erfuellt die Weitergabebedingung der MIT-Lizenz dieses Projekts
+("The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software"). Er dokumentiert
+die Herkunft und ist keine Rechtsberatung.
+
+Die eigenen Teile dieses Repositorys stehen unter der MIT-Lizenz in LICENSE
+(Copyright (c) 2026 Mark Zimmermann). Dieser Hinweis tritt nicht an deren
+Stelle, sondern ergaenzt sie.
+
+
+-------------------------------------------------------------------------
+1. Verstehen-Pipeline, Sprach- und Framework-Guides
+-------------------------------------------------------------------------
+
+Quelle:     Understand-Anything
+            https://github.com/Egonex-AI/Understand-Anything
+Abgerufen:  2026-09-20, Branch main, Commit 6df3065f1d8ddc2ce3615314d1d493f36d6b1c80
+Lizenz:     MIT
+
+Copyright (c) 2026 Yuxiang Lin
+Copyright (c) 2026 Infinite Universe, Inc.
+
+Uebernommen bzw. abgeleitet (Stand des oben genannten Commits):
+
+  * languages/*.md (23 Dateien) und frameworks/*.md (10 Dateien)
+    Unveraendert uebernommen. Alle 33 Dateien sind byte-identisch mit
+    understand-anything-plugin/skills/understand/{languages,frameworks}/.
+
+  * agents/*.md (8 Dateien)
+    Abgeleitet von understand-anything-plugin/agents/ und angepasst.
+
+  * Verstehen-Modus in skill.md (Phasen 0-7, Graph-Schema, Merge-Spezifikation)
+    Abgeleitet von understand-anything-plugin/skills/understand/SKILL.md.
+
+Der Kurs-Modus, das Design-System, das Level-System und das
+Helpfulness-Scoring stammen nicht aus dieser Quelle.
+
+Volltext der Lizenz, unter der dieses Material bezogen wurde:
+
+    MIT License
+
+    Copyright (c) 2026 Yuxiang Lin
+    Copyright (c) 2026 Infinite Universe, Inc.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
+
+-------------------------------------------------------------------------
+Verhaeltnis zur Identitaets-Regel in skill.md
+-------------------------------------------------------------------------
+
+Die Identitaets-Regel verbietet fremde Projektnamen im *generierten Output*
+des Skills (HTML-Kurse, Knowledge Graph, Logs, Commit-Messages). Diese Datei
+ist kein generierter Output, sondern ein Lizenzhinweis des Repositorys, und
+faellt deshalb nicht unter die Regel. Sie darf von keinem Selbst-Check des
+Skills veraendert oder entfernt werden.
